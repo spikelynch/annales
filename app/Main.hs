@@ -21,6 +21,8 @@ import qualified Data.Text.IO as Tio
 -- Note that this can't be a combinator, it has to be in IO to have rendered
 -- the TextGens
 
+type TextGenCh = [ TextGen StdGen [[Char]] ]
+
 name = choose $ map word [ "Arnold", "Betty", "Charles", "Davina", "Edgar", "Felicity", "George", "Hortense", "Ignatz", "Jenny", "Karl", "Lorelei", "Martin", "Nina", "Oliver", "Penelope", "Quentin", "Rose", "Stephen", "Tarin", "Umberto", "Veronica", "Wayne", "Xanthippe", "Yorick", "Zuleika" ]
 
 arrival = choose $ map word [ "rocked up", "appeared", "joined the party", "arrived", "showed up", "manifested" ]
@@ -31,14 +33,12 @@ dumbjoin :: [ [ Char ] ] -> [ Char ]
 dumbjoin s = intercalate " " s
 
 
-newcomer :: [ TextGen StdGen [[Char]] ] -> IO ( [ TextGen StdGen [[Char]] ], [ [ Char ] ] )
+newcomer :: [ TextGen StdGen [[Char]] ] -> IO ( [ TextGen StdGen [[Char]] ], TextGen StdGen [ [Char ] ] )
 newcomer cast = do
---  choice <- getStdRandom $ randomR ( 0, 1 )
   new <- getStdRandom $ runTextGen name
-  arrived <- getStdRandom $ runTextGen arrival
   newgen <- return $ word $ dumbjoin new
   newcast <- return $ (newgen:cast)
-  return ( newcast, new ++ arrived )
+  return ( newcast, list [ newgen, arrival ] )
       
       
 
@@ -46,29 +46,15 @@ newcomer cast = do
 incidents :: Int -> [ TextGen StdGen [ [ Char ] ] ] -> IO [ Char ]
 incidents l cast = do
   ( cast1, incident ) <- newcomer cast
-  text <- return $ smartjoin incident
-  lp <- return $ length text
+  words <- getStdRandom $ runTextGen incident
+  text <- return $ smartjoin words
+  lp <- return $ length $ text
   case lp > l of
     True -> return text
     otherwise -> do
       rest <- incidents (l - lp) cast1
       return $ text ++ " " ++ rest
 
-
-
-mountainous :: Int -> [ TextGen StdGen [[Char]] ] -> IO [ Char ]
-mountainous l mountains = do
-  ( mm, ms2 ) <- getStdRandom $ runTextGen $ remove mountains
-  case mm of
-    Nothing -> return ""
-    Just ms -> do
-      m <- return $ smartjoin ms
-      lp <- return $ length m
-      case lp > l of
-        True -> return m
-        otherwise -> do
-          rest <- mountainous (l - lp) ms2
-          return $ m ++ ", " ++ rest
 
 
 maybejoin (Just s) = smartjoin s
