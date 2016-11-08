@@ -21,49 +21,118 @@ import qualified Data.Text.IO as Tio
 -- Note that this can't be a combinator, it has to be in IO to have rendered
 -- the TextGens
 
-type TextGenCh = [ TextGen StdGen [[Char]] ]
+type TextGenCh = TextGen StdGen [[Char]]
 
-name = choose $ map word [ "Arnold", "Betty", "Charles", "Davina", "Edgar", "Felicity", "George", "Hortense", "Ignatz", "Jenny", "Karl", "Lorelei", "Martin", "Nina", "Oliver", "Penelope", "Quentin", "Rose", "Stephen", "Tarin", "Umberto", "Veronica", "Wayne", "Xanthippe", "Yorick", "Zuleika" ]
+choiceGen l = choose $ map word l 
 
-arrival = choose $ map word [ "rocked up", "appeared", "joined the party", "arrived", "showed up", "manifested" ]
+names = choiceGen [ "Arnold", "Betty", "Charles", "Davina", "Edgar", "Felicity", "George", "Hortense", "Ignatz", "Jenny", "Karl", "Lorelei", "Martin", "Nina", "Oliver", "Penelope", "Quentin", "Rose", "Stephen", "Tarin", "Umberto", "Veronica", "Wayne", "Xanthippe", "Yorick", "Zuleika" ]
 
--- generate = getStdRandom runTextGen
+arrived = choiceGen [ "appeared", "rose to prominence", "won favour" ]
+
+death = choiceGen [ "disappeared", "was assassinated", "drowned in the baths", "choked on a chicken bone" ]
+
+disasters = choiceGen [ "Great storms", "Winds", "Nightmares", "Evil omens" ]
+
+
+
+
+
+
+
+
+
+
+generate g = getStdRandom $ runTextGen g
 
 dumbjoin :: [ [ Char ] ] -> [ Char ]
 dumbjoin s = intercalate " " s
 
 
-newcomer :: [ TextGen StdGen [[Char]] ] -> IO ( [ TextGen StdGen [[Char]] ], TextGen StdGen [ [Char ] ] )
-newcomer cast = do
-  new <- getStdRandom $ runTextGen name
-  newgen <- return $ word $ dumbjoin new
-  newcast <- return $ (newgen:cast)
-  return ( newcast, list [ newgen, arrival ] )
-      
-      
+randn :: Int -> IO Int
+randn n = do
+  r <- getStdRandom $ randomR ( 0, n - 1 )
+  return r
 
 
-incidents :: Int -> [ TextGen StdGen [ [ Char ] ] ] -> IO [ Char ]
-incidents l cast = do
-  ( cast1, incident ) <- newcomer cast
-  words <- getStdRandom $ runTextGen incident
+-- a TextGenCh can return random versions of a name
+
+data Empire = Empire { emperor :: TextGenCh
+                     , forebears :: [ TextGenCh ]
+                     , court :: [ TextGenCh ]
+                     , tribes :: [ TextGenCh ]
+                     , enemies :: [ TextGenCh ]
+                     , projects :: [ TextGenCh ]
+                     }
+
+
+disaster :: Empire -> IO ( Empire, TextGenCh )
+disaster e = return ( e, disasters )
+
+
+newCourtier :: Empire -> IO ( Empire, TextGenCh )
+newCourtier e = do
+  new  <- generate names
+  newc <- return $ word $ dumbjoin new
+  e'   <- return $ e { court = newc:(court e) }
+  return ( e', list [ newc, arrived ] )
+
+deadCourtier :: Empire -> IO ( Empire, TextGenCh )
+deadCourtier e = do
+  ( mdc, court' ) <- generate $ remove $ court e
+  case mdc of
+    Nothing -> disaster e
+    Just left -> do
+      e' <- return $ e { court = court' }
+      return ( e', list [ word $ dumbjoin left, death ] ) 
+
+
+incident :: Empire -> IO ( Empire, TextGenCh )
+incident e = do
+  r <- randn 3
+  case r of
+    0         -> newCourtier e
+    1         -> deadCourtier e
+    otherwise -> disaster e
+
+
+showL :: [ TextGenCh ] -> IO [ Char ]
+showL []     = return ""
+showL (g:gs) = do
+  gt <- generate g
+  gtr <- showL gs
+  return $ (smartjoin gt) ++ ", " ++ gtr
+
+
+
+incidents :: Int -> Empire -> IO [ Char ]
+incidents l e = do
+  ( e', desc ) <- incident e
+  words <- generate desc
   text <- return $ smartjoin words
   lp <- return $ length $ text
   case lp > l of
     True -> return text
     otherwise -> do
-      rest <- incidents (l - lp) cast1
-      return $ text ++ " " ++ rest
+      rest <- incidents (l - lp) e'
+      return $ text ++ "\n" ++ rest
 
 
 
 maybejoin (Just s) = smartjoin s
 maybejoin Nothing  = ""
 
-mountains = "./data/mountains.txt"
+initialE = Empire { emperor = word "Fred the great"
+                  , forebears = []
+                  , court = []
+                  , tribes =  []
+                  , enemies = []
+                  , projects = []
+                  }
+
+
 
 
 main :: IO ()
 main = do
-  results <- incidents 1000 []
-  putStrLn results
+  annals <- incidents 1000 initialE
+  putStrLn annals

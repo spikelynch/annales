@@ -54,3 +54,20 @@ generals and priests, etc
 New religions are promulgated
 
 Artefacts found from extinct tribes
+
+
+## Technical notes
+
+Possible, more interestingly Haskell-ish way to do this: wrap the
+TextGen state in a second state monad which carries the current
+narrative state around, something like
+
+    narstate = {
+        emperor: ( "Charles", 2 ),
+        court: [ "Umberto", "Godfrey", "Peter the Blunt" ],
+        tribes: [ "Unicorns", "Vacuums", "Haversathes" ]
+        }
+
+    do
+        state <- return initState
+        ( text, state2 ) <- doIncident state
