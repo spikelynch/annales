@@ -33,9 +33,15 @@ death = choiceGen [ "disappeared", "was assassinated", "drowned in the baths", "
 
 disasters = choiceGen [ "Great storms", "Winds", "Nightmares", "Evil omens" ]
 
+epithets = choiceGen [ "Wise", "Cruel", "Kind", "Wind-bound", "Fat", "Tall", "Great", "Oblique" ]
 
 
-
+genEmperor :: IO TextGenCh
+genEmperor = do
+  epithet <- generate epithets
+  name <- generate names
+  longname <- return $ (dumbjoin name) ++ " the " ++ (dumbjoin epithet)
+  return $ list [ word "Emperor", choose [ word (dumbjoin name), word longname ]]
 
 
 
@@ -68,6 +74,12 @@ data Empire = Empire { emperor :: TextGenCh
 disaster :: Empire -> IO ( Empire, TextGenCh )
 disaster e = return ( e, disasters )
 
+deadEmperor :: Empire -> IO ( Empire, TextGenCh )
+deadEmperor e = do
+  newe <- genEmperor
+  e' <- return $ e { emperor = newe }
+  return ( e', list [ emperor e, death, word "succeeded by", newe ] ) 
+
 
 newCourtier :: Empire -> IO ( Empire, TextGenCh )
 newCourtier e = do
@@ -92,6 +104,7 @@ incident e = do
   case r of
     0         -> newCourtier e
     1         -> deadCourtier e
+    2         -> deadEmperor e
     otherwise -> disaster e
 
 
