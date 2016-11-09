@@ -14,10 +14,15 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  hs-source-dirs:      src
+  hs-source-dirs:      app
+  exposed-modules:     Annales.Empire
   build-depends:       base >= 4.7 && < 5
                      , text >= 1.2.1.3 
+                     , containers 
+                     , directory >= 1.2.2
+                     , regex-posix
                      , random >= 1.1
+                     , textgen >= 0.1
   default-language:    Haskell2010
 
 executable annales-exe
@@ -27,9 +32,12 @@ executable annales-exe
   build-depends:       base
                      , annales
                      , text
-                     , random
-                     , monad-loops
+                     , containers 
+                     , directory >= 1.2.2
+                     , regex-posix
+                     , random >= 1.1
                      , textgen >= 0.1
+  other-modules:       Annales.Empire
   default-language:    Haskell2010
 
 test-suite annales-test
