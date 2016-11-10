@@ -1,7 +1,8 @@
 import TextGen (TextGen, runTextGen, word, choose, remove, list, randrep, rep, perhaps, smartjoin)
 
 import Annales.Empire ( TextGenCh, Empire, court, emperor, initialiseEmpire, vocabGet, generate, dumbjoin, randn)
-  
+
+import Annales.Tribes ( tribe )
 
 import System.Random
 
@@ -14,13 +15,13 @@ arrived = choiceGen [ "appeared", "rose to prominence", "won favour" ]
 
 death = choiceGen [ "disappeared", "was assassinated", "drowned in the baths", "choked on a chicken bone" ]
 
-disasters = choiceGen [ "Great storms", "Winds", "Nightmares", "Evil omens" ]
+--disasters = choiceGen [ "Great storms", "Winds", "Nightmares", "Evil omens" ]
 
 
 
 
-disaster :: Empire -> IO ( Empire, TextGenCh )
-disaster e = return ( e, disasters )
+phenomena :: Empire -> IO ( Empire, TextGenCh )
+phenomena e = return ( e, vocabGet e "phenomena.txt")
 
 genEmperor :: Empire -> IO TextGenCh
 genEmperor e = do
@@ -49,7 +50,7 @@ deadCourtier :: Empire -> IO ( Empire, TextGenCh )
 deadCourtier e = do
   ( mdc, court' ) <- generate $ remove $ court e
   case mdc of
-    Nothing -> disaster e
+    Nothing -> phenomena e
     Just left -> do
       e' <- return $ e { court = court' }
       return ( e', list [ word $ dumbjoin left, death ] ) 
@@ -57,12 +58,13 @@ deadCourtier e = do
 
 incident :: Empire -> IO ( Empire, TextGenCh )
 incident e = do
-  r <- randn 3
+  r <- randn 6
   case r of
     0         -> newCourtier e
     1         -> deadCourtier e
     2         -> deadEmperor e
-    otherwise -> disaster e
+    3         -> tribe e
+    otherwise -> phenomena e
 
 
 showL :: [ TextGenCh ] -> IO [ Char ]

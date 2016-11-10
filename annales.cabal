@@ -16,6 +16,7 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      app
   exposed-modules:     Annales.Empire
+                     , Annales.Tribes
   build-depends:       base >= 4.7 && < 5
                      , text >= 1.2.1.3 
                      , containers 
@@ -38,6 +39,7 @@ executable annales-exe
                      , random >= 1.1
                      , textgen >= 0.1
   other-modules:       Annales.Empire
+                     , Annales.Tribes
   default-language:    Haskell2010
 
 test-suite annales-test
