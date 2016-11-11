@@ -17,6 +17,8 @@ library
   hs-source-dirs:      app
   exposed-modules:     Annales.Empire
                      , Annales.Tribes
+                     , Annales.Deaths
+                     , Annales.Courtiers
   build-depends:       base >= 4.7 && < 5
                      , text >= 1.2.1.3 
                      , containers 
@@ -40,6 +42,8 @@ executable annales-exe
                      , textgen >= 0.1
   other-modules:       Annales.Empire
                      , Annales.Tribes
+                     , Annales.Deaths
+                     , Annales.Courtiers
   default-language:    Haskell2010
 
 test-suite annales-test

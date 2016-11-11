@@ -4,16 +4,18 @@ import Annales.Empire ( TextGenCh, Empire, court, emperor, initialiseEmpire, voc
 
 import Annales.Tribes ( tribe )
 
+import Annales.Courtiers ( newCourtier, deadCourtier )
+
+
+import Annales.Deaths ( deathOf )
+
 import System.Random
 
 
 
-choiceGen l = choose $ map word l 
 
 
-arrived = choiceGen [ "appeared", "rose to prominence", "won favour" ]
 
-death = choiceGen [ "disappeared", "was assassinated", "drowned in the baths", "choked on a chicken bone" ]
 
 --disasters = choiceGen [ "Great storms", "Winds", "Nightmares", "Evil omens" ]
 
@@ -21,7 +23,9 @@ death = choiceGen [ "disappeared", "was assassinated", "drowned in the baths", "
 
 
 phenomena :: Empire -> IO ( Empire, TextGenCh )
-phenomena e = return ( e, vocabGet e "phenomena.txt")
+phenomena e = return ( e, list [ phenom, word "in", place ] )
+  where phenom = vocabGet e "phenomena.txt"
+        place = vocabGet e "places.txt"
 
 genEmperor :: Empire -> IO TextGenCh
 genEmperor e = do
@@ -36,24 +40,8 @@ deadEmperor :: Empire -> IO ( Empire, TextGenCh )
 deadEmperor e = do
   newe <- genEmperor e
   e' <- return $ e { emperor = newe }
-  return ( e', list [ emperor e, death, word "succeeded by", newe ] ) 
+  return ( e', list [ deathOf (emperor e), word "succeeded by", newe ] ) 
 
-
-newCourtier :: Empire -> IO ( Empire, TextGenCh )
-newCourtier e = do
-  new  <- generate $ vocabGet e "people.txt"
-  newc <- return $ word $ dumbjoin new
-  e'   <- return $ e { court = newc:(court e) }
-  return ( e', list [ newc, arrived ] )
-
-deadCourtier :: Empire -> IO ( Empire, TextGenCh )
-deadCourtier e = do
-  ( mdc, court' ) <- generate $ remove $ court e
-  case mdc of
-    Nothing -> phenomena e
-    Just left -> do
-      e' <- return $ e { court = court' }
-      return ( e', list [ word $ dumbjoin left, death ] ) 
 
 
 incident :: Empire -> IO ( Empire, TextGenCh )
