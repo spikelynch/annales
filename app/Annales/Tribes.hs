@@ -1,15 +1,50 @@
-module Annales.Tribes ( tribe ) where
+module Annales.Tribes ( newTribe, goneTribe ) where
 
-import TextGen (TextGen, runTextGen, word, choose, remove, list, randrep, rep, perhaps, smartjoin)
+import Annales.Empire (
+  TextGenCh
+  ,Empire
+  ,tribes
+  ,vocabGet
+  ,generate
+  ,wordjoin
+  )
 
-import Annales.Empire ( TextGenCh, Empire, vocabGet, generate)
-  
-import System.Random
+import TextGen (
+  TextGen
+  ,word
+  ,choose
+  ,remove
+  ,list
+  )
 
-tribe :: Empire -> IO ( Empire, TextGenCh )
-tribe e = return ( e, tribeGen ( vocabGet e "tribes.txt" ) )
+
+import Annales.Omens ( omen )
+ 
+
+newTribe :: Empire -> IO ( Empire, TextGenCh )
+newTribe e = do
+  tribe  <- generate $ vocabGet e "tribes.txt"
+  tribeg <- return $ wordjoin tribe
+  e'   <- return $ e { tribes = tribeg:(tribes e) }
+  return ( e', tribeDescribe e tribeg )
 
 
-tribeGen :: TextGenCh -> TextGenCh
-tribeGen t = list [ word "The", t, werebad ]
-  where werebad = choose $ map word [ "caused trouble", "were restless", "made incursions", "were repelled" ]
+tribeDescribe :: Empire -> TextGenCh -> TextGenCh
+tribeDescribe e tribe = list [ word "The", tribe, word ",", nation, description, arose ]
+  where nation = word "a new nation"
+        description = list [ word ",", word "given to", vocabGet e "immorality.txt", word "," ]
+        arose = list [ word "arose in", vocabGet e "places.txt" ]
+
+
+goneTribe :: Empire -> IO ( Empire, TextGenCh )
+goneTribe e = do
+  ( maybetribe, tribes' ) <- generate $ remove $ tribes e
+  case maybetribe of
+    Nothing -> omen e
+    Just tribe -> do
+      e' <- return $ e { tribes = tribes' }
+      return ( e', tribeGo tribe ) 
+
+tribeGo :: [[Char]] -> TextGenCh
+tribeGo tc = list [ word "The", wordjoin tc, went ]
+  where went = choose $ map word [ "dwindled", "migrated south", "were cursed" ]

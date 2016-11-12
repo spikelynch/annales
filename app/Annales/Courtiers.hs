@@ -1,14 +1,32 @@
-module Annales.Courtiers (newCourtier, deadCourtier) where
+module Annales.Courtiers (
+  newCourtier
+  ,deadCourtier
+  ) where
 
-import TextGen (TextGen, runTextGen, word, choose, remove, list, randrep, rep, perhaps, smartjoin)
+import Annales.Empire (
+  TextGenCh
+  ,Empire
+  ,court
+  ,vocabGet
+  ,generate
+  ,dumbjoin
+  ,randn
+  )
 
-import Annales.Empire ( TextGenCh, Empire, court, vocabGet, generate, dumbjoin, randn)
+import TextGen (
+  TextGen
+  ,word
+  ,choose
+  ,remove
+  ,list
+  )
+
+
 import Annales.Deaths ( deathOf )
+import Annales.Omens ( omen )
   
-import System.Random
 
-
-arrived = choose $ map word [ "appeared", "rose to prominence", "won favour" ]
+arrived = choose $ map word [ "was born", "rose to prominence", "won favour" ]
 
 
 
@@ -23,7 +41,7 @@ deadCourtier :: Empire -> IO ( Empire, TextGenCh )
 deadCourtier e = do
   ( mdc, court' ) <- generate $ remove $ court e
   case mdc of
-    Nothing -> return (e, word "")
+    Nothing -> omen e
     Just courtier -> do
       e' <- return $ e { court = court' }
       return ( e', deathOf $ word $ dumbjoin courtier ) 

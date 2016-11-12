@@ -1,7 +1,32 @@
-module Annales.Empire (Empire, TextGenCh, emperor, court, vocabGet, initialiseEmpire, generate, dumbjoin, randn) where
+module Annales.Empire (
+  Empire
+  ,TextGenCh
+  ,emperor
+  ,court
+  ,tribes
+  ,vocabGet
+  ,initialiseEmpire
+  ,generate
+  ,dumbjoin
+  ,wordjoin
+  ,phrase
+  ,randn
+  ) where
 
 
-import TextGen (TextGen, runTextGen, word, choose, remove, list, randrep, rep, perhaps, smartjoin, loadOptions)
+import TextGen (
+  TextGen
+  ,runTextGen
+  ,word
+  ,choose
+  ,remove
+  ,list
+  ,randrep
+  ,rep
+  ,perhaps
+  ,smartjoin
+  ,loadOptions
+  )
 
 import Data.Map (Map)
 import Data.List (intercalate)
@@ -9,6 +34,7 @@ import qualified Data.Map as Map
 import System.Directory (getDirectoryContents)
 import Text.Regex.Posix
 import System.Random (StdGen, getStdRandom, randomR)
+
 
 
 type TextGenCh = TextGen StdGen [[Char]]
@@ -33,6 +59,12 @@ generate g = getStdRandom $ runTextGen g
 dumbjoin :: [ [ Char ] ] -> [ Char ]
 dumbjoin s = intercalate " " s
 
+wordjoin :: [ [ Char ] ] -> TextGenCh
+wordjoin = word . dumbjoin
+
+phrase :: TextGenCh -> TextGenCh
+phrase g = list [ comma, g, comma ]
+  where comma = word ","
 
 randn :: Int -> IO Int
 randn n = do

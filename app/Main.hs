@@ -2,30 +2,14 @@ import TextGen (TextGen, runTextGen, word, choose, remove, list, randrep, rep, p
 
 import Annales.Empire ( TextGenCh, Empire, court, emperor, initialiseEmpire, vocabGet, generate, dumbjoin, randn)
 
-import Annales.Tribes ( tribe )
-
+import Annales.Tribes ( newTribe, goneTribe )
 import Annales.Courtiers ( newCourtier, deadCourtier )
-
-
 import Annales.Deaths ( deathOf )
+import Annales.Omens ( omen )
 
 import System.Random
 
 
-
-
-
-
-
---disasters = choiceGen [ "Great storms", "Winds", "Nightmares", "Evil omens" ]
-
-
-
-
-phenomena :: Empire -> IO ( Empire, TextGenCh )
-phenomena e = return ( e, list [ phenom, word "in", place ] )
-  where phenom = vocabGet e "phenomena.txt"
-        place = vocabGet e "places.txt"
 
 genEmperor :: Empire -> IO TextGenCh
 genEmperor e = do
@@ -48,11 +32,12 @@ incident :: Empire -> IO ( Empire, TextGenCh )
 incident e = do
   r <- randn 6
   case r of
-    0         -> newCourtier e
-    1         -> deadCourtier e
-    2         -> deadEmperor e
-    3         -> tribe e
-    otherwise -> phenomena e
+    0         -> newTribe e
+    1         -> goneTribe e
+    2         -> newCourtier e
+    3         -> deadCourtier e
+    4         -> deadEmperor e
+    otherwise -> omen e
 
 
 showL :: [ TextGenCh ] -> IO [ Char ]
@@ -92,5 +77,5 @@ maybejoin Nothing  = ""
 main :: IO ()
 main = do
   empire <- initialiseEmpire "./data/"
-  annales <- incidents 1000 empire
+  annales <- incidents 100000 empire
   putStrLn annales

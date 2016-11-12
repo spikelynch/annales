@@ -55,6 +55,9 @@ New religions are promulgated
 
 Artefacts found from extinct tribes
 
+Ablative clauses are good (the Illuminati being subdued, the Emperor
+embarked on a project to repair the quays)
+
 
 ## Technical notes
 
