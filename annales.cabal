@@ -19,7 +19,7 @@ library
                      , Annales.Omens
                      , Annales.Tribes
                      , Annales.Deaths
-                     , Annales.Courtiers
+                     , Annales.Court
   build-depends:       base >= 4.7 && < 5
                      , text >= 1.2.1.3 
                      , containers 
@@ -45,7 +45,7 @@ executable annales-exe
                      , Annales.Omens
                      , Annales.Tribes
                      , Annales.Deaths
-                     , Annales.Courtiers
+                     , Annales.Court
   default-language:    Haskell2010
 
 test-suite annales-test

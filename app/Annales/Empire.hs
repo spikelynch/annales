@@ -9,8 +9,10 @@ module Annales.Empire (
   ,generate
   ,dumbjoin
   ,wordjoin
+  ,cap
   ,phrase
   ,randn
+  ,chooseW
   ) where
 
 
@@ -30,6 +32,7 @@ import TextGen (
 
 import Data.Map (Map)
 import Data.List (intercalate)
+import Data.Char (toUpper)
 import qualified Data.Map as Map
 import System.Directory (getDirectoryContents)
 import Text.Regex.Posix
@@ -53,11 +56,17 @@ data Empire = Empire { emperor :: TextGenCh
 nullGen :: TextGenCh
 nullGen = word "-"
 
-
 generate g = getStdRandom $ runTextGen g
+
+chooseW :: [ [ Char ] ] -> TextGenCh
+chooseW l = choose (map word l)
 
 dumbjoin :: [ [ Char ] ] -> [ Char ]
 dumbjoin s = intercalate " " s
+
+cap :: [ Char ] -> [ Char ]
+cap [] = []
+cap (x:xs) = (toUpper x):xs 
 
 wordjoin :: [ [ Char ] ] -> TextGenCh
 wordjoin = word . dumbjoin
@@ -74,7 +83,7 @@ randn n = do
 
 
 vocabGet :: Empire -> String -> TextGenCh
-vocabGet e name = case Map.lookup name (vocab e) of
+vocabGet e name = case Map.lookup (name ++ ".txt") (vocab e) of
   Nothing -> nullGen
   Just gen -> gen
 

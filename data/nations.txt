@@ -1,0 +1,6 @@
+nation
+tribe
+race
+people
+clan
+horde

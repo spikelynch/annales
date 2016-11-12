@@ -2,29 +2,13 @@ import TextGen (TextGen, runTextGen, word, choose, remove, list, randrep, rep, p
 
 import Annales.Empire ( TextGenCh, Empire, court, emperor, initialiseEmpire, vocabGet, generate, dumbjoin, randn)
 
+import Annales.Court ( newCourtier, deadCourtier, deadEmperor )
 import Annales.Tribes ( newTribe, goneTribe )
-import Annales.Courtiers ( newCourtier, deadCourtier )
-import Annales.Deaths ( deathOf )
 import Annales.Omens ( omen )
 
 import System.Random
 
 
-
-genEmperor :: Empire -> IO TextGenCh
-genEmperor e = do
-  epithet <- generate $ vocabGet e "epithets.txt"
-  name <- generate $ vocabGet e "people.txt"
-  longname <- return $ (dumbjoin name) ++ " the " ++ (dumbjoin epithet)
-  return $ choose [ word (dumbjoin name), word longname ]
-
-
-
-deadEmperor :: Empire -> IO ( Empire, TextGenCh )
-deadEmperor e = do
-  newe <- genEmperor e
-  e' <- return $ e { emperor = newe }
-  return ( e', list [ deathOf (emperor e), word "succeeded by", newe ] ) 
 
 
 
@@ -59,7 +43,7 @@ incidents l e = do
     True -> return text
     otherwise -> do
       rest <- incidents (l - lp) e'
-      return $ text ++ "\n" ++ rest
+      return $ text ++ "\n\n" ++ rest
 
 
 

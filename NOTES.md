@@ -74,3 +74,16 @@ narrative state around, something like
     do
         state <- return initState
         ( text, state2 ) <- doIncident state
+
+( I've done this but haven't formalised it into a typeclass or
+anything)
+
+Nice textgen syntax
+
+## Templates
+
+### Tribes
+
+The T, a TRIBAL DESCRIPTION, ADJECTIVAL, AROSE in PLACE
+
+TRIBAL DESCRIPTION = 'adjective' 'noun' - "lowly nation
