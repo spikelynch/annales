@@ -13,6 +13,7 @@ import Annales.Empire (
 import TextGen (
   TextGen
   ,word
+  ,aan
   ,choose
   ,remove
   ,list
@@ -45,11 +46,11 @@ tribeDescribe :: Empire -> TextGenCh -> TextGenCh
 tribeDescribe e t = let v = vocabGet e
                         w = word
                         c = w ","
-                        nation = list [ v "epithets", v "nations" ]
+                        nation = aan $ list [ v "epithets", v "nations" ]
                         givento = chooseW [ "prone to", "given to", "notorious for", "infamous for", "great in", "big with" ]
                         wickedness = v "immorality"
                         arose = list [ w "arose in", v "places" ]
-  in list [ w "The", t, c, w "a", nation, c, givento, wickedness, c, arose ]
+  in list [ w "The", t, c, nation, c, givento, wickedness, c, arose ]
 
 
 goneTribe :: Empire -> IO ( Empire, TextGenCh )

@@ -40,7 +40,7 @@ executable annales-exe
                      , directory >= 1.2.2
                      , regex-posix
                      , random >= 1.1
-                     , textgen >= 0.1
+                     , textgen >= 0.2
   other-modules:       Annales.Empire
                      , Annales.Omens
                      , Annales.Tribes

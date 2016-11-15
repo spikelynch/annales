@@ -48,7 +48,7 @@ deadCourtier e = do
     Nothing -> omen e
     Just courtier -> do
       e' <- return $ e { court = court' }
-      return ( e', deathOf $ word $ dumbjoin courtier ) 
+      return ( e', deathOf e $ word $ dumbjoin courtier ) 
 
 
 
@@ -62,7 +62,7 @@ deadEmperor :: Empire -> IO ( Empire, TextGenCh )
 deadEmperor e = do
   newe <- newEmperor e
   e' <- return $ e { emperor = newe }
-  return ( e', list [ deathOf (emperor e), word "succeeded by", newe ] ) 
+  return ( e', list [ deathOf e (emperor e), word "and was succeeded by", newe ] ) 
 
 newEmperor :: Empire -> IO TextGenCh
 newEmperor e = do
