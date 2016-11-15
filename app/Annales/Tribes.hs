@@ -31,16 +31,6 @@ newTribe e = do
   return ( e', tribeDescribe e tribeg )
 
 
--- tribeDescribe :: Empire -> TextGenCh -> TextGenCh
--- tribeDescribe e tribe = list [ word "The", tribe, word ",", nation, description, arose ]
---   where nation = list [ word "a", mighty, people ]
---         mighty = vocabGet e "epithets"
---         people = vocabGet e "nations"
---         description = list [ word ",", proneto, vocabGet e "immorality", word "," ]
---         proneto = chooseW [ "prone to", "given to", "notorious for", "infamous for", "great in" ]
---         arose = list [ word "arose in", vocabGet e "places" ]
-
-
 
 tribeDescribe :: Empire -> TextGenCh -> TextGenCh
 tribeDescribe e t = let v = vocabGet e
