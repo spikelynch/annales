@@ -45,7 +45,7 @@ deadEmperor e = do
 newEmperor :: Empire -> IO ( TextGenCh, [ Char ], Int )
 newEmperor e = do
   ( name, regnal ) <- do
-    r <- randn 2
+    r <- randn 4
     case r of
       0          -> forebear e
       otherwise  -> do
@@ -60,8 +60,11 @@ newEmperor e = do
     otherwise -> return ( rgen name regnal, name, regnal )
 
 
--- need to figure out how to 
+-- For now, suppressing the roman numeral if it's I
+-- Need a way to flag some new names as not-to-be-succeeded
+
 rgen :: [ Char ] -> Int -> TextGenCh
+rgen n 1 = word n
 rgen n i = list [ word n, word $ toRoman i ]
 
 forebear :: Empire -> IO ( [ Char ], Int )
@@ -73,7 +76,7 @@ forebear e = do
 lineageName :: Empire -> [ ( [ Char ], Int ) ] -> IO [ Char ]
 lineageName e []     = randomName e
 lineageName e names  = do
-  k <- randn 3
+  k <- randn 2
   case k of
     0 -> do
       i <- randn $ length names
