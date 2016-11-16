@@ -14,7 +14,7 @@ import System.Random
 
 incident :: Empire -> IO ( Empire, TextGenCh )
 incident e = do
-  r <- randn 6
+  r <- randn 7
   case r of
     0         -> newTribe e
     1         -> goneTribe e

@@ -4,6 +4,7 @@ module Annales.Empire (
   ,emperor
   ,court
   ,tribes
+  ,lineage
   ,vocabGet
   ,initialiseEmpire
   ,generate
@@ -44,7 +45,7 @@ type TextGenCh = TextGen StdGen [[Char]]
 
   
 data Empire = Empire { emperor :: TextGenCh
-                     , forebears :: [ TextGenCh ]
+                     , lineage :: [ ( [ Char ], Int ) ]
                      , court :: [ TextGenCh ]
                      , tribes :: [ TextGenCh ]
                      , enemies :: [ TextGenCh ]
@@ -115,7 +116,7 @@ sampleVocab vocab name = do
     Nothing -> return ( "Vocab file not found: " ++ name )
 
 initialE = Empire { emperor = word "Fred the great"
-                  , forebears = []
+                  , lineage = []
                   , court = []
                   , tribes =  []
                   , enemies = []

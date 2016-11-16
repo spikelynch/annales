@@ -11,7 +11,7 @@ packages:
     commit: 8a59883
 
 # Packages to be pulled from upstream that are not in the resolver (e.g., acme-missiles-0.3)
-extra-deps: []
+extra-deps: [ roman-numerals-0.5.1.5 ]
 
 # Override default flag values for local packages and extra-deps
 flags: {}

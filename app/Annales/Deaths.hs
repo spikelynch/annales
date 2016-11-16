@@ -10,15 +10,8 @@ deathOf :: Empire -> TextGenCh -> TextGenCh
 deathOf e person = list [ person, death e ]
 
 death :: Empire -> TextGenCh
-death e = choose [ weapon e, choke e, beast e, disease e, poison e, witchcraft e ]
+death e = choose [ choke e, beast e, disease e, poison e, witchcraft e ]
 
-weapon e = choose [ accident e, battle e ]
-
-accident e = list [ word "was nicked with", aweapon, word "and the wound festered" ]
-  where aweapon = aan $ vocabGet e "weapons"
-
-
-battle e = list [ word "was wounded in battle by", aan $ vocabGet e "weapons", word "through the", vocabGet e "body_parts" ]
 
 choke e = list [ word "choked on", aan $ choose [ bone, other ] ]
   where bone = list [ vocabGet e "animals", word "bone" ]
