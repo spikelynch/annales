@@ -1,6 +1,7 @@
 module Annales.Empire (
   Empire
   ,TextGenCh
+  ,Forebear(..)
   ,emperor
   ,court
   ,tribes
@@ -43,9 +44,10 @@ import System.Random (StdGen, getStdRandom, randomR)
 
 type TextGenCh = TextGen StdGen [[Char]]
 
+data Forebear = Forebear [ Char ] (Maybe Int)
   
 data Empire = Empire { emperor :: TextGenCh
-                     , lineage :: [ ( [ Char ], Int ) ]
+                     , lineage :: [ Forebear ]
                      , court :: [ TextGenCh ]
                      , tribes :: [ TextGenCh ]
                      , enemies :: [ TextGenCh ]
