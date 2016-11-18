@@ -1,6 +1,6 @@
 module Annales.Court (
   newCourtier
-  ,deadCourtier
+  ,goneCourtier
   ,deadEmperor
   ) where
 
@@ -9,11 +9,14 @@ import Text.Numeral.Roman (toRoman)
 import Annales.Empire (
   TextGenCh
   ,Empire
+  ,Person (..)
   ,Forebear(..)
   ,emperor
   ,lineage
   ,court
   ,vocabGet
+  ,pGen
+  ,pAge
   ,generate
   ,dumbjoin
   ,cap
@@ -38,12 +41,13 @@ deadEmperor :: Empire -> IO ( Empire, TextGenCh )
 deadEmperor e = do
   ( newe, forebear ) <- newEmperor e
   e' <- return $ e { emperor = newe, lineage = forebear:(lineage e) }
-  return ( e', list [ deathOf e (emperor e), word ": succession of", newe ] ) 
+  death <- return $ deathOf e $ pGen $ emperor e
+  return ( e', list [ death, word "\n", word "Succession of", pGen newe ] ) 
 
 
 -- newEmperor returns the new emperor's Textgen, name and regnal number
 
-newEmperor :: Empire -> IO ( TextGenCh, Forebear )
+newEmperor :: Empire -> IO ( Person, Forebear )
 newEmperor e = do
   newe <- do
     r <- randn 4
@@ -52,12 +56,12 @@ newEmperor e = do
       otherwise  -> newName e
   r <- randn 4
   case r of
-    0 -> do
+    3 -> do
       epithet <- generate $ vocabGet e "epithets"
       (Forebear name _) <- return newe
       longname <- return $ name ++ " the " ++ ( cap $ dumbjoin epithet)
-      return ( choose [ rgen newe, word longname ], newe )
-    otherwise -> return ( rgen newe, newe )
+      return ( Person (choose [ rgen newe, word longname ]) 1, newe )
+    otherwise -> return ( Person (rgen newe) 1, newe )
 
 
 
@@ -66,7 +70,6 @@ rgen (Forebear n Nothing)  = word n
 rgen (Forebear n (Just i)) = list [ word n, word $ toRoman i ]
 
 
--- make list selections safe
 
 
 forebear :: Empire -> IO Forebear
@@ -74,6 +77,43 @@ forebear e = do
   l <- return $ lineage e
   name <- lineageName e l
   return $ nextRegnal l name
+
+
+-- this should sometimes return Forebears with a Nothing regnal number
+-- who will never have successors
+-- it also needs to filter the vocab names so that they don't duplicate
+-- a Nothing name which is already in the lineage
+
+newName :: Empire -> IO Forebear
+newName e = do
+  n <- getNewName e
+  r <- randn 2
+  case r of
+    0 -> return $ nextRegnal (lineage e) n
+    otherwise -> return $ Forebear n Nothing
+
+
+
+
+getNewName :: Empire -> IO [ Char ]
+getNewName e = do
+  unsucc <- return $ map (\(Forebear x _) -> x) $ filter isunsucc $ lineage e
+  nn <- excludeGet unsucc (vocabGet e "people")
+  return nn
+
+isunsucc :: Forebear -> Bool
+isunsucc (Forebear c Nothing) = True
+isunsucc _                    = False
+
+-- This could loop forever if lineage > names
+
+excludeGet :: [ [ Char ] ] -> TextGenCh -> IO [ Char ]
+excludeGet ex g = do
+  nn <- generate g
+  n <- return $ dumbjoin nn
+  if n `elem` ex then excludeGet ex g else return n
+
+
 
 
 -- get rid of the !! and head in this
@@ -85,24 +125,23 @@ lineageName e []   = do
   (Forebear name _) <- newName e
   return name
 lineageName e fbs  = do
-  k <- randn 2
-  case k of
-    0 -> do
-      i <- randn $ length fbs
-      (Forebear name _) <- return $ fbs !! i
+  succ <- return $ filter ( not . isunsucc ) fbs
+  case null succ of
+    True -> do
+      (Forebear name _) <- newName e
       return name
-    otherwise -> do
-      (Forebear name _) <- return $ head fbs
-      return name
+    False -> do
+      k <- randn 2
+      case k of
+        0 -> do
+          i <- randn $ length succ
+          (Forebear name _) <- return $ succ !! i
+          return name
+        otherwise -> do
+          (Forebear name _) <- return $ head succ
+          return name
       
 
--- this should sometimes return Forebears with a Nothing regnal number
--- who will never have successors
-
-newName :: Empire -> IO Forebear
-newName e = do
-  n <- generate $ vocabGet e "people"
-  return $ nextRegnal (lineage e) (dumbjoin n)
 
 
 
@@ -125,17 +164,19 @@ newCourtier e = do
   e'   <- return $ e { court = newc:(court e) }
   return ( e', list [ newc, arrived ] )
 
-deadCourtier :: Empire -> IO ( Empire, TextGenCh )
-deadCourtier e = do
-  ( mdc, court' ) <- generate $ remove $ court e
-  case mdc of
-    Nothing -> omen e
-    Just courtier -> do
+goneCourtier :: Empire -> IO ( Empire, TextGenCh )
+goneCourtier e = do
+  ( mdead, court' ) <- generate $ remove $ court e
+  case mdead of
+    Nothing                  -> omen e
+    Just dead -> do
       e' <- return $ e { court = court' }
-      return ( e', deathOf e $ word $ dumbjoin courtier ) 
+      return ( e', deathOf e $ word $ dumbjoin dead ) 
 
 
 
-
+-- things courtiers can do: write poems and plays and histories,
+-- intrigue, win triumphs, be exiled to PLACE, retire to their
+-- villa/etc in PLACE, sponsor games
 
 

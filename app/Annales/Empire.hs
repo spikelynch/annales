@@ -1,13 +1,19 @@
 module Annales.Empire (
   Empire
   ,TextGenCh
+  ,Person(..)
   ,Forebear(..)
   ,emperor
   ,court
   ,tribes
   ,lineage
+  ,pGen
+  ,pAge
   ,vocabGet
   ,initialiseEmpire
+  ,incrementYear
+  ,agePerson
+  ,yearDesc
   ,generate
   ,dumbjoin
   ,wordjoin
@@ -15,6 +21,7 @@ module Annales.Empire (
   ,phrase
   ,randn
   ,chooseW
+  ,showL
   ) where
 
 
@@ -45,16 +52,27 @@ import System.Random (StdGen, getStdRandom, randomR)
 type TextGenCh = TextGen StdGen [[Char]]
 
 data Forebear = Forebear [ Char ] (Maybe Int)
-  
-data Empire = Empire { emperor :: TextGenCh
+  deriving Show
+
+data Person = Person TextGenCh Int
+
+data Empire = Empire { emperor :: Person
                      , lineage :: [ Forebear ]
                      , court :: [ TextGenCh ]
                      , tribes :: [ TextGenCh ]
-                     , enemies :: [ TextGenCh ]
                      , projects :: [ TextGenCh ]
                      , vocab :: Map String TextGenCh
                      }
 
+
+pGen :: Person -> TextGenCh
+pGen (Person t _) = t
+
+pAge :: Person -> Int
+pAge (Person _ a) = a
+
+agePerson :: Person -> Person
+agePerson p = (Person (pGen p) ((pAge p) + 1)) 
 
 nullGen :: TextGenCh
 nullGen = word "-"
@@ -83,6 +101,15 @@ randn n = do
   r <- getStdRandom $ randomR ( 0, n - 1 )
   return r
 
+showL :: [ TextGenCh ] -> IO [ Char ]
+showL []     = return ""
+showL (g:gs) = do
+  gt <- generate g
+  gtr <- showL gs
+  return $ (smartjoin gt) ++ ", " ++ gtr
+
+
+
 
 
 vocabGet :: Empire -> String -> TextGenCh
@@ -90,10 +117,6 @@ vocabGet e name = case Map.lookup (name ++ ".txt") (vocab e) of
   Nothing -> nullGen
   Just gen -> gen
 
--- loadVocab :: String -> IO ( Map String TextGenCh )
-
--- This should scan the directory and load every file mapping it to its
--- filename
 
 isTextFile :: String -> Bool
 isTextFile f = f =~ ".txt$"
@@ -117,16 +140,22 @@ sampleVocab vocab name = do
       return $ dumbjoin genc
     Nothing -> return ( "Vocab file not found: " ++ name )
 
-initialE = Empire { emperor = word "Fred the great"
+initialE = Empire { emperor = Person (word "") 0
                   , lineage = []
                   , court = []
                   , tribes =  []
-                  , enemies = []
                   , projects = []
                   , vocab = Map.empty
                   }
 
 
+incrementYear :: Empire -> Empire
+incrementYear e = e { emperor = (agePerson (emperor e)) } 
+
+yearDesc :: Empire -> TextGenCh
+yearDesc e = let a = word $ show $ pAge $ emperor e
+                 g = pGen $ emperor e
+             in list [ word "Year", a, word "in the reign of", g ]
 
 initialiseEmpire :: String -> IO ( Empire )
 initialiseEmpire dir = do
