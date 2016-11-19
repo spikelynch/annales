@@ -14,6 +14,7 @@ module Annales.Empire (
   ,incrementYear
   ,agePerson
   ,yearDesc
+  ,yearAbbrev
   ,generate
   ,dumbjoin
   ,wordjoin
@@ -44,11 +45,13 @@ import TextGen (
 
 import Data.Map (Map)
 import Data.List (intercalate)
+import Data.List.Split (splitOn)
 import Data.Char (toUpper)
 import qualified Data.Map as Map
 import System.Directory (getDirectoryContents)
 import Text.Regex.Posix
 import System.Random (StdGen, getStdRandom, randomR)
+import Text.Numeral.Roman (toRoman)
 
 
 
@@ -169,7 +172,21 @@ incrementYear e = e { emperor = (agePerson (emperor e)) }
 yearDesc :: Empire -> TextGenCh
 yearDesc e = let a = word $ show $ pAge $ emperor e
                  g = pGen $ emperor e
-             in list [ word "Year", a, word "in the reign of", g ]
+                 d = list [ word "Year", a, word "in the reign of", g ]
+             in paragraph $ sentence $ d
+
+yearAbbrev :: Empire -> TextGenCh
+yearAbbrev e = paragraph $ word $ year ++ "." ++ emp
+  where year = show $ pAge $ emperor e
+        emp = case lineage e of
+          []   -> ""
+          (Forebear n i):ls -> (initials n) ++ (roman i)
+            where roman Nothing = ""
+                  roman (Just i) = "." ++ toRoman i
+        initials n = concat $ map initial $ splitOn " " n
+        initial []   = ""
+        initial (c:cs) = [ c ]
+          
 
 initialiseEmpire :: String -> IO ( Empire )
 initialiseEmpire dir = do

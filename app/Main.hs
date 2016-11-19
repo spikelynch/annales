@@ -1,11 +1,13 @@
 import TextGen (TextGen, runTextGen, word,  choose, remove, list, randrep, rep, perhaps, smartjoin)
 
-import Annales.Empire ( TextGenCh, Empire, incrementYear, yearDesc, court, emperor, lineage, pAge, initialiseEmpire, vocabGet, generate, dumbjoin, randn, paragraph, sentence)
+import Annales.Empire ( TextGenCh, Empire, incrementYear, yearDesc, yearAbbrev, court, emperor, lineage, pAge, initialiseEmpire, vocabGet, generate, dumbjoin, randn, paragraph, sentence)
 
 import Annales.Court ( newCourtier, goneCourtier, newEmperor, deadEmperor )
 import Annales.Tribes ( newTribe, goneTribe )
 import Annales.Omens ( omen )
 
+import System.Environment (getArgs)
+import Text.Read (readMaybe)
 import System.Random
 import Control.Monad (forM)
 import Data.Maybe (catMaybes)
@@ -35,7 +37,7 @@ year e = do
     True -> return ( incrementYear e, Nothing )
     False -> do
       ( e', incidents ) <- chain e (catMaybes mis)
-      return ( incrementYear e', Just $ list [ paragraph $ sentence $ yearDesc e', incidents ] )
+      return ( incrementYear e', Just $ list [ yearAbbrev e', incidents ] )
 
 -- feel like I'm reinventing a wheel here
 -- This should be done with a stateT
@@ -68,15 +70,22 @@ generateAnnals len e = do
         otherwise -> do
           rest <- generateAnnals (len - lp) e'
           return $ text ++ rest
-    
+
+getLength :: [ String ] -> Int
+getLength [] = 1000
+getLength (a:as) = case readMaybe a of
+  Nothing -> 1000
+  Just i -> i
 
 
 
 
 main :: IO ()
 main = do
+  args <- getArgs
+  length <- return $ getLength args
   e0 <- initialiseEmpire "./data/"
   ( emp0, forebear ) <- newEmperor e0
   empire <- return $ e0 { emperor = emp0, lineage = [ forebear ] }
-  annales <- generateAnnals 50000 empire
+  annales <- generateAnnals length empire
   putStrLn annales

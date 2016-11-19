@@ -22,6 +22,7 @@ library
                      , Annales.Court
   build-depends:       base >= 4.7 && < 5
                      , text >= 1.2.1.3 
+                     , split
                      , containers 
                      , directory >= 1.2.2
                      , regex-posix
@@ -37,6 +38,7 @@ executable annales-exe
   build-depends:       base
                      , annales
                      , text
+                     , split
                      , containers 
                      , directory >= 1.2.2
                      , regex-posix
