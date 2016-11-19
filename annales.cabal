@@ -27,7 +27,7 @@ library
                      , regex-posix
                      , random >= 1.1
                      , roman-numerals
-                     , textgen >= 0.1
+                     , textgen >= 0.3
   default-language:    Haskell2010
 
 executable annales-exe
@@ -42,7 +42,7 @@ executable annales-exe
                      , regex-posix
                      , random >= 1.1
                      , roman-numerals
-                     , textgen >= 0.2
+                     , textgen >= 0.3
   other-modules:       Annales.Empire
                      , Annales.Omens
                      , Annales.Tribes

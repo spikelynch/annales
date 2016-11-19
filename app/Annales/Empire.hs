@@ -17,16 +17,19 @@ module Annales.Empire (
   ,generate
   ,dumbjoin
   ,wordjoin
+  ,sentence
   ,cap
   ,phrase
   ,randn
   ,chooseW
   ,showL
+  ,paragraph
+  ,phrase
   ) where
 
 
 import TextGen (
-  TextGen
+  TextGen(..)
   ,runTextGen
   ,word
   ,choose
@@ -96,6 +99,17 @@ phrase :: TextGenCh -> TextGenCh
 phrase g = list [ comma, g, comma ]
   where comma = word ","
 
+paragraph :: TextGenCh -> TextGenCh
+paragraph g = list [ word "¶", g, word "\n\n" ]
+
+-- A combinator which wraps a generator in the sentence formatter
+
+sentence :: TextGenCh -> TextGenCh
+sentence g = TextGen $ \s -> let (TextGen gf) = g
+                                 ( raw, s' ) = gf s
+                             in ( [ smartjoin raw ], s' )
+
+  
 randn :: Int -> IO Int
 randn n = do
   r <- getStdRandom $ randomR ( 0, n - 1 )

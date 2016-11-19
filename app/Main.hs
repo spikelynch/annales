@@ -1,6 +1,6 @@
 import TextGen (TextGen, runTextGen, word,  choose, remove, list, randrep, rep, perhaps, smartjoin)
 
-import Annales.Empire ( TextGenCh, Empire, incrementYear, yearDesc, court, emperor, pAge, initialiseEmpire, vocabGet, generate, dumbjoin, randn)
+import Annales.Empire ( TextGenCh, Empire, incrementYear, yearDesc, court, emperor, pAge, initialiseEmpire, vocabGet, generate, dumbjoin, randn, paragraph, sentence)
 
 import Annales.Court ( newCourtier, goneCourtier, deadEmperor )
 import Annales.Tribes ( newTribe, goneTribe )
@@ -16,6 +16,7 @@ probmap = [
   ,( (\_ -> 10), goneTribe )
   ,( (\_ -> 10), newCourtier )
   ,( (\_ -> 10), goneCourtier )
+  ,( (\_ -> 40), omen )
   ]
 
 
@@ -34,16 +35,17 @@ year e = do
     True -> return ( incrementYear e, Nothing )
     False -> do
       ( e', incidents ) <- chain e (catMaybes mis)
-      return ( incrementYear e', Just $ list [ yearDesc e', incidents ] )
+      return ( incrementYear e', Just $ list [ paragraph $ sentence $ yearDesc e', incidents ] )
 
--- reinventing a wheel here
+-- feel like I'm reinventing a wheel here
+-- This should be done with a stateT
   
 chain :: Empire -> [ Empire -> IO ( Empire, TextGenCh ) ] -> IO ( Empire, TextGenCh )
 chain e []     = return ( e, tgempty )
 chain e (i:is) = do
   ( e', g ) <- i e
   ( e'', gs ) <- chain e' is
-  return ( e'', list [ g, gs ] )
+  return ( e'', list [ paragraph $ sentence g, gs ] )
 
 
 tgempty :: (RandomGen g) => TextGen g [[Char]]
@@ -59,13 +61,13 @@ generateAnnals len e = do
     Nothing -> generateAnnals len e'
     Just incidents -> do
       words <- generate incidents
-      text <- return $ smartjoin words
+      text <- return $ concat words
       lp <- return $ length $ text
       case lp > len of
         True -> return text
         otherwise -> do
           rest <- generateAnnals (len - lp) e'
-          return $ text ++ "\n\n" ++ rest
+          return $ text ++ rest
     
 
 
