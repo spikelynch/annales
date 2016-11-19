@@ -6,7 +6,7 @@ from nltk.corpus import wordnet as wn
 # do a dictionary lookup on people and if they're in WordNet, exclude them
 
 DIVISION = [
-    ( re.compile("^\w{1,7}(sh|is|ne|ch|th|us|om|gh|or|rg|rh|ib)$"), "gods" ),
+    ( re.compile("^\w{1,7}(sh|is|ne|ch|th|us|om|gh|or|rg|rh|b)$"), "gods" ),
     ( re.compile("(ism|ity)$"), "religions" ),
     ( re.compile("(us|a|on|ian)$"), "people" ),
     ( re.compile("(es|i|ae)$"), "tribes" ),

@@ -1,6 +1,7 @@
 module Annales.Court (
   newCourtier
   ,goneCourtier
+  ,newEmperor
   ,deadEmperor
   ) where
 

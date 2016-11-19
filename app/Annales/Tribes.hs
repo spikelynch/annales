@@ -7,6 +7,7 @@ import Annales.Empire (
   ,vocabGet
   ,generate
   ,wordjoin
+  ,phrase
   ,chooseW
   )
 
@@ -16,6 +17,7 @@ import TextGen (
   ,aan
   ,choose
   ,remove
+  ,perhaps
   ,list
   )
 
@@ -37,10 +39,11 @@ tribeDescribe e t = let v = vocabGet e
                         w = word
                         c = w ","
                         nation = aan $ list [ v "epithets", v "nations" ]
-                        givento = chooseW [ "prone to", "given to", "notorious for", "infamous for", "great in", "big with" ]
-                        wickedness = v "immorality"
+                        givento = list [ v "proneto", v "immorality" ]
+                        worship = list [ v "worshipping", perhaps (2, 0) $ v "divine", v "gods" ]
+                        clause = perhaps (3, 2) $ phrase $ choose [ givento, worship ]
                         arose = list [ w "arose in", v "places" ]
-  in list [ w "The", t, c, nation, c, givento, wickedness, c, arose ]
+  in list [ w "The", t, c, nation, clause, arose ]
 
 
 goneTribe :: Empire -> IO ( Empire, TextGenCh )

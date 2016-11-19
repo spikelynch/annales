@@ -1,8 +1,8 @@
 import TextGen (TextGen, runTextGen, word,  choose, remove, list, randrep, rep, perhaps, smartjoin)
 
-import Annales.Empire ( TextGenCh, Empire, incrementYear, yearDesc, court, emperor, pAge, initialiseEmpire, vocabGet, generate, dumbjoin, randn, paragraph, sentence)
+import Annales.Empire ( TextGenCh, Empire, incrementYear, yearDesc, court, emperor, lineage, pAge, initialiseEmpire, vocabGet, generate, dumbjoin, randn, paragraph, sentence)
 
-import Annales.Court ( newCourtier, goneCourtier, deadEmperor )
+import Annales.Court ( newCourtier, goneCourtier, newEmperor, deadEmperor )
 import Annales.Tribes ( newTribe, goneTribe )
 import Annales.Omens ( omen )
 
@@ -75,6 +75,8 @@ generateAnnals len e = do
 
 main :: IO ()
 main = do
-  empire <- initialiseEmpire "./data/"
+  e0 <- initialiseEmpire "./data/"
+  ( emp0, forebear ) <- newEmperor e0
+  empire <- return $ e0 { emperor = emp0, lineage = [ forebear ] }
   annales <- generateAnnals 50000 empire
   putStrLn annales
