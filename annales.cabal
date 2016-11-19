@@ -16,6 +16,7 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      app
   exposed-modules:     Annales.Empire
+                     , Annales.Emperor
                      , Annales.Omens
                      , Annales.Tribes
                      , Annales.Deaths
@@ -46,6 +47,7 @@ executable annales-exe
                      , roman-numerals
                      , textgen >= 0.3
   other-modules:       Annales.Empire
+                     , Annales.Emperor
                      , Annales.Omens
                      , Annales.Tribes
                      , Annales.Deaths

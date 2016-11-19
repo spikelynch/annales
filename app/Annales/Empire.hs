@@ -5,6 +5,8 @@ module Annales.Empire (
   ,Forebear(..)
   ,emperor
   ,court
+  ,consort
+  ,heirs
   ,tribes
   ,lineage
   ,pGen
@@ -64,6 +66,8 @@ data Person = Person TextGenCh Int
 
 data Empire = Empire { emperor :: Person
                      , lineage :: [ Forebear ]
+                     , heirs :: [ Person ]
+                     , consort :: Maybe Person
                      , court :: [ TextGenCh ]
                      , tribes :: [ TextGenCh ]
                      , projects :: [ TextGenCh ]
@@ -159,6 +163,8 @@ sampleVocab vocab name = do
 
 initialE = Empire { emperor = Person (word "") 0
                   , lineage = []
+                  , heirs = []
+                  , consort = Nothing
                   , court = []
                   , tribes =  []
                   , projects = []

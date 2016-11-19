@@ -2,7 +2,8 @@ import TextGen (TextGen, runTextGen, word,  choose, remove, list, randrep, rep, 
 
 import Annales.Empire ( TextGenCh, Empire, incrementYear, yearDesc, yearAbbrev, court, emperor, lineage, pAge, initialiseEmpire, vocabGet, generate, dumbjoin, randn, paragraph, sentence)
 
-import Annales.Court ( newCourtier, goneCourtier, newEmperor, deadEmperor )
+import Annales.Emperor ( newEmperor, deadEmperor )
+import Annales.Court ( newCourtier, goneCourtier )
 import Annales.Tribes ( newTribe, goneTribe )
 import Annales.Omens ( omen )
 
@@ -14,11 +15,11 @@ import Data.Maybe (catMaybes)
 
 probmap = [
   ( (\e -> 5 + (pAge $ emperor e)), deadEmperor )
-  ,( (\_ -> 10), newTribe )
-  ,( (\_ -> 10), goneTribe )
+  ,( (\_ -> 20), newTribe )
+  ,( (\_ -> 20), goneTribe )
   ,( (\_ -> 10), newCourtier )
   ,( (\_ -> 10), goneCourtier )
-  ,( (\_ -> 40), omen )
+  ,( (\_ -> 20), omen )
   ]
 
 
