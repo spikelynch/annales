@@ -10,6 +10,7 @@ import Annales.Empire (
   ,Empire
   ,court
   ,vocabGet
+  ,personGet
   ,generate
   ,dumbjoin
   ,cap
@@ -41,7 +42,7 @@ arrived = chooseW [ "was born", "rose to prominence", "won favour", "was first h
 
 newCourtier :: Empire -> IO ( Empire, TextGenCh )
 newCourtier e = do
-  new  <- generate $ vocabGet e "people"
+  new  <- generate $ personGet e
   newc <- return $ word $ dumbjoin new
   e'   <- return $ e { court = newc:(court e) }
   return ( e', list [ newc, arrived ] )

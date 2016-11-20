@@ -17,6 +17,7 @@ import Annales.Empire (
   ,heirs
   ,court
   ,vocabGet
+  ,personGet
   ,pGen
   ,pAge
   ,generate
@@ -41,7 +42,7 @@ import Annales.Omens ( omen )
 
 royalWedding :: Empire -> IO ( Empire, TextGenCh )
 royalWedding e = do
-  c <- generate $ vocabGet e "people"    -- gender?
+  c <- generate $ vocabGet e "women" 
   cg <- return $ wordjoin c
   age <- randn 5
   e' <- return $ e { consort = Just (Person cg (16 + age)) }
@@ -53,8 +54,12 @@ weddingDescribe e cg = let (Person eg _) = emperor e
                            w = word
                            v = vocabGet e
                            waswed = w "was wedded to"
-                           celebrated = list [ w "with great", v "festivities" ] 
+                           celebrated = list [ w "with", v "festivities" ]
                        in list [ eg, waswed, cg, celebrated ]
+
+
+
+
 
 deadEmperor :: Empire -> IO ( Empire, TextGenCh )
 deadEmperor e = do
@@ -117,7 +122,7 @@ newName e = do
 getNewName :: Empire -> IO [ Char ]
 getNewName e = do
   unsucc <- return $ map (\(Forebear x _) -> x) $ filter isunsucc $ lineage e
-  nn <- excludeGet unsucc (vocabGet e "people")
+  nn <- excludeGet unsucc (vocabGet e "men")
   return nn
 
 isunsucc :: Forebear -> Bool

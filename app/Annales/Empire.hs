@@ -12,6 +12,7 @@ module Annales.Empire (
   ,pGen
   ,pAge
   ,vocabGet
+  ,personGet
   ,initialiseEmpire
   ,incrementYear
   ,agePerson
@@ -160,6 +161,11 @@ sampleVocab vocab name = do
       genc <- generate gen
       return $ dumbjoin genc
     Nothing -> return ( "Vocab file not found: " ++ name )
+
+
+personGet :: Empire -> TextGenCh
+personGet e = choose [ vocabGet e "men", vocabGet e "women" ]
+
 
 initialE = Empire { emperor = Person (word "") 0
                   , lineage = []

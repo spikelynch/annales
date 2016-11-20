@@ -30,7 +30,7 @@ probmap = [
   ]
   where probWedding e = case consort e of
                           (Just _) -> 0
-                          Nothing -> 10
+                          Nothing -> 65
 
 
 -- generate a year's worth of incidents and string them together as
