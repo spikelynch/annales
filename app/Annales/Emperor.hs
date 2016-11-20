@@ -9,6 +9,7 @@ import Text.Numeral.Roman (toRoman)
 import Annales.Empire (
   TextGenCh
   ,Empire
+  ,Gender (..)
   ,Person (..)
   ,Forebear(..)
   ,emperor
@@ -45,12 +46,12 @@ royalWedding e = do
   c <- generate $ vocabGet e "women" 
   cg <- return $ wordjoin c
   age <- randn 5
-  e' <- return $ e { consort = Just (Person cg (16 + age)) }
+  e' <- return $ e { consort = Just (Person cg (16 + age) Female) }
   return ( e', weddingDescribe e' cg )
 
 
 weddingDescribe :: Empire -> TextGenCh -> TextGenCh
-weddingDescribe e cg = let (Person eg _) = emperor e
+weddingDescribe e cg = let (Person eg _ _) = emperor e
                            w = word
                            v = vocabGet e
                            waswed = w "was wedded to"
@@ -84,8 +85,8 @@ newEmperor e = do
       epithet <- generate $ vocabGet e "epithets"
       (Forebear name _) <- return newe
       longname <- return $ name ++ " the " ++ ( cap $ dumbjoin epithet)
-      return ( Person (choose [ rgen newe, word longname ]) 1, newe )
-    otherwise -> return ( Person (rgen newe) 1, newe )
+      return ( (Person (choose [ rgen newe, word longname ]) 1 Male), newe )
+    otherwise -> return ( (Person (rgen newe) 1 Male), newe )
 
 
 

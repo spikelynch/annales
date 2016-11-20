@@ -1,6 +1,7 @@
 module Annales.Empire (
   Empire
   ,TextGenCh
+  ,Gender(..)
   ,Person(..)
   ,Forebear(..)
   ,emperor
@@ -63,7 +64,9 @@ type TextGenCh = TextGen StdGen [[Char]]
 data Forebear = Forebear [ Char ] (Maybe Int)
   deriving Show
 
-data Person = Person TextGenCh Int
+data Gender = Male | Female
+
+data Person = Person TextGenCh Int Gender
 
 data Empire = Empire { emperor :: Person
                      , lineage :: [ Forebear ]
@@ -77,13 +80,16 @@ data Empire = Empire { emperor :: Person
 
 
 pGen :: Person -> TextGenCh
-pGen (Person t _) = t
+pGen (Person t _ _) = t
 
 pAge :: Person -> Int
-pAge (Person _ a) = a
+pAge (Person _ a _) = a
+
+pGender :: Person -> Gender
+pGender (Person _ _ g) = g
 
 agePerson :: Person -> Person
-agePerson p = (Person (pGen p) ((pAge p) + 1)) 
+agePerson p = (Person (pGen p) ((pAge p) + 1) (pGender p)) 
 
 nullGen :: TextGenCh
 nullGen = word "-"
@@ -167,7 +173,9 @@ personGet :: Empire -> TextGenCh
 personGet e = choose [ vocabGet e "men", vocabGet e "women" ]
 
 
-initialE = Empire { emperor = Person (word "") 0
+
+
+initialE = Empire { emperor = Person (word "") 0 Male
                   , lineage = []
                   , heirs = []
                   , consort = Nothing
