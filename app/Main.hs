@@ -1,8 +1,8 @@
 import TextGen (TextGen, runTextGen, word,  choose, remove, list, randrep, rep, perhaps, smartjoin)
 
-import Annales.Empire ( TextGenCh, Empire, incrementYear, yearDesc, yearAbbrev, court, emperor, lineage, pAge, initialiseEmpire, vocabGet, generate, dumbjoin, randn, paragraph, sentence)
+import Annales.Empire ( TextGenCh, Empire, incrementYear, yearDesc, yearAbbrev, court, emperor, lineage, consort, pAge, initialiseEmpire, vocabGet, generate, dumbjoin, randn, paragraph, sentence)
 
-import Annales.Emperor ( newEmperor, deadEmperor )
+import Annales.Emperor ( newEmperor, deadEmperor, royalWedding )
 import Annales.Court ( newCourtier, goneCourtier )
 import Annales.Tribes ( newTribe, goneTribe )
 import Annales.Omens ( omen )
@@ -13,14 +13,24 @@ import System.Random
 import Control.Monad (forM)
 import Data.Maybe (catMaybes)
 
+-- Note: the callbacks here provide a nice way to model contingent
+-- events.
+-- chance of an heir is 0  if there is no consort (but bastardy)
+-- no marriages if there is already a consort
+-- etc
+
 probmap = [
   ( (\e -> 5 + (pAge $ emperor e)), deadEmperor )
+  ,( probWedding, royalWedding )
   ,( (\_ -> 20), newTribe )
   ,( (\_ -> 20), goneTribe )
   ,( (\_ -> 10), newCourtier )
   ,( (\_ -> 10), goneCourtier )
   ,( (\_ -> 20), omen )
   ]
+  where probWedding e = case consort e of
+                          (Just _) -> 0
+                          Nothing -> 10
 
 
 -- generate a year's worth of incidents and string them together as

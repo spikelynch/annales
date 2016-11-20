@@ -1,6 +1,7 @@
 module Annales.Emperor (
   newEmperor
   ,deadEmperor
+  ,royalWedding
   ) where
 
 import Text.Numeral.Roman (toRoman)
@@ -12,12 +13,15 @@ import Annales.Empire (
   ,Forebear(..)
   ,emperor
   ,lineage
+  ,consort
+  ,heirs
   ,court
   ,vocabGet
   ,pGen
   ,pAge
   ,generate
   ,dumbjoin
+  ,wordjoin
   ,cap
   ,randn
   ,chooseW
@@ -35,16 +39,32 @@ import Annales.Deaths ( deathOf )
 import Annales.Omens ( omen )
   
 
+royalWedding :: Empire -> IO ( Empire, TextGenCh )
+royalWedding e = do
+  c <- generate $ vocabGet e "people"    -- gender?
+  cg <- return $ wordjoin c
+  age <- randn 5
+  e' <- return $ e { consort = Just (Person cg (16 + age)) }
+  return ( e', weddingDescribe e' cg )
+
+
+weddingDescribe :: Empire -> TextGenCh -> TextGenCh
+weddingDescribe e cg = let (Person eg _) = emperor e
+                           w = word
+                           v = vocabGet e
+                           waswed = w "was wedded to"
+                           celebrated = list [ w "with great", v "festivities" ] 
+                       in list [ eg, waswed, cg, celebrated ]
 
 deadEmperor :: Empire -> IO ( Empire, TextGenCh )
 deadEmperor e = do
   ( newe, forebear ) <- newEmperor e
-  e' <- return $ e { emperor = newe, lineage = forebear:(lineage e) }
+  e' <- return $ e { emperor = newe, lineage = forebear:(lineage e), consort = Nothing }
   death <- return $ deathOf e $ pGen $ emperor e
   return ( e', list [ death, word "\n", word "Succession of", pGen newe ] ) 
 
 
--- newEmperor returns the new emperor's Textgen, name and regnal number
+-- newEmperor returns the new emperor's Person And Forebear
 
 newEmperor :: Empire -> IO ( Person, Forebear )
 newEmperor e = do
