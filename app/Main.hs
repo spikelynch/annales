@@ -2,7 +2,7 @@ import TextGen (TextGen, runTextGen, word,  choose, remove, list, randrep, rep, 
 
 import Annales.Empire ( TextGenCh, Empire, incrementYear, yearDesc, yearAbbrev, court, emperor, lineage, consort, pAge, initialiseEmpire, vocabGet, generate, dumbjoin, randn, paragraph, sentence)
 
-import Annales.Emperor ( newEmperor, deadEmperor, royalWedding )
+import Annales.Emperor ( newEmperor, deadEmperor, royalWedding, royalBirth )
 import Annales.Court ( newCourtier, goneCourtier )
 import Annales.Tribes ( newTribe, goneTribe )
 import Annales.Omens ( omen )
@@ -21,6 +21,7 @@ import Data.Maybe (catMaybes)
 
 probmap = [
   ( (\e -> 5 + (pAge $ emperor e)), deadEmperor )
+  ,( probBirth, royalBirth )
   ,( probWedding, royalWedding )
   ,( (\_ -> 20), newTribe )
   ,( (\_ -> 20), goneTribe )
@@ -31,6 +32,9 @@ probmap = [
   where probWedding e = case consort e of
                           (Just _) -> 0
                           Nothing -> 65
+        probBirth e = case consort e of
+                          (Just _) -> 30
+                          Nothing -> 0
 
 
 -- generate a year's worth of incidents and string them together as

@@ -40,8 +40,8 @@ tribeDescribe e t = let v = vocabGet e
                         c = w ","
                         nation = aan $ list [ v "epithets", v "nations" ]
                         givento = list [ v "proneto", v "immorality" ]
-                        worship = list [ v "worshipping", perhaps (2, 0) $ v "divine", v "gods" ]
-                        clause = perhaps (3, 2) $ phrase $ choose [ givento, worship ]
+                        worship = list [ v "worshipping", perhaps (1, 2) $ v "divine", v "gods" ]
+                        clause = perhaps (2, 3) $ phrase $ choose [ givento, worship ]
                         arose = list [ w "arose in", v "places" ]
   in list [ w "The", t, c, nation, clause, arose ]
 

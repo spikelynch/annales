@@ -65,6 +65,7 @@ data Forebear = Forebear [ Char ] (Maybe Int)
   deriving Show
 
 data Gender = Male | Female
+  deriving (Eq, Show)
 
 data Person = Person TextGenCh Int Gender
 

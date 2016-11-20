@@ -2,6 +2,7 @@ module Annales.Emperor (
   newEmperor
   ,deadEmperor
   ,royalWedding
+  ,royalBirth
   ) where
 
 import Text.Numeral.Roman (toRoman)
@@ -27,6 +28,7 @@ import Annales.Empire (
   ,cap
   ,randn
   ,chooseW
+  ,phrase
   )
 
 import TextGen (
@@ -34,6 +36,7 @@ import TextGen (
   ,word
   ,choose
   ,remove
+  ,perhaps
   ,list
   )
 
@@ -47,19 +50,47 @@ royalWedding e = do
   cg <- return $ wordjoin c
   age <- randn 5
   e' <- return $ e { consort = Just (Person cg (16 + age) Female) }
-  return ( e', weddingDescribe e' cg )
+  return ( e', desc e' cg )
+    where desc e cg = let (Person eg _ _) = emperor e
+                          w = word
+                          v = vocabGet e
+                          waswed = w "was wedded to"
+                          celebrated = list [ w "with", v "festivities" ]
+                      in list [ eg, waswed, cg, celebrated ]
 
 
-weddingDescribe :: Empire -> TextGenCh -> TextGenCh
-weddingDescribe e cg = let (Person eg _ _) = emperor e
-                           w = word
-                           v = vocabGet e
-                           waswed = w "was wedded to"
-                           celebrated = list [ w "with", v "festivities" ]
-                       in list [ eg, waswed, cg, celebrated ]
+royalBirth :: Empire -> IO ( Empire, TextGenCh )
+royalBirth e = do
+  case consort e of
+    Nothing -> omen e
+    Just mother -> do
+      baby <- birth e
+      e' <- return $ e { heirs = (heirs e) ++ [ baby ] }
+      return ( e', birthDesc e' mother baby )
 
+birthDesc e mother baby = let (Person pg _ g) = baby
+                              (Person mg _ _) = mother
+                              w = word
+                              v = vocabGet e
+                              child = if g == Male then w "son" else w "daughter"
+                              star = perhaps ( 3, 5 ) $ list [ w "under the star", v "stars" ]
+                          in list [ mg, w "was brought to bed of a", child, phrase pg, star ]
+                     
+maybeConsort :: Empire -> Person
+maybeConsort e = case consort e of
+  Just c -> c
+  Nothing -> Person (word "FIXME") 1 Female
 
-
+birth :: Empire -> IO Person
+birth e = do
+  r <- randn 2
+  case r of
+    1 -> do
+      n <- generate $ vocabGet e "men"
+      return $ Person (wordjoin n) 1 Male
+    otherwise -> do
+      n <- generate $ vocabGet e "women"
+      return $ Person (wordjoin n) 1 Female
 
 
 deadEmperor :: Empire -> IO ( Empire, TextGenCh )
