@@ -62,7 +62,9 @@ royalWedding e = do
 royalBirth :: Empire -> IO ( Empire, TextGenCh )
 royalBirth e = do
   case consort e of
-    Nothing -> omen e
+    Nothing -> do
+      putStrLn "ERROR royal birth without consort"
+      return ( e, word "ERROR royal birth without consort" )
     Just mother -> do
       baby <- birth e
       e' <- return $ e { heirs = (heirs e) ++ [ baby ] }
