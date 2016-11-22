@@ -161,7 +161,6 @@ loadVocab dir = do
   list <- mapM loadFile $ filter isTextFile files
   return $ Map.fromList list
     where loadFile f = do
-            putStrLn("Loaded vocab " ++ f)
             gen <- loadOptions ( dir ++ f )
             return ( f, gen )
   

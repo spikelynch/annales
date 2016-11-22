@@ -217,7 +217,7 @@ makeEmperor :: Empire -> Person -> [ Person ] -> IO ( Empire, TextGenCh )
 makeEmperor e newe newheirs = do
   (Person hg _ eg) <- return newe
   newename <- generate hg
-  forebear <- return $ nextRegnal e eg $ dumbjoin newename
+  forebear <- makeEmpName e eg $ dumbjoin newename 
   style <- return $ regnalStyle forebear
   e' <- return $ e {
     emperor = Just (Person style (pAge newe) (pGender newe)),
@@ -226,6 +226,21 @@ makeEmperor e newe newheirs = do
     heirs = newheirs
     }
   return ( e', style )
+
+
+-- This makes some forebears unsucceedable
+
+makeEmpName :: Empire -> Gender -> [ Char ] -> IO Forebear
+makeEmpName e gender name = do
+  (Forebear ng ge mr) <- return $ nextRegnal e gender name
+  case mr of
+    Nothing -> return $ Forebear ng ge Nothing
+    (Just i) -> do
+      r <- randn 5
+      case r of
+        0 -> return $ Forebear ng ge Nothing
+        otherwise -> return $ Forebear ng ge (Just i)
+ 
 
 
 -- TODO: make this be one of the courtiers, after a possible
@@ -244,6 +259,7 @@ acclamation e = do
 
 acclamationDesc :: Empire -> TextGenCh -> TextGenCh
 acclamationDesc e style = list [ style, word "was made Emperor by", vocabGet e "acclamations" ]
+
 
 
 nextRegnal :: Empire -> Gender -> [ Char ] -> Forebear
