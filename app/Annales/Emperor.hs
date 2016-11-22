@@ -43,7 +43,8 @@ import TextGen (
 
 import Annales.Deaths ( deathOf )
 import Annales.Omens ( omen )
-  
+
+
 
 royalWedding :: Empire -> IO ( Empire, TextGenCh )
 royalWedding e = do
@@ -152,7 +153,8 @@ deadEmperor e = do
 -- every year, loop through all heirs and do a probability check to see
 -- if they died
 
-
+-- If the emperor dies and there are no living heirs:
+-- one of the Court becomes emperor by a variety of means "military acclamation" etc
 
 
 successorM :: Empire -> Maybe Person
