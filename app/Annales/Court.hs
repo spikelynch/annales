@@ -36,7 +36,7 @@ import Annales.Omens ( omen )
 
 
 
-arrived = chooseW [ "was born", "rose to prominence", "won favour", "was first heard of", "rose through the ranks", "was promoted" ]
+arrived = chooseW [ "rose to prominence", "won favour", "was first heard of", "rose through the ranks", "was promoted" ]
 
 
 

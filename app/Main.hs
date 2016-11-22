@@ -2,7 +2,7 @@ import TextGen (TextGen, runTextGen, word,  choose, remove, list, randrep, rep, 
 
 import Annales.Empire ( TextGenCh, Empire, Person(..), incrementYear, yearDesc, yearAbbrev, court, emperor, lineage, consort, pAge, initialiseEmpire, vocabGet, generate, dumbjoin, randn, paragraph, sentence)
 
-import Annales.Emperor ( newEmperor, deadEmperor, royalWedding, royalBirth )
+import Annales.Emperor ( newEmperor, deadEmperor, royalWedding, royalBirth, probBirth )
 import Annales.Court ( newCourtier, goneCourtier )
 import Annales.Tribes ( newTribe, goneTribe )
 import Annales.Omens ( omen )
@@ -38,9 +38,7 @@ probmap = [
   where probWedding e = case consort e of
                           (Just _) -> 0
                           Nothing -> 65
-        probBirth e = case consort e of
-                          (Just _) -> 30
-                          Nothing -> 0
+
 
 mcons :: Empire -> IO [ Char ]
 mcons e = case consort e of

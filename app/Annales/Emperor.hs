@@ -3,6 +3,7 @@ module Annales.Emperor (
   ,deadEmperor
   ,royalWedding
   ,royalBirth
+  ,probBirth
   ) where
 
 import Text.Numeral.Roman (toRoman)
@@ -83,6 +84,27 @@ maybeConsort e = case consort e of
   Just c -> c
   Nothing -> Person (word "FIXME") 1 Female
 
+
+probBirth :: Empire -> Int
+probBirth e = case consortAge e of
+  Nothing    -> 0
+  (Just x) | x > 49 -> 0
+  (Just x) | x < 16 -> 0
+  otherwise -> if isBaby e then 0 else 35
+
+consortAge :: Empire -> Maybe Int
+consortAge e = case consort e of
+  Nothing             -> Nothing
+  Just (Person _ a _) -> Just a
+
+isBaby :: Empire -> Bool
+isBaby e = case heirs e of
+  [] -> False
+  hs -> case pAge $ last hs of
+    x | x < 3 -> True
+    otherwise -> False
+
+
 birth :: Empire -> IO Person
 birth e = do
   r <- randn 2
@@ -126,7 +148,7 @@ deadEmperor e = do
 -- new heir: append to the head of heirs
 -- pull heirs off
 
--- every year, incremened all heir ages by one
+-- every year, increment all heir ages by one
 -- every year, loop through all heirs and do a probability check to see
 -- if they died
 
