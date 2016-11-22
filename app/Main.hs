@@ -94,7 +94,7 @@ perhapsIncident e (probf, incident) = do
 
 
 
--- generateAnnales until we exceed len
+-- generateAnnales until we exceed len words
 
 generateAnnals :: Int -> Empire -> IO [ Char ]
 generateAnnals len e = do
@@ -104,12 +104,18 @@ generateAnnals len e = do
     Just incidents -> do
       words <- generate incidents
       text <- return $ concat words
-      lp <- return $ length $ text
+      lp <- return $ wordCount $ text
       case lp > len of
         True -> return text
         otherwise -> do
           rest <- generateAnnals (len - lp) e'
           return $ text ++ rest
+
+wordCount :: [ Char ] -> Int
+wordCount t = 1 + (length $ filter (== ' ') t)
+
+
+
 
 getLength :: [ String ] -> Int
 getLength [] = 1000

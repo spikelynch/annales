@@ -237,12 +237,12 @@ makeEmpName e gender name = do
   (Forebear ng ge mr) <- return $ nextRegnal e gender name
   case mr of
     Nothing -> return $ Forebear ng ge Nothing
-    (Just i) -> do
+    (Just 1) -> do
       r <- randn 5
       case r of
         0 -> return $ Forebear ng ge Nothing
-        otherwise -> return $ Forebear ng ge (Just i)
- 
+        otherwise -> return $ Forebear ng ge (Just 1)
+    (Just i) -> return $ Forebear ng ge (Just i)
 
 
 -- TODO: make this be one of the courtiers, after a possible
