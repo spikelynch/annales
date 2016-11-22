@@ -219,13 +219,14 @@ makeEmperor e newe newheirs = do
   newename <- generate hg
   forebear <- makeEmpName e eg $ dumbjoin newename 
   style <- return $ regnalStyle forebear
+  ( intro, embellished ) <- embellishName e style
   e' <- return $ e {
-    emperor = Just (Person style (pAge newe) (pGender newe)),
+    emperor = Just (Person embellished (pAge newe) (pGender newe)),
     year = 1,
     lineage = forebear:(lineage e),
     heirs = newheirs
     }
-  return ( e', style )
+  return ( e', intro )
 
 
 -- This makes some forebears unsucceedable
@@ -272,19 +273,24 @@ regnalStyle :: Forebear -> TextGenCh
 regnalStyle (Forebear n _ Nothing)  = word n
 regnalStyle (Forebear n _ (Just i)) = list [ word n, word $ toRoman i ]
 
+embellishName :: Empire -> TextGenCh -> IO ( TextGenCh, TextGenCh )
+embellishName e style = do
+  r <- randn 4
+  case r of
+    3 -> do
+      epithet <- generate $ vocabGet e "epithets"
+      stext <- generate style
+      sname <- return $ ( dumbjoin stext )
+      ep <- return $ ( cap $ dumbjoin epithet )
+      longname <- return $ sname ++ " the " ++ ep
+      nstyle <- return $ choose [ style, word longname ]
+      phrases <- return $ choose [ word "later called the", word "surnamed the" ]
+      intro <- return $ list [ word sname, phrase $ list [ phrases, word ep ] ]
+      return ( intro, style )
+    otherwise -> return ( style, style )
 
 
--- Leave name embellishments till later
---
--- embellishName e = do
---   r <- randn 4
---   case r of
---     3 -> do
---       epithet <- generate $ vocabGet e "epithets"
---       (Forebear name _) <- return newe
---       longname <- return $ name ++ " the " ++ ( cap $ dumbjoin epithet)
---       return ( (Person (choose [ rgen newe, word longname ]) 1 Male), newe )
---     otherwise -> return ( (Person (rgen newe) 1 Male), newe )
+
 
 
       
