@@ -8,14 +8,21 @@ import Text.Numeral.Roman (toRoman)
 import Annales.Empire (
   TextGenCh
   ,Empire
+  ,Person(..)
   ,court
   ,vocabGet
   ,personGet
+  ,pName
   ,generate
   ,dumbjoin
   ,cap
   ,randn
+  ,randRemove
   ,chooseW
+  )
+
+import Annales.Emperor (
+  newPerson
   )
 
 import TextGen (
@@ -42,19 +49,18 @@ arrived = chooseW [ "rose to prominence", "won favour", "was first heard of", "r
 
 newCourtier :: Empire -> IO ( Empire, TextGenCh )
 newCourtier e = do
-  new  <- generate $ personGet e
-  newc <- return $ word $ dumbjoin new
-  e'   <- return $ e { court = newc:(court e) }
-  return ( e', list [ newc, arrived ] )
+  p <- newPerson e
+  e'   <- return $ e { court = p:(court e) }
+  return ( e', list [ pName p, arrived ] )
 
 goneCourtier :: Empire -> IO ( Empire, TextGenCh )
 goneCourtier e = do
-  ( mdead, court' ) <- generate $ remove $ court e
+  ( mdead, court' ) <- randRemove $ court e
   case mdead of
-    Nothing                  -> omen e
-    Just dead -> do
+    []     -> omen e
+    dead:d -> do
       e' <- return $ e { court = court' }
-      return ( e', deathOf e $ word $ dumbjoin dead ) 
+      return ( e', deathOf e $ pName dead ) 
 
 
 

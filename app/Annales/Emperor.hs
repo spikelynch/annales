@@ -4,6 +4,7 @@ module Annales.Emperor (
   ,royalWedding
   ,royalBirth
   ,probBirth
+  ,newPerson
   ) where
 
 import Text.Numeral.Roman (toRoman)
@@ -249,17 +250,23 @@ makeEmpName e gender name = do
 
 acclamation :: Empire -> IO (Empire, TextGenCh )
 acclamation e = do
+  claimant <- newPerson e
+  makeEmperor e claimant [] 
+
+acclamationDesc :: Empire -> TextGenCh -> TextGenCh
+acclamationDesc e style = list [ style, word "was made Emperor by", vocabGet e "acclamations" ]
+
+
+
+newPerson :: Empire -> IO Person
+newPerson e = do
   rg <- randn 2
   gender <- return $ case rg of
     0 -> Male
     1 -> Female
   age <- randn 20
-  nclaimant <- newName e gender
-  newe <- return $ Person (word nclaimant) (age + 10) gender
-  makeEmperor e newe [] 
-
-acclamationDesc :: Empire -> TextGenCh -> TextGenCh
-acclamationDesc e style = list [ style, word "was made Emperor by", vocabGet e "acclamations" ]
+  name <- newName e gender
+  return $ Person (word name) (age + 15) gender
 
 
 

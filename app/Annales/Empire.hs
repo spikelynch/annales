@@ -29,6 +29,8 @@ module Annales.Empire (
   ,cap
   ,phrase
   ,randn
+  ,randPick
+  ,randRemove
   ,chooseW
   ,showL
   ,paragraph
@@ -77,7 +79,7 @@ data Empire = Empire { emperor :: Maybe Person
                      , lineage :: [ Forebear ]
                      , heirs :: [ Person ]
                      , claimants :: [ Person ]
-                     , court :: [ TextGenCh ]
+                     , court :: [ Person ]
                      , tribes :: [ TextGenCh ]
                      , projects :: [ TextGenCh ]
                      , vocab :: Map String TextGenCh
@@ -194,12 +196,18 @@ initialE = Empire { emperor = Nothing
 
 
 incrementYear :: Empire -> Empire
-incrementYear e = e { emperor = agee, year = year', heirs = ageheirs }
+incrementYear e = e {
+  emperor = agee
+  , year = year'
+  , heirs = ageheirs
+  , court = agecourt
+  }
   where year' = 1 + (year e)
         agee = case emperor e of
           Nothing -> Nothing
           (Just emp) -> Just $ agePerson emp
         ageheirs = map agePerson $ heirs e
+        agecourt = map agePerson $ court e
         -- add courtiers 
 
 yearDesc :: Empire -> TextGenCh
@@ -230,3 +238,29 @@ initialiseEmpire dir = do
   v <- loadVocab dir
   return $ initialE { vocab = v }
   
+
+
+
+
+removel :: Int -> [ a ] -> (  [ a ], [ a ] )
+removel i l = let ( h, t ) = splitAt i l
+          in case ( h, t ) of
+               ( _, [] ) -> ( [], l )
+               ( h, t:ts ) -> ( [ t ], h ++ ts )
+
+
+randPick :: [ a ] -> IO (Maybe a)
+randPick [] = return Nothing
+randPick as = do
+  r <- randn $ length as
+  ( p, _ ) <- return $ removel r as
+  case p of
+    [] -> return Nothing
+    p:ps -> return $ Just p
+
+
+randRemove :: [ a ] -> IO ( [ a ], [ a ] )
+randRemove [] = return ( [], [] )
+randRemove as = do
+   r <- randn $ length as
+   return $ removel r as

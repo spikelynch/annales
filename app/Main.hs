@@ -125,6 +125,5 @@ main = do
   args <- getArgs
   length <- return $ getLength args
   e0 <- initialiseEmpire "./data/"
-  empire <- return $ e0 { heirs = [ Person (word "Man Ray") 16 Male ] }
-  annales <- generateAnnals length empire
+  annales <- generateAnnals length e0
   putStrLn annales
