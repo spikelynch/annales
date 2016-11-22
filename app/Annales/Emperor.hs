@@ -103,6 +103,54 @@ deadEmperor e = do
   return ( e', list [ death, word "\n", word "Succession of", pGen newe ] ) 
 
 
+-- Notes on rewriting this:
+
+-- Keep the "unsucceedable names" logic but mediated through heirship,
+-- or abandon it and start from scratch (better)
+
+-- Creating an heir: use the 'forebear or random' logic and add them
+-- to the heir list
+
+-- When the emperor dies, determine the heir using a successor rule
+-- (male first, female first, etc)
+
+-- Then add the heir to the Forebears list - maybe at this stage, if
+-- they're new, decide if they're unsucceedable?
+
+-- A mess to sort out: the old heirs need to stick around until they
+-- die
+
+-- heirs is [ [ Person ] ]
+
+-- new Emperor: push an empty [] onto heirs
+-- new heir: append to the head of heirs
+-- pull heirs off
+
+-- every year, incremened all heir ages by one
+-- every year, loop through all heirs and do a probability check to see
+-- if they died
+
+
+
+
+successorM :: Empire -> Maybe Person
+successorM e = case heir Male (heirs e) of
+  (Just p) -> Just p
+  Nothing -> heir Female (heirs e)
+
+successorF :: Empire -> Maybe Person
+successorF e = case heir Female (heirs e) of
+  (Just p) -> Just p
+  Nothing -> heir Male (heirs e)
+
+
+
+heir :: Gender -> [ Person ] -> Maybe Person
+heir hg hs = case filter (\(Person _ _ g) -> g == hg) hs of
+                []     -> Nothing
+                (x:xs) -> Just x
+                
+
 -- newEmperor returns the new emperor's Person And Forebear
 
 newEmperor :: Empire -> IO ( Person, Forebear )

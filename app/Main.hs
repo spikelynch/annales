@@ -22,6 +22,9 @@ import Data.Maybe (catMaybes)
 -- Remember that I'm fudging empire state here: see
 -- https://github.com/spikelynch/annales/issues/14
 
+
+
+probmap :: [ ( (Empire -> Int), (Empire -> IO (Empire, TextGenCh )) )  ]
 probmap = [
   ( probBirth, royalBirth )
   ,( probWedding, royalWedding )
@@ -49,42 +52,39 @@ mcons e = case consort e of
 -- generate a year's worth of incidents and string them together as
 -- a list
 
--- FIXME - the loop of probabilities and the loop of running and
--- chaining incidents have to be the same, so the probability of an
--- incident is based on the correct state - the "missing mother bug"
--- where a royal birth got invalidated because the emperor died,
--- removing the consort.  But that should be allowed to happen.
+-- Fixed the Missing Mother bug, now just have to shuffle probmap
+-- each year
 
 
 year :: Empire -> IO ( Empire, Maybe TextGenCh )
 year e = do
-  c <- mcons e
-  mis <- forM probmap $ \(p, incident) -> do
-    r <- randn 100
-    x <- return $ p e
-    case r < x of
-      True ->  return $ Just incident
-      False -> return $ Nothing
-  is <- return $ catMaybes mis
-  case null is of
-    True -> return ( incrementYear e, Nothing )
-    False -> do
-      ( e', incidents ) <- chain e (catMaybes mis)
-      return ( incrementYear e', Just $ list [ yearAbbrev e', incidents ] )
+  ( e', minc ) <- chain (incrementYear e) probmap
+  case minc of
+    Nothing -> return ( e', Nothing )
+    Just inc -> return ( e', Just $ list [ yearAbbrev e', inc ] )
 
--- feel like I'm reinventing a wheel here
--- This should be done with a stateT
-  
-chain :: Empire -> [ Empire -> IO ( Empire, TextGenCh ) ] -> IO ( Empire, TextGenCh )
-chain e []     = return ( e, tgempty )
-chain e (i:is) = do
-  ( e', g ) <- i e
-  ( e'', gs ) <- chain e' is
-  return ( e'', list [ paragraph $ sentence g, gs ] )
+chain :: Empire -> [ ( Empire -> Int, Empire -> IO ( Empire, TextGenCh ) )  ] -> IO ( Empire, Maybe TextGenCh )
+chain e []     = return ( e, Nothing )
+chain e (p:ps) = do
+  ( e', mg ) <- perhapsIncident e p
+  ( e'', mgs ) <- chain e' ps
+  return ( e'', link mg mgs )
 
+link :: Maybe TextGenCh -> Maybe TextGenCh -> Maybe TextGenCh
+link Nothing Nothing = Nothing
+link (Just g) Nothing = Just $ paragraph $ sentence g
+link Nothing (Just g) = Just g
+link (Just g) (Just h) = Just (list [ paragraph $ sentence g, h ]) 
 
-tgempty :: (RandomGen g) => TextGen g [[Char]]
-tgempty = return [ ]
+perhapsIncident :: Empire -> ( Empire -> Int, Empire -> IO ( Empire, TextGenCh ) ) -> IO ( Empire, Maybe TextGenCh )
+perhapsIncident e (probf, incident) = do
+  r <- randn 100
+  case r < (probf e) of
+    True -> do
+      (e', g) <- incident e
+      return $ ( e', Just g )
+    False -> return ( e, Nothing )
+
 
 
 -- generateAnnales until we exceed len
