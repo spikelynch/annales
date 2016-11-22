@@ -1,6 +1,6 @@
 module Annales.Emperor (
-  newEmperor
-  ,deadEmperor
+  deadEmperor
+  ,succession
   ,royalWedding
   ,royalBirth
   ,probBirth
@@ -21,8 +21,9 @@ import Annales.Empire (
   ,court
   ,vocabGet
   ,personGet
-  ,pGen
+  ,pName
   ,pAge
+  ,pGender
   ,generate
   ,dumbjoin
   ,wordjoin
@@ -53,7 +54,10 @@ royalWedding e = do
   age <- randn 5
   e' <- return $ e { consort = Just (Person cg (16 + age) Female) }
   return ( e', desc e' cg )
-    where desc e cg = let (Person eg _ _) = emperor e
+    where desc e cg = let me = emperor e
+                          eg = case me of
+                            Just emp -> pName emp
+                            Nothing -> word "ERROR"
                           w = word
                           v = vocabGet e
                           waswed = w "was wedded to"
@@ -109,22 +113,33 @@ isBaby e = case heirs e of
 birth :: Empire -> IO Person
 birth e = do
   r <- randn 2
-  case r of
-    1 -> do
-      n <- generate $ vocabGet e "men"
-      return $ Person (wordjoin n) 1 Male
-    otherwise -> do
-      n <- generate $ vocabGet e "women"
-      return $ Person (wordjoin n) 1 Female
+  g <- return $ if r == 0 then Female else Male
+  n <- royalBabyName e g
+  return $ Person (word n) 1 g
 
+
+
+
+-- deadEmperor used to do the new emperor selection as well, but now
+-- that's its own incident, triggered by an absence of emperor
 
 deadEmperor :: Empire -> IO ( Empire, TextGenCh )
 deadEmperor e = do
-  ( newe, forebear ) <- newEmperor e
-  e' <- return $ e { emperor = newe, lineage = forebear:(lineage e), consort = Nothing }
-  death <- return $ deathOf e $ pGen $ emperor e
-  return ( e', list [ death, word "\n", word "Succession of", pGen newe ] ) 
+  case emperor e of
+    (Just olde) -> do
+      e' <- return $ e { emperor = Nothing, consort = Nothing }
+      death <- return $ deathOf e $ pName olde
+      return ( e', death )
+    Nothing -> omen e
 
+
+-- succession is triggered in the main incident loop by the absence
+-- of an emperor.
+
+-- Try to select an heir based on the succession rules
+
+-- If there are claimants, it's a war of succession incident, which
+-- may resolve to a new emperor
 
 -- Notes on rewriting this:
 
@@ -154,86 +169,154 @@ deadEmperor e = do
 -- if they died
 
 -- If the emperor dies and there are no living heirs:
--- one of the Court becomes emperor by a variety of means "military acclamation" etc
+-- one of the Court becomes emperor by a variety of means
+-- Note this is part of a generic succession incident now,
+
+-- A Note on Regnal Names
+
+-- at birth - pick a random name, biased towards forebears, but never
+-- one which is unsucceedable
+
+-- at succession - take the heirs name, and generate the Forebear with
+-- regnal number: (with an option to make it unsucceedable)
 
 
-successorM :: Empire -> Maybe Person
+
+
+succession :: Empire -> IO ( Empire, TextGenCh )
+succession e = do
+  ( mheir, newheirs ) <- return $ getHeir e
+  case mheir of
+    Nothing     -> startCivilWar e
+    (Just newe) -> do
+      (Person hg _ eg) <- return newe
+      newename <- generate hg
+      forebear <- return $ nextRegnal e eg $ dumbjoin newename
+      style <- return $ regnalStyle forebear
+      desc <- return $ list [ word "Succession of", style ]
+      e' <- return $ e {
+        emperor = Just (Person style (pAge newe) (pGender newe)),
+        lineage = forebear:(lineage e),
+        heirs = newheirs
+        }
+      return ( e', desc )
+
+
+
+
+nextRegnal :: Empire -> Gender -> [ Char ] -> Forebear
+nextRegnal e g n = let match = (\(Forebear m _ _) -> m == n)
+                       r = 1 + (length $ filter match $ lineage e)
+                   in (Forebear n g (Just r))
+
+
+regnalStyle :: Forebear -> TextGenCh
+regnalStyle (Forebear n _ Nothing)  = word n
+regnalStyle (Forebear n _ (Just i)) = list [ word n, word $ toRoman i ]
+
+
+
+-- Leave name embellishments till later
+--
+-- embellishName e = do
+--   r <- randn 4
+--   case r of
+--     3 -> do
+--       epithet <- generate $ vocabGet e "epithets"
+--       (Forebear name _) <- return newe
+--       longname <- return $ name ++ " the " ++ ( cap $ dumbjoin epithet)
+--       return ( (Person (choose [ rgen newe, word longname ]) 1 Male), newe )
+--     otherwise -> return ( (Person (rgen newe) 1 Male), newe )
+
+
+      
+
+startCivilWar :: Empire -> IO ( Empire, TextGenCh )
+startCivilWar e = return ( e, word "Eternal war of succession" )
+
+
+
+      
+-- TODO: multiple levels of heirs
+
+-- Default: favouring males
+
+getHeir :: Empire -> ( Maybe Person, [ Person ] )
+getHeir = successorM
+
+
+
+
+successorM :: Empire -> ( Maybe Person, [ Person ] )
 successorM e = case heir Male (heirs e) of
-  (Just p) -> Just p
-  Nothing -> heir Female (heirs e)
+  (Just p, ps) -> ( Just p, ps )
+  (Nothing, _) -> heir Female (heirs e)
 
-successorF :: Empire -> Maybe Person
+
+successorF :: Empire -> ( Maybe Person, [ Person ] )
 successorF e = case heir Female (heirs e) of
-  (Just p) -> Just p
-  Nothing -> heir Male (heirs e)
+  (Just p, ps) -> ( Just p, ps )
+  (Nothing, _) -> heir Male (heirs e)
 
 
 
-heir :: Gender -> [ Person ] -> Maybe Person
-heir hg hs = case filter (\(Person _ _ g) -> g == hg) hs of
-                []     -> Nothing
-                (x:xs) -> Just x
+-- heir finds the first heir of gender g, and returns
+-- them and the modified list, or Nothing and the original list
+
+heir :: Gender -> [ Person ] -> ( Maybe Person, [ Person ] )
+heir hg hs = let notgender = (\(Person _ _ g) -> g /= hg)
+                 h1 = takeWhile notgender hs
+                 h2 = dropWhile notgender hs
+             in case h2 of
+                  []    -> ( Nothing, hs )
+                  hh:hs -> ( Just hh, h1 ++ hs )
                 
 
 -- newEmperor returns the new emperor's Person And Forebear
 
-newEmperor :: Empire -> IO ( Person, Forebear )
-newEmperor e = do
-  newe <- do
-    r <- randn 4
-    case r of
-      0          -> forebear e
-      otherwise  -> newName e
+-- newEmperor :: Empire -> IO ( Person, Forebear )
+-- newEmperor e = do
+--   newe <- do
+--     r <- randn 4
+--     case r of
+--       0          -> forebear e
+--       otherwise  -> newName e
+--   r <- randn 4
+--   case r of
+--     3 -> do
+--       epithet <- generate $ vocabGet e "epithets"
+--       (Forebear name _) <- return newe
+--       longname <- return $ name ++ " the " ++ ( cap $ dumbjoin epithet)
+--       return ( (Person (choose [ rgen newe, word longname ]) 1 Male), newe )
+--     otherwise -> return ( (Person (rgen newe) 1 Male), newe )
+
+
+-- Returns a name of the correct gender, with a bias towards
+-- forebears, avoiding unsucceedable forebears
+
+royalBabyName :: Empire -> Gender -> IO [ Char ]
+royalBabyName e g = do
   r <- randn 4
   case r of
-    3 -> do
-      epithet <- generate $ vocabGet e "epithets"
-      (Forebear name _) <- return newe
-      longname <- return $ name ++ " the " ++ ( cap $ dumbjoin epithet)
-      return ( (Person (choose [ rgen newe, word longname ]) 1 Male), newe )
-    otherwise -> return ( (Person (rgen newe) 1 Male), newe )
-
-
-
-rgen :: Forebear -> TextGenCh
-rgen (Forebear n Nothing)  = word n
-rgen (Forebear n (Just i)) = list [ word n, word $ toRoman i ]
+    0         -> lineageName e g
+    otherwise -> newName e g
 
 
 
 
-forebear :: Empire -> IO Forebear
-forebear e = do
-  l <- return $ lineage e
-  name <- lineageName e l
-  return $ nextRegnal l name
-
-
--- this should sometimes return Forebears with a Nothing regnal number
--- who will never have successors
--- it also needs to filter the vocab names so that they don't duplicate
--- a Nothing name which is already in the lineage
-
-newName :: Empire -> IO Forebear
-newName e = do
-  n <- getNewName e
-  r <- randn 2
-  case r of
-    0 -> return $ nextRegnal (lineage e) n
-    otherwise -> return $ Forebear n Nothing
 
 
 
+-- Get a random name of the right gender which is not in the
+-- lineage as 'unsucc'
 
-getNewName :: Empire -> IO [ Char ]
-getNewName e = do
-  unsucc <- return $ map (\(Forebear x _) -> x) $ filter isunsucc $ lineage e
-  nn <- excludeGet unsucc (vocabGet e "men")
+newName :: Empire -> Gender -> IO [ Char ]
+newName e g = do
+  vocab <- return $ if g == Male then "men" else "women"
+  unsucc <- return $ map (\(Forebear x _ _) -> x) $ filter isunsucc $ lineage e
+  nn <- excludeGet unsucc (vocabGet e vocab)
   return nn
 
-isunsucc :: Forebear -> Bool
-isunsucc (Forebear c Nothing) = True
-isunsucc _                    = False
 
 -- This could loop forever if lineage > names
 
@@ -246,38 +329,41 @@ excludeGet ex g = do
 
 
 
--- get rid of the !! and head in this
--- filter the forebears so that ones with regnal number = Nothing
--- don't have successors
+-- TODO: get rid of the !! and head in this
+-- now respects the Gender
 
-lineageName :: Empire -> [ Forebear ] -> IO [ Char ]
-lineageName e []   = do
-  (Forebear name _) <- newName e
-  return name
-lineageName e fbs  = do
-  succ <- return $ filter ( not . isunsucc ) fbs
-  case null succ of
-    True -> do
-      (Forebear name _) <- newName e
-      return name
-    False -> do
-      k <- randn 2
-      case k of
-        0 -> do
-          i <- randn $ length succ
-          (Forebear name _) <- return $ succ !! i
-          return name
-        otherwise -> do
-          (Forebear name _) <- return $ head succ
-          return name
-      
+lineageName :: Empire -> Gender -> IO [ Char ]
+lineageName e g = do
+  case filter (\(Forebear _ gg _) -> g == gg ) $ lineage e of
+    []  -> newName e g
+    fbs -> do
+      succ <- return $ filter ( not . isunsucc ) fbs
+      case null succ of
+        True -> newName e g
+        False -> do
+          k <- randn 2
+          case k of
+            0 -> do
+              i <- randn $ length succ
+              (Forebear name _ _) <- return $ succ !! i
+              return name
+            otherwise -> do
+              (Forebear name _ _) <- return $ head succ
+              return name
 
-
+isunsucc :: Forebear -> Bool
+isunsucc (Forebear c _ Nothing) = True
+isunsucc _                      = False
 
 
-nextRegnal :: [ Forebear ] -> [ Char ] -> Forebear
-nextRegnal l n = let r = 1 + (length $ filter (\(Forebear m _) -> m == n) l)
-                 in (Forebear n (Just r))
+-- The next two are used at succession, not birth
+
+-- forebear :: Empire -> IO Forebear
+-- forebear e = do
+--   l <- return $ lineage e
+--   name <- lineageName e l
+--   return $ nextRegnal l name
+
 
 
 

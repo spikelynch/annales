@@ -7,11 +7,13 @@ module Annales.Empire (
   ,emperor
   ,court
   ,consort
+  ,claimants
   ,heirs
   ,tribes
   ,lineage
-  ,pGen
+  ,pName
   ,pAge
+  ,pGender
   ,vocabGet
   ,personGet
   ,initialiseEmpire
@@ -29,7 +31,6 @@ module Annales.Empire (
   ,chooseW
   ,showL
   ,paragraph
-  ,phrase
   ) where
 
 
@@ -61,7 +62,7 @@ import Text.Numeral.Roman (toRoman)
 
 type TextGenCh = TextGen StdGen [[Char]]
 
-data Forebear = Forebear [ Char ] (Maybe Int)
+data Forebear = Forebear [ Char ] Gender (Maybe Int)
   deriving Show
 
 data Gender = Male | Female
@@ -69,10 +70,11 @@ data Gender = Male | Female
 
 data Person = Person TextGenCh Int Gender
 
-data Empire = Empire { emperor :: Person
+data Empire = Empire { emperor :: Maybe Person
+                     , consort :: Maybe Person
                      , lineage :: [ Forebear ]
                      , heirs :: [ Person ]
-                     , consort :: Maybe Person
+                     , claimants :: [ Person ]
                      , court :: [ TextGenCh ]
                      , tribes :: [ TextGenCh ]
                      , projects :: [ TextGenCh ]
@@ -80,8 +82,8 @@ data Empire = Empire { emperor :: Person
                      }
 
 
-pGen :: Person -> TextGenCh
-pGen (Person t _ _) = t
+pName :: Person -> TextGenCh
+pName (Person t _ _) = t
 
 pAge :: Person -> Int
 pAge (Person _ a _) = a
@@ -90,7 +92,7 @@ pGender :: Person -> Gender
 pGender (Person _ _ g) = g
 
 agePerson :: Person -> Person
-agePerson p = (Person (pGen p) ((pAge p) + 1) (pGender p)) 
+agePerson p = (Person (pName p) ((pAge p) + 1) (pGender p)) 
 
 nullGen :: TextGenCh
 nullGen = word "-"
@@ -176,10 +178,11 @@ personGet e = choose [ vocabGet e "men", vocabGet e "women" ]
 
 
 
-initialE = Empire { emperor = Person (word "") 0 Male
+initialE = Empire { emperor = Nothing
+                  , consort = Nothing
                   , lineage = []
                   , heirs = []
-                  , consort = Nothing
+                  , claimants = []
                   , court = []
                   , tribes =  []
                   , projects = []
@@ -188,25 +191,34 @@ initialE = Empire { emperor = Person (word "") 0 Male
 
 
 incrementYear :: Empire -> Empire
-incrementYear e = e { emperor = (agePerson (emperor e)) } 
+incrementYear e = e { emperor = agee, heirs = ageheirs }
+  where agee = case emperor e of
+          Nothing -> Nothing
+          (Just emp) -> Just $ agePerson emp
+        ageheirs = map agePerson $ heirs e
+        -- add courtiers 
 
 yearDesc :: Empire -> TextGenCh
-yearDesc e = let a = word $ show $ pAge $ emperor e
-                 g = pGen $ emperor e
-                 d = list [ word "Year", a, word "in the reign of", g ]
-             in paragraph $ sentence $ d
+yearDesc e = paragraph $ sentence $ yearof $ emperor e
+  where yearof Nothing = word "Interregnum"
+        yearof (Just em) = list [ word "Year", a, word "in the reign of", g ]
+          where a = word $ show $ pAge em
+                g = pName $ em
 
 yearAbbrev :: Empire -> TextGenCh
-yearAbbrev e = paragraph $ word $ year ++ "." ++ emp
-  where year = show $ pAge $ emperor e
-        emp = case lineage e of
-          []   -> ""
-          (Forebear n i):ls -> (initials n) ++ (roman i)
-            where roman Nothing = ""
-                  roman (Just i) = "." ++ toRoman i
-        initials n = concat $ map initial $ splitOn " " n
-        initial []   = ""
-        initial (c:cs) = [ c ]
+yearAbbrev e = word "FIXME"
+-- yearAbbrev e = paragraph $ word $ yearcode $ emperor e
+--   where yearcode Nothing = word "INT"
+--         yearcode (Just emp) = year ++ "." ++ ecode
+--           where year = show $ pAge emp
+--                 ecode = case lineage e of
+--                   []   -> ""
+--                   (Forebear n i):ls -> (initials n) ++ (roman i)
+--                     where roman Nothing = ""
+--                           roman (Just i) = "." ++ toRoman i
+--                           initials n = concat $ map initial $ splitOn " " n
+--                           initial []   = ""
+--                           initial (c:cs) = [ c ]
           
 
 initialiseEmpire :: String -> IO ( Empire )

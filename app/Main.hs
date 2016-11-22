@@ -1,8 +1,8 @@
 import TextGen (TextGen, runTextGen, word,  choose, remove, list, randrep, rep, perhaps, smartjoin)
 
-import Annales.Empire ( TextGenCh, Empire, Person(..), incrementYear, yearDesc, yearAbbrev, court, emperor, lineage, consort, pAge, initialiseEmpire, vocabGet, generate, dumbjoin, randn, paragraph, sentence)
+import Annales.Empire ( TextGenCh, Empire, Person(..), Gender(..), incrementYear, yearDesc, yearAbbrev, court, emperor, lineage, consort, heirs, pAge, initialiseEmpire, vocabGet, generate, dumbjoin, randn, paragraph, sentence)
 
-import Annales.Emperor ( newEmperor, deadEmperor, royalWedding, royalBirth, probBirth )
+import Annales.Emperor ( succession, deadEmperor, royalWedding, royalBirth, probBirth )
 import Annales.Court ( newCourtier, goneCourtier )
 import Annales.Tribes ( newTribe, goneTribe )
 import Annales.Omens ( omen )
@@ -28,16 +28,25 @@ probmap :: [ ( (Empire -> Int), (Empire -> IO (Empire, TextGenCh )) )  ]
 probmap = [
   ( probBirth, royalBirth )
   ,( probWedding, royalWedding )
-  ,( (\e -> 5 + (pAge $ emperor e)), deadEmperor )
-  ,( (\_ -> 20), newTribe )
-  ,( (\_ -> 20), goneTribe )
-  ,( (\_ -> 10), newCourtier )
-  ,( (\_ -> 10), goneCourtier )
-  ,( (\_ -> 20), omen )
+  ,( probEmpDeath, deadEmperor )
+  ,( probSuccession, succession )
+  ,( (\_ -> 0), newTribe )
+  ,( (\_ -> 0), goneTribe )
+  ,( (\_ -> 0), newCourtier )
+  ,( (\_ -> 0), goneCourtier )
+  ,( (\_ -> 0), omen )
   ]
   where probWedding e = case consort e of
                           (Just _) -> 0
-                          Nothing -> 65
+                          Nothing -> case emperor e of
+                                       (Just _) -> 65
+                                       Nothing -> 0
+        probSuccession e = case emperor e of
+                             (Just _) -> 0
+                             Nothing -> 100
+        probEmpDeath e = case emperor e of
+                           (Just emp) -> 5 + (pAge $ emp)
+                           Nothing -> 0
 
 
 mcons :: Empire -> IO [ Char ]
@@ -59,7 +68,7 @@ year e = do
   ( e', minc ) <- chain (incrementYear e) probmap
   case minc of
     Nothing -> return ( e', Nothing )
-    Just inc -> return ( e', Just $ list [ yearAbbrev e', inc ] )
+    Just inc -> return ( e', Just $ list [ yearDesc e', inc ] )
 
 chain :: Empire -> [ ( Empire -> Int, Empire -> IO ( Empire, TextGenCh ) )  ] -> IO ( Empire, Maybe TextGenCh )
 chain e []     = return ( e, Nothing )
@@ -116,7 +125,6 @@ main = do
   args <- getArgs
   length <- return $ getLength args
   e0 <- initialiseEmpire "./data/"
-  ( emp0, forebear ) <- newEmperor e0
-  empire <- return $ e0 { emperor = emp0, lineage = [ forebear ] }
+  empire <- return $ e0 { heirs = [ Person (word "Man Ray") 16 Male ] }
   annales <- generateAnnals length empire
   putStrLn annales
