@@ -11,6 +11,7 @@ module Annales.Empire (
   ,heirs
   ,tribes
   ,lineage
+  ,year
   ,pName
   ,pAge
   ,pGender
@@ -72,6 +73,7 @@ data Person = Person TextGenCh Int Gender
 
 data Empire = Empire { emperor :: Maybe Person
                      , consort :: Maybe Person
+                     , year :: Int
                      , lineage :: [ Forebear ]
                      , heirs :: [ Person ]
                      , claimants :: [ Person ]
@@ -159,6 +161,7 @@ loadVocab dir = do
   list <- mapM loadFile $ filter isTextFile files
   return $ Map.fromList list
     where loadFile f = do
+            putStrLn("Loaded vocab " ++ f)
             gen <- loadOptions ( dir ++ f )
             return ( f, gen )
   
@@ -180,6 +183,7 @@ personGet e = choose [ vocabGet e "men", vocabGet e "women" ]
 
 initialE = Empire { emperor = Nothing
                   , consort = Nothing
+                  , year = 0
                   , lineage = []
                   , heirs = []
                   , claimants = []
@@ -191,8 +195,9 @@ initialE = Empire { emperor = Nothing
 
 
 incrementYear :: Empire -> Empire
-incrementYear e = e { emperor = agee, heirs = ageheirs }
-  where agee = case emperor e of
+incrementYear e = e { emperor = agee, year = year', heirs = ageheirs }
+  where year' = 1 + (year e)
+        agee = case emperor e of
           Nothing -> Nothing
           (Just emp) -> Just $ agePerson emp
         ageheirs = map agePerson $ heirs e
@@ -202,7 +207,7 @@ yearDesc :: Empire -> TextGenCh
 yearDesc e = paragraph $ sentence $ yearof $ emperor e
   where yearof Nothing = word "Interregnum"
         yearof (Just em) = list [ word "Year", a, word "in the reign of", g ]
-          where a = word $ show $ pAge em
+          where a = word $ show $ year e
                 g = pName $ em
 
 yearAbbrev :: Empire -> TextGenCh

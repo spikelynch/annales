@@ -30,11 +30,11 @@ probmap = [
   ,( probWedding, royalWedding )
   ,( probEmpDeath, deadEmperor )
   ,( probSuccession, succession )
-  ,( (\_ -> 0), newTribe )
-  ,( (\_ -> 0), goneTribe )
-  ,( (\_ -> 0), newCourtier )
-  ,( (\_ -> 0), goneCourtier )
-  ,( (\_ -> 0), omen )
+  ,( (\_ -> 10), newTribe )
+  ,( (\_ -> 10), goneTribe )
+  ,( (\_ -> 10), newCourtier )
+  ,( (\_ -> 10), goneCourtier )
+  ,( (\_ -> 20), omen )
   ]
   where probWedding e = case consort e of
                           (Just _) -> 0

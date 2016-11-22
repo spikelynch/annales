@@ -19,6 +19,7 @@ import Annales.Empire (
   ,consort
   ,heirs
   ,court
+  ,year
   ,vocabGet
   ,personGet
   ,pName
@@ -49,8 +50,11 @@ import Annales.Omens ( omen )
 
 royalWedding :: Empire -> IO ( Empire, TextGenCh )
 royalWedding e = do
-  c <- generate $ vocabGet e "women" 
-  cg <- return $ wordjoin c
+  consortGender <- return $ case emperor e of
+    (Just emp) -> if (pGender emp) == Male then Female else Male
+    Nothing -> Female
+  c <- newName e consortGender 
+  cg <- return $ word c
   age <- randn 5
   e' <- return $ e { consort = Just (Person cg (16 + age) Female) }
   return ( e', desc e' cg )
@@ -71,10 +75,23 @@ royalBirth e = do
     Nothing -> do
       putStrLn "ERROR royal birth without consort"
       return ( e, word "ERROR royal birth without consort" )
-    Just mother -> do
+    Just cons -> do
       baby <- birth e
-      e' <- return $ e { heirs = (heirs e) ++ [ baby ] }
-      return ( e', birthDesc e' mother baby )
+      mmother <- return $ femaleParent e
+      case mmother of
+        Just mother -> do
+          e' <- return $ e { heirs = (heirs e) ++ [ baby ] }
+          return ( e', birthDesc e' mother baby )
+        Nothing ->
+          return ( e, word "ERROR couldn't resolve parent" )
+
+femaleParent :: Empire -> Maybe Person
+femaleParent e = case consort e of
+  Nothing -> Nothing
+  (Just c) -> case pGender c of
+                Female -> Just c
+                Male -> emperor e
+
 
 birthDesc e mother baby = let (Person pg _ g) = baby
                               (Person mg _ _) = mother
@@ -187,21 +204,46 @@ succession :: Empire -> IO ( Empire, TextGenCh )
 succession e = do
   ( mheir, newheirs ) <- return $ getHeir e
   case mheir of
-    Nothing     -> startCivilWar e
     (Just newe) -> do
-      (Person hg _ eg) <- return newe
-      newename <- generate hg
-      forebear <- return $ nextRegnal e eg $ dumbjoin newename
-      style <- return $ regnalStyle forebear
-      desc <- return $ list [ word "Succession of", style ]
-      e' <- return $ e {
-        emperor = Just (Person style (pAge newe) (pGender newe)),
-        lineage = forebear:(lineage e),
-        heirs = newheirs
-        }
-      return ( e', desc )
+      (e', style ) <- makeEmperor e newe newheirs
+      return ( e', list [ word "Succession of", style ] )
+    Nothing -> do
+      (e', style ) <- acclamation e
+      return ( e', acclamationDesc e style )
 
 
+
+makeEmperor :: Empire -> Person -> [ Person ] -> IO ( Empire, TextGenCh )
+makeEmperor e newe newheirs = do
+  (Person hg _ eg) <- return newe
+  newename <- generate hg
+  forebear <- return $ nextRegnal e eg $ dumbjoin newename
+  style <- return $ regnalStyle forebear
+  e' <- return $ e {
+    emperor = Just (Person style (pAge newe) (pGender newe)),
+    year = 1,
+    lineage = forebear:(lineage e),
+    heirs = newheirs
+    }
+  return ( e', style )
+
+
+-- TODO: make this be one of the courtiers, after a possible
+-- war of succession
+
+acclamation :: Empire -> IO (Empire, TextGenCh )
+acclamation e = do
+  rg <- randn 2
+  gender <- return $ case rg of
+    0 -> Male
+    1 -> Female
+  age <- randn 20
+  nclaimant <- newName e gender
+  newe <- return $ Person (word nclaimant) (age + 10) gender
+  makeEmperor e newe [] 
+
+acclamationDesc :: Empire -> TextGenCh -> TextGenCh
+acclamationDesc e style = list [ style, word "was made Emperor by", vocabGet e "acclamations" ]
 
 
 nextRegnal :: Empire -> Gender -> [ Char ] -> Forebear
