@@ -1,10 +1,11 @@
 import TextGen (TextGen, runTextGen, word,  choose, remove, list, randrep, rep, perhaps, smartjoin)
 
-import Annales.Empire ( TextGenCh, Empire, Person(..), Gender(..), incrementYear, yearDesc, yearAbbrev, court, emperor, lineage, consort, heirs, pAge, initialiseEmpire, vocabGet, generate, dumbjoin, randn, paragraph, sentence)
+import Annales.Empire ( TextGenCh, Empire, Person(..), Gender(..), incrementYear, yearDesc, yearAbbrev, court, emperor, lineage, consort, heirs, year, pAge, initialiseEmpire, vocabGet, generate, dumbjoin, randn, paragraph, sentence)
 
-import Annales.Emperor ( succession, deadEmperor, royalWedding, royalBirth, probBirth )
+import Annales.Emperor ( succession,  royalWedding, royalBirth, probBirth )
 import Annales.Court ( newCourtier, goneCourtier )
 import Annales.Tribes ( newTribe, goneTribe )
+import Annales.Deaths ( deathProbs )
 import Annales.Omens ( omen )
 
 import System.Environment (getArgs)
@@ -28,12 +29,10 @@ probmap :: [ ( (Empire -> Int), (Empire -> IO (Empire, TextGenCh )) )  ]
 probmap = [
   ( probBirth, royalBirth )
   ,( probWedding, royalWedding )
-  ,( probEmpDeath, deadEmperor )
   ,( probSuccession, succession )
   ,( (\_ -> 10), newTribe )
   ,( (\_ -> 10), goneTribe )
   ,( (\_ -> 10), newCourtier )
-  ,( (\_ -> 10), goneCourtier )
   ,( (\_ -> 20), omen )
   ]
   where probWedding e = case consort e of
@@ -44,9 +43,6 @@ probmap = [
         probSuccession e = case emperor e of
                              (Just _) -> 0
                              Nothing -> 100
-        probEmpDeath e = case emperor e of
-                           (Just emp) -> 5 + (pAge $ emp)
-                           Nothing -> 0
 
 
 mcons :: Empire -> IO [ Char ]
@@ -59,16 +55,19 @@ mcons e = case consort e of
 -- generate a year's worth of incidents and string them together as
 -- a list
 
--- Fixed the Missing Mother bug, now just have to shuffle probmap
--- each year
 
 
-year :: Empire -> IO ( Empire, Maybe TextGenCh )
-year e = do
-  ( e', minc ) <- chain (incrementYear e) probmap
+makeYear :: Empire -> IO ( Empire, Maybe TextGenCh )
+makeYear e = do
+  allprobmap <- return $ (deathProbs e) ++ probmap
+  ( e', minc ) <- chain (incrementYear e) allprobmap
   case minc of
     Nothing -> return ( e', Nothing )
-    Just inc -> return ( e', Just $ list [ yearDesc e', inc ] )
+    Just inc -> case year e of
+      1 -> return ( e', Just $ list [ yearDesc e', inc ] )
+      otherwise -> return ( e', Just $ list [ yearDesc e', inc ] )
+
+      
 
 chain :: Empire -> [ ( Empire -> Int, Empire -> IO ( Empire, TextGenCh ) )  ] -> IO ( Empire, Maybe TextGenCh )
 chain e []     = return ( e, Nothing )
@@ -98,7 +97,7 @@ perhapsIncident e (probf, incident) = do
 
 generateAnnals :: Int -> Empire -> IO [ Char ]
 generateAnnals len e = do
-  ( e', mincidents ) <- year e
+  ( e', mincidents ) <- makeYear e
   case mincidents of
     Nothing -> generateAnnals len e'
     Just incidents -> do

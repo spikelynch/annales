@@ -3,7 +3,6 @@ module Annales.Omens (omen) where
 import TextGen (TextGen, runTextGen, word, choose, remove, list, randrep, rep, perhaps, smartjoin)
 
 import Annales.Empire ( TextGenCh, Empire, court, vocabGet, generate, dumbjoin, randn)
-import Annales.Deaths ( deathOf )
   
 
 

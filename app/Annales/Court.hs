@@ -37,6 +37,17 @@ import Annales.Deaths ( deathOf )
 import Annales.Omens ( omen )
   
 
+
+
+
+
+
+
+
+
+
+
+
 -- things courtiers can do: write poems and plays and histories,
 -- intrigue, win triumphs, be exiled to PLACE, retire to their
 -- villa/etc in PLACE, sponsor games, projects

@@ -218,19 +218,17 @@ yearDesc e = paragraph $ sentence $ yearof $ emperor e
                 g = pName $ em
 
 yearAbbrev :: Empire -> TextGenCh
-yearAbbrev e = word "FIXME"
--- yearAbbrev e = paragraph $ word $ yearcode $ emperor e
---   where yearcode Nothing = word "INT"
---         yearcode (Just emp) = year ++ "." ++ ecode
---           where year = show $ pAge emp
---                 ecode = case lineage e of
---                   []   -> ""
---                   (Forebear n i):ls -> (initials n) ++ (roman i)
---                     where roman Nothing = ""
---                           roman (Just i) = "." ++ toRoman i
---                           initials n = concat $ map initial $ splitOn " " n
---                           initial []   = ""
---                           initial (c:cs) = [ c ]
+yearAbbrev e = paragraph $ word $ yearcode $ emperor e
+  where yearcode Nothing = "INT." ++ (show $ year e)
+        yearcode (Just emp) = (show $ year e) ++ "." ++ ecode
+          where ecode = case lineage e of
+                  []   -> ""
+                  (Forebear n _ i):ls -> (initials n) ++ (roman i)
+                    where roman Nothing = ""
+                          roman (Just i) = "." ++ toRoman i
+                          initials n = concat $ map initial $ splitOn " " n
+                          initial []   = ""
+                          initial (c:cs) = [ c ]
           
 
 initialiseEmpire :: String -> IO ( Empire )

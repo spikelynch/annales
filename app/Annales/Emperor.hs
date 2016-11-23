@@ -1,6 +1,5 @@
 module Annales.Emperor (
-  deadEmperor
-  ,succession
+  succession
   ,royalWedding
   ,royalBirth
   ,probBirth
@@ -138,17 +137,6 @@ birth e = do
 
 
 
--- deadEmperor used to do the new emperor selection as well, but now
--- that's its own incident, triggered by an absence of emperor
-
-deadEmperor :: Empire -> IO ( Empire, TextGenCh )
-deadEmperor e = do
-  case emperor e of
-    (Just olde) -> do
-      e' <- return $ e { emperor = Nothing, consort = Nothing }
-      death <- return $ deathOf e $ pName olde
-      return ( e', death )
-    Nothing -> omen e
 
 
 -- succession is triggered in the main incident loop by the absence
@@ -254,7 +242,7 @@ acclamation e = do
   makeEmperor e claimant [] 
 
 acclamationDesc :: Empire -> TextGenCh -> TextGenCh
-acclamationDesc e style = list [ style, word "was made Emperor by", vocabGet e "acclamations" ]
+acclamationDesc e style = list [ style, vocabGet e "enthroned", vocabGet e "acclamations" ]
 
 
 
