@@ -3,7 +3,9 @@ ANNALES
 
 My entry for NaNoGenMo 2016. An exercise in cheap generative worldbuilding.
 
-## Current sample output
+## Sample output
+
+[Release 1.0.0.0 - Bladda](blob/master/output/sample-1.0.0.0-Bladda.txt)
 
 ¶Giuged Poon I was made Emperor by barratry.
 
