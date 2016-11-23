@@ -293,7 +293,7 @@ embellishName e style = do
       nstyle <- return $ choose [ style, word longname ]
       phrases <- return $ choose [ word "later called the", word "surnamed the" ]
       intro <- return $ list [ word sname, phrase $ list [ phrases, word ep ] ]
-      return ( intro, style )
+      return ( intro, nstyle )
     otherwise -> return ( style, style )
 
 
@@ -425,15 +425,6 @@ lineageName e g = do
 isunsucc :: Forebear -> Bool
 isunsucc (Forebear c _ Nothing) = True
 isunsucc _                      = False
-
-
--- The next two are used at succession, not birth
-
--- forebear :: Empire -> IO Forebear
--- forebear e = do
---   l <- return $ lineage e
---   name <- lineageName e l
---   return $ nextRegnal l name
 
 
 
