@@ -72,7 +72,7 @@ data Gender = Male | Female
   deriving (Eq, Show)
 
 data Person = Person TextGenCh Int Gender
-
+    
 data Empire = Empire { emperor :: Maybe Person
                      , consort :: Maybe Person
                      , year :: Int

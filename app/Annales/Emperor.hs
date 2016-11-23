@@ -57,7 +57,7 @@ royalWedding e = do
   c <- newName e consortGender 
   cg <- return $ word c
   age <- randn 5
-  e' <- return $ e { consort = Just (Person cg (16 + age) Female) }
+  e' <- return $ e { consort = Just (Person cg (16 + age) consortGender) }
   return ( e', desc e' cg )
     where desc e cg = let me = emperor e
                           eg = case me of
@@ -80,7 +80,7 @@ royalBirth e = do
       baby <- birth e
       mmother <- return $ femaleParent e
       case mmother of
-        Just mother -> do
+        (Just mother) -> do
           e' <- return $ e { heirs = (heirs e) ++ [ baby ] }
           return ( e', birthDesc e' mother baby )
         Nothing ->

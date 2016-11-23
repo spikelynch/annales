@@ -38,12 +38,12 @@ tribeDescribe :: Empire -> TextGenCh -> TextGenCh
 tribeDescribe e t = let v = vocabGet e
                         w = word
                         c = w ","
-                        nation = aan $ list [ v "epithets", v "nations" ]
+                        nation = phrase $ aan $ list [ v "epithets", v "nations" ]
                         givento = list [ v "proneto", v "immorality" ]
                         worship = list [ v "worshipping", perhaps (1, 2) $ v "divine", v "gods" ]
                         clause = perhaps (2, 3) $ phrase $ choose [ givento, worship ]
                         arose = list [ w "arose in", v "places" ]
-  in list [ w "The", t, c, nation, clause, arose ]
+  in list [ w "The", t, nation, clause, arose ]
 
 
 goneTribe :: Empire -> IO ( Empire, TextGenCh )
