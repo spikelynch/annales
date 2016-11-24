@@ -1,4 +1,7 @@
-module Annales.Succession ( succession ) where
+module Annales.Succession (
+  probSuccession
+  ,succession
+  ) where
 
 import Text.Numeral.Roman (toRoman)
 
@@ -12,6 +15,7 @@ import Annales.Empire (
   ,lineage
   ,consort
   ,heirs
+  ,claimants
   ,court
   ,year
   ,vocabGet
@@ -22,8 +26,11 @@ import Annales.Empire (
   ,generate
   ,dumbjoin
   ,wordjoin
+  ,nicelist
+  ,paragraph
   ,cap
   ,randn
+  ,randRemove
   ,chooseW
   ,phrase
   )
@@ -46,66 +53,30 @@ import Annales.Omens ( omen )
 
 
 
--- succession is triggered in the main incident loop by the absence
--- of an emperor.
 
--- Try to select an heir based on the succession rules
+-- succession: if there's an Emperor, do nothing
+-- If there's not, see if there are claimants: this means there's
+-- a civil war in progress
+-- If there's no claimants, try to find an heir
+-- if there are no heirs, start a civil war
 
--- If there are claimants, it's a war of succession incident, which
--- may resolve to a new emperor
-
--- Notes on rewriting this:
-
--- Keep the "unsucceedable names" logic but mediated through heirship,
--- or abandon it and start from scratch (better)
-
--- Creating an heir: use the 'forebear or random' logic and add them
--- to the heir list
-
--- When the emperor dies, determine the heir using a successor rule
--- (male first, female first, etc)
-
--- Then add the heir to the Forebears list - maybe at this stage, if
--- they're new, decide if they're unsucceedable?
-
--- A mess to sort out: the old heirs need to stick around until they
--- die
-
--- heirs is [ [ Person ] ]
-
--- new Emperor: push an empty [] onto heirs
--- new heir: append to the head of heirs
--- pull heirs off
-
--- every year, increment all heir ages by one
--- every year, loop through all heirs and do a probability check to see
--- if they died
-
--- If the emperor dies and there are no living heirs:
--- one of the Court becomes emperor by a variety of means
--- Note this is part of a generic succession incident now,
-
--- A Note on Regnal Names
-
--- at birth - pick a random name, biased towards forebears, but never
--- one which is unsucceedable
-
--- at succession - take the heirs name, and generate the Forebear with
--- regnal number: (with an option to make it unsucceedable)
-
-
+probSuccession :: Empire -> Int
+probSuccession e = case emperor e of
+  Nothing -> 100
+  _       -> 0
 
 
 succession :: Empire -> IO ( Empire, TextGenCh )
 succession e = do
-  ( mheir, newheirs ) <- return $ getHeir e
-  case mheir of
-    (Just newe) -> do
-      (e', style ) <- makeEmperor e newe newheirs
-      return ( e', list [ word "Succession of", style ] )
-    Nothing -> do
-      (e', style ) <- acclamation e
-      return ( e', acclamationDesc e style )
+  case claimants e of
+    [] -> do
+      ( mheir, newheirs ) <- return $ getHeir e
+      case mheir of
+        (Just newe) -> do
+          (e', style ) <- makeEmperor e newe newheirs
+          return ( e', list [ word "Succession of", style ] )
+        Nothing -> startWar e
+    cs -> civilWar e
 
 
 
@@ -140,14 +111,111 @@ makeEmpName e gender name = do
     (Just i) -> return $ Forebear ng ge (Just i)
 
 
--- TODO: make this be one of the courtiers, after a possible
--- war of succession
 
-acclamation :: Empire -> IO (Empire, TextGenCh )
-acclamation e = do
-  claimant <- newPerson e
-  makeEmperor e claimant [] 
+-- war logic
 
+-- Think of a name (the War of X)
+-- select 2-4 claimants from courtiers
+-- every year there is a Battle of PLACE
+-- each of the claimants has a chance of dying
+-- if there is one claimant left, they become emperor
+-- if there are none, pick a random one
+
+-- If there is < 2 courtiers, avoid war
+-- Otherwise start it
+
+-- startWar is called from succession when there are no heirs
+-- if there are 0 or 1 courtiers, it acclaims the only courtier
+-- or picks a random acclamation.
+-- otherwise it starts a war with 2+ claimants
+
+startWar :: Empire -> IO ( Empire, TextGenCh )
+startWar e = do
+  case court e of
+    [] -> randomAcclamation e
+    c:cs -> do
+      case null cs of
+        True -> do
+          e' <- return $ e { court = [] }
+          acclamation e' c
+        False -> do
+          e' <- chooseClaimants e
+          return ( e', nameWar e' )
+
+-- Move 2+ courtiers to claimants
+
+chooseClaimants :: Empire -> IO Empire
+chooseClaimants e = do
+  n <- randn 3
+  n1 <- return $ n + 2
+  cls <- return $ take n1 (court e)
+  cos <- return $ drop n1 (court e)
+  return $ e { court = cos, claimants = cls } 
+
+-- make a "thing, thing and thing" TextGenCh combinator
+
+nameWar :: Empire -> TextGenCh
+nameWar e = list [ word "Now began the War of", wname, word "in which", cs, word "contended" ]
+  where wname = vocabGet e "places"
+        cs = nicelist $ map pName $ claimants e
+
+
+
+-- civilWar is called by succession until there
+-- are no more claimants
+
+civilWar :: Empire -> IO ( Empire, TextGenCh )
+civilWar e = do
+  ( ma, mb, remain ) <- pickCombatants $ claimants e
+  case ma of
+    Nothing -> randomAcclamation e
+    Just a -> case mb of
+      Nothing -> victory e a
+      Just b -> do
+        ( v, bdesc ) <- doBattle e a b
+        case remain of
+          [] -> do
+            ( e', vdesc ) <- victory e v
+            e'' <- return $ e' { claimants = [] }
+            return ( e'', list [ paragraph bdesc, paragraph vdesc ] )
+          otherwise -> do
+            e' <- return $ e { claimants = v:remain }
+            return ( e', bdesc )
+    
+pickCombatants :: [ Person ] -> IO ( Maybe Person, Maybe Person, [ Person ] )
+pickCombatants ps = do
+  ( al, ps' ) <- randRemove ps
+  ( bl, ps'' ) <- randRemove ps'
+  return ( l2m al, l2m bl, ps'' )
+    where l2m []     = Nothing
+          l2m (a:as) = Just a
+
+doBattle :: Empire -> Person -> Person -> IO ( Person, TextGenCh )
+doBattle e a b = do
+  w <- randn 2
+  victor <- return $ if w == 0 then a else b
+  desc <- return $ list [ pName a, word "and", pName b, word "contended in battle: ", pName victor, word "was the victor" ]
+  return ( victor, desc )
+
+
+victory :: Empire -> Person -> IO ( Empire, TextGenCh )
+victory e p = do
+  ( e', style ) <- makeEmperor e p []
+  desc <- return $ list [ style, vocabGet e "enthroned", word "triumph" ]
+  return ( e', desc )
+
+
+randomAcclamation :: Empire -> IO (Empire, TextGenCh )
+randomAcclamation e = do
+  p <- newPerson e
+  acclamation e p
+
+  
+acclamation :: Empire -> Person -> IO (Empire, TextGenCh )
+acclamation e p = do
+  (e', style ) <- makeEmperor e p [] 
+  return ( e', acclamationDesc e' style )
+  
 acclamationDesc :: Empire -> TextGenCh -> TextGenCh
 acclamationDesc e style = list [ style, vocabGet e "enthroned", vocabGet e "acclamations" ]
 
@@ -188,8 +256,6 @@ embellishName e style = do
 
       
 
-startCivilWar :: Empire -> IO ( Empire, TextGenCh )
-startCivilWar e = return ( e, word "Eternal war of succession" )
 
 
 

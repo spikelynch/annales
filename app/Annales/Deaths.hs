@@ -16,6 +16,7 @@ import Annales.Empire (
   ,pAge
   ,generate
   ,dumbjoin
+  ,removePerson
   )
 
 import Annales.Omens ( omen )
@@ -115,25 +116,10 @@ updateCourt e ps = e { court = ps }
 deathRemove :: Empire -> [ Person ] -> Person -> IO ( [ Person ], TextGenCh )
 deathRemove e ps p = do
   name <- return $ pName p
-  desc <- return $ deathOf e name
-  sname <- generate name
-  remain <- filterGens (dumbjoin sname) ps
-  return ( remain, desc )
+  remain <- removePerson p ps
+  return ( remain, deathOf e name )
 
 
-
-
--- this is nasty - have to generate each name in the group
--- to filter out the dead one
-
-filterGens :: [ Char ] -> [ Person ] -> IO [ Person ]
-filterGens name []     = return []
-filterGens name (p:ps) = do
-  n2 <- generate $ pName p
-  rest <- filterGens name ps
-  case (dumbjoin n2) == name of
-    False -> return $ p:rest
-    True ->  return rest
   
 -- take a Person and return a death probability
 -- LATER; we can use this to increase mortality in war, plague

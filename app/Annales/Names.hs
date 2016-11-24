@@ -42,6 +42,14 @@ import TextGen (
   )
 
 
+-- A Note on Regnal Names
+
+-- at birth - pick a random name, biased towards forebears, but never
+-- one which is unsucceedable
+
+-- at succession - take the heirs name, and generate the Forebear with
+-- regnal number: (with an option to make it unsucceedable)
+
 
 
 -- Returns a name of the correct gender, with a bias towards

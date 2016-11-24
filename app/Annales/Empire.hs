@@ -27,6 +27,7 @@ module Annales.Empire (
   ,dumbjoin
   ,wordjoin
   ,sentence
+  ,nicelist
   ,cap
   ,phrase
   ,randn
@@ -35,6 +36,7 @@ module Annales.Empire (
   ,chooseW
   ,showL
   ,paragraph
+  ,removePerson
   ) where
 
 
@@ -94,9 +96,11 @@ renderEmpire e = do
   cons <- mpShow $ consort e
   hs <- forM (heirs e) pShow
   c <- forM (court e) pShow
-  hlist <- return $ intercalate ", " hs
-  clist <- return $ intercalate ", " c
-  return $ intercalate "\n" [ emp, cons, hlist, clist ]
+  cl <- forM (claimants e) pShow
+  hlist <- return $ "heirs: " ++ (intercalate ", " hs)
+  clist <- return $ "court:" ++ (intercalate ", " c)
+  cllist <- return $ "claimants:" ++ (intercalate ", " cl)
+  return $ intercalate "\n" [ emp, cons, hlist, clist, cllist ]
 
 pShow :: Person -> IO ( [ Char ] )
 pShow p = do
@@ -154,6 +158,14 @@ sentence g = TextGen $ \s -> let (TextGen gf) = g
                                  ( raw, s' ) = gf s
                              in ( [ smartjoin raw ], s' )
 
+
+-- A combinator for lists, lists and lists
+
+nicelist :: [ TextGenCh ] -> TextGenCh
+nicelist []       = word ""
+nicelist (a:[])   = a
+nicelist (a:b:[]) = list [ a, word "and", b ]
+nicelist (a:b:c)  = list [ a, word ",", nicelist (b:c) ]
   
 randn :: Int -> IO Int
 randn n = do
@@ -286,3 +298,28 @@ randRemove [] = return ( [], [] )
 randRemove as = do
    r <- randn $ length as
    return $ removel r as
+
+-- Hacky function to remove a Person from a list of Persons
+-- (because names are generators, to compare names it has to be
+-- done in IO)
+
+removePerson ::  Person  -> [ Person ] -> IO ( [ Person ] )
+removePerson p ps = do
+  name <- return $ pName p
+  sname <- generate name
+  remain <- filterGens (dumbjoin sname) ps
+  return remain
+
+  -- this is nasty - have to generate each name in the group
+-- to filter out the dead one
+
+filterGens :: [ Char ] -> [ Person ] -> IO [ Person ]
+filterGens name []     = return []
+filterGens name (p:ps) = do
+  n2 <- generate $ pName p
+  rest <- filterGens name ps
+  case (dumbjoin n2) == name of
+    False -> return $ p:rest
+    True ->  return rest
+
+

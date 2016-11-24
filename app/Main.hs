@@ -25,6 +25,7 @@ import Annales.Empire (
   ,lineage
   ,consort
   ,heirs
+  ,claimants
   ,year
   ,pAge
   ,initialiseEmpire
@@ -37,7 +38,7 @@ import Annales.Empire (
   )
 
 import Annales.Emperor ( royalWedding, royalBirth, probBirth )
-import Annales.Succession ( succession )
+import Annales.Succession ( probSuccession, succession )
 import Annales.Court ( newCourtier, goneCourtier )
 import Annales.Tribes ( newTribe, goneTribe )
 import Annales.Deaths ( deathProbs )
@@ -61,9 +62,9 @@ import Data.Maybe (catMaybes)
 
 probmap :: [ ( (Empire -> Int), (Empire -> IO (Empire, TextGenCh )) )  ]
 probmap = [
-  ( probBirth, royalBirth )
+  ( probSuccession, succession )
+  ,( probBirth, royalBirth )
   ,( probWedding, royalWedding )
-  ,( probSuccession, succession )
   ,( (\_ -> 10), newTribe )
   ,( (\_ -> 10), goneTribe )
   ,( (\_ -> 40), newCourtier )
@@ -74,9 +75,7 @@ probmap = [
                           Nothing -> case emperor e of
                                        (Just em) -> if pAge em > 15 then 65 else 0
                                        Nothing -> 0
-        probSuccession e = case emperor e of
-                             (Just _) -> 0
-                             Nothing -> 100
+        probWar e = if null $ claimants e then 0 else 75
 
 
 mcons :: Empire -> IO [ Char ]
@@ -143,8 +142,8 @@ generateAnnals len e = do
         True -> return text
         otherwise -> do
           rest <- generateAnnals (len - lp) e'
-          return $ text ++ "\n\n" ++ rest
---          return $ text ++ "\n\n--\n" ++ state ++ "\n--\n\n" ++ rest
+--          return $ text ++ "\n\n" ++ rest
+          return $ text ++ "\n\n--\n" ++ state ++ "\n--\n\n" ++ rest
 
 wordCount :: [ Char ] -> Int
 wordCount t = 1 + (length $ filter (== ' ') t)
