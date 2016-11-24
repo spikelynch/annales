@@ -22,6 +22,7 @@ import TextGen (
   ,list
   )
 
+import Annales.Descriptions ( descTribe, descTribeGo )
 
 import Annales.Omens ( omen )
  
@@ -31,20 +32,7 @@ newTribe e = do
   tribe  <- generate $ vocabGet e "tribes"
   tribeg <- return $ wordjoin tribe
   e'   <- return $ e { tribes = tribeg:(tribes e) }
-  return ( e', tribeDescribe e tribeg )
-
-
-
-tribeDescribe :: Empire -> TextGenCh -> TextGenCh
-tribeDescribe e t = let v = vocabGet e
-                        w = word
-                        c = w ","
-                        nation = phrase $ aan $ list [ v "epithets", v "nations" ]
-                        givento = list [ v "proneto", v "immorality" ]
-                        worship = list [ v "worshipping", perhaps (1, 2) $ v "divine", v "gods" ]
-                        clause = perhaps (2, 3) $ phrase $ choose [ givento, worship ]
-                        arose = list [ w "arose in", v "places" ]
-  in inc [ w "The", t, nation, clause, arose ]
+  return ( e', descTribe e tribeg )
 
 
 goneTribe :: Empire -> IO ( Empire, TextGenCh )
@@ -54,13 +42,5 @@ goneTribe e = do
     Nothing -> omen e
     Just tribe -> do
       e' <- return $ e { tribes = tribes' }
-      return ( e', tribeGo e tribe ) 
+      return ( e', descTribeGo e (wordjoin tribe) ) 
 
-tribeGo :: Empire -> [[Char]] -> TextGenCh
-tribeGo e tc = inc [ word "The", wordjoin tc, went ]
-  where went = choose [ dwindled, conquered, migrated, fled ]
-        dwindled = chooseW [ "dwindled", "dissolved", "failed" ]
-        conquered = list [ word "were conquered by the", vocabGet e "tribes" ]
-        migrated = list [ word "migrated to the", chooseW [ "north", "west", "east", "south" ] ]
-        fled = list [ cursed, vocabGet e "phenomena" ]
-        cursed = chooseW [ "were cursed with", "fled the", "fled in the face of" ]

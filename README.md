@@ -7,6 +7,7 @@ a neural net trained on dictionary entries.
 
 ## Sample output
 
+* [Release 1.4.1.0 - Indolation](output/sample-1.4.1.0-Indolation.md)
 * [Release 1.3.1.0 - Pacentirus](output/sample-1.3.1.0-Pacentirus.md)
 * [Release 1.1.0.0 - Limonication](output/sample-1.1.0.0-Limonication.md)
 * [Release 1.0.0.0 - Bladda](output/sample-1.0.0.0-Bladda.md)

@@ -37,6 +37,14 @@ import Annales.Empire (
   ,phrase
   )
 
+import Annales.Descriptions (
+  descSuccession
+  , descAcclamation
+  , descWar
+  , descBattle
+  , descWinWar
+  )
+
 import Annales.Names ( newName, newPerson, royalBabyName )
 
 import TextGen (
@@ -48,7 +56,6 @@ import TextGen (
   ,list
   )
 
-import Annales.Deaths ( deathOf )
 import Annales.Omens ( omen )
 
 
@@ -76,7 +83,7 @@ succession e = do
       case mheir of
         (Just newe) -> do
           (e', style ) <- makeEmperor e newe newheirs
-          return ( e', inc [ word "Succession of", style ] )
+          return ( e', descSuccession style )
         Nothing -> startWar e
     cs -> civilWar e
 
@@ -142,7 +149,7 @@ startWar e = do
           acclamation e' c
         False -> do
           e' <- chooseClaimants e
-          return ( e', nameWar e' )
+          return ( e', descWar e' )
 
 -- Move 2+ courtiers to claimants
 
@@ -155,10 +162,6 @@ chooseClaimants e = do
   return $ e { court = cos, claimants = cls } 
 
 
-nameWar :: Empire -> TextGenCh
-nameWar e = inc [ word "Now began the War of", wname, word "in which", cs, word "contended" ]
-  where wname = vocabGet e "places"
-        cs = nicelist $ map pName $ claimants e
 
 
 
@@ -194,16 +197,15 @@ pickCombatants ps = do
 doBattle :: Empire -> Person -> Person -> IO ( Person, TextGenCh )
 doBattle e a b = do
   w <- randn 2
-  victor <- return $ if w == 0 then a else b
-  desc <- return $ list [ pName a, word "and", pName b, word "contended in battle: ", pName victor, word "was the victor" ]
-  return ( victor, desc )
+  case w of
+    0 -> return ( a, descBattle e a b )
+    1 -> return ( b, descBattle e b a )
 
 
 victory :: Empire -> Person -> IO ( Empire, TextGenCh )
 victory e p = do
   ( e', style ) <- makeEmperor e p []
-  desc <- return $ list [ style, vocabGet e "enthroned", word "triumph" ]
-  return ( e', desc )
+  return ( e', descWinWar e' style )
 
 
 randomAcclamation :: Empire -> IO (Empire, TextGenCh )
@@ -215,10 +217,8 @@ randomAcclamation e = do
 acclamation :: Empire -> Person -> IO (Empire, TextGenCh )
 acclamation e p = do
   (e', style ) <- makeEmperor e p [] 
-  return ( e', acclamationDesc e' style )
+  return ( e', descAcclamation e' style )
   
-acclamationDesc :: Empire -> TextGenCh -> TextGenCh
-acclamationDesc e style = inc [ style, vocabGet e "enthroned", vocabGet e "acclamations" ]
 
 
 

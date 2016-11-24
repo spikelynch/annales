@@ -27,6 +27,12 @@ import Annales.Emperor (
   newPerson
   )
 
+import Annales.Descriptions (
+  descCourtier
+  ,descCourtDouble
+  ,descCourtierGo
+  )
+
 import TextGen (
   TextGen
   ,word
@@ -35,28 +41,10 @@ import TextGen (
   ,list
   )
 
-import Annales.Deaths ( deathOf )
+import Annales.Descriptions ( descDeathOf )
 import Annales.Omens ( omen )
   
 
-
-
-
-
-
-
-
-
-
-
-
--- things courtiers can do: write poems and plays and histories,
--- intrigue, win triumphs, be exiled to PLACE, retire to their
--- villa/etc in PLACE, sponsor games, projects
-
-
-
-arrived = chooseW [ "rose to prominence", "won favour", "was first heard of", "rose through the ranks", "was promoted" ]
 
 
 
@@ -67,18 +55,18 @@ newCourtier e = do
   case dup of
     False -> do
       e' <- return $ e { court = p:(court e) }
-      return ( e', inc [ pName p, arrived ] )
+      return ( e', descCourtier e p )
     True -> do
-      return ( e, inc [ word "Fearful omen of a doppleganger of", pName p, word "at court" ] )
+      return ( e, descCourtDouble e p )
 
 goneCourtier :: Empire -> IO ( Empire, TextGenCh )
 goneCourtier e = do
-  ( mdead, court' ) <- randRemove $ court e
-  case mdead of
+  ( mgone, court' ) <- randRemove $ court e
+  case mgone of
     []     -> omen e
-    dead:d -> do
+    gone:c -> do
       e' <- return $ e { court = court' }
-      return ( e', deathOf e $ pName dead ) 
+      return ( e', descCourtierGo e gone ) 
 
 
 

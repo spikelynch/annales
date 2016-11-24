@@ -68,6 +68,7 @@ probmap = [
   ,( (\_ -> 10), newTribe )
   ,( (\_ -> 10), goneTribe )
   ,( (\_ -> 40), newCourtier )
+  ,( (\_ -> 20), goneCourtier )
   ,( (\_ -> 10), omen )
   ]
   where probWedding e = case consort e of
@@ -142,8 +143,8 @@ generateAnnals len e = do
         True -> return text
         otherwise -> do
           rest <- generateAnnals (len - lp) e'
---          return $ text ++ "\n\n" ++ rest
-          return $ text ++ "\n\n--\n" ++ state ++ "\n--\n\n" ++ rest
+          return $ text ++ "\n\n" ++ rest
+          -- return $ text ++ "\n\n--\n" ++ state ++ "\n--\n\n" ++ rest
 
 wordCount :: [ Char ] -> Int
 wordCount t = 1 + (length $ filter (== ' ') t)

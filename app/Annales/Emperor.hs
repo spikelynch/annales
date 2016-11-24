@@ -33,6 +33,7 @@ import Annales.Empire (
   )
 
 import Annales.Names ( newName, newPerson, royalBabyName )
+import Annales.Descriptions ( descWedding, descBirth )
 
 import TextGen (
   TextGen
@@ -43,7 +44,6 @@ import TextGen (
   ,list
   )
 
-import Annales.Deaths ( deathOf )
 import Annales.Omens ( omen )
 
 
@@ -57,16 +57,7 @@ royalWedding e = do
   cg <- return $ word c
   age <- randn 5
   e' <- return $ e { consort = Just (Person cg (16 + age) consortGender) }
-  return ( e', desc e' cg )
-    where desc e cg = let me = emperor e
-                          eg = case me of
-                            Just emp -> pName emp
-                            Nothing -> word "ERROR"
-                          w = word
-                          v = vocabGet e
-                          waswed = w "was wedded to"
-                          celebrated = list [ w "with", v "festivities" ]
-                      in inc [ eg, waswed, cg, celebrated ]
+  return ( e', descWedding e' cg )
 
 
 royalBirth :: Empire -> IO ( Empire, TextGenCh )
@@ -81,7 +72,7 @@ royalBirth e = do
       case mmother of
         (Just mother) -> do
           e' <- return $ e { heirs = (heirs e) ++ [ baby ] }
-          return ( e', birthDesc e' mother baby )
+          return ( e', descBirth e' mother baby )
         Nothing ->
           return ( e, word "ERROR couldn't resolve parent" )
 
@@ -93,13 +84,6 @@ femaleParent e = case consort e of
                 Male -> emperor e
 
 
-birthDesc e mother baby = let (Person pg _ g) = baby
-                              (Person mg _ _) = mother
-                              w = word
-                              v = vocabGet e
-                              child = if g == Male then w "son" else w "daughter"
-                              star = perhaps ( 3, 5 ) $ list [ w "under the star", v "stars" ]
-                          in inc [ mg, w "was brought to bed of a", child, phrase pg, star ]
                      
 maybeConsort :: Empire -> Person
 maybeConsort e = case consort e of

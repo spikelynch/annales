@@ -1,4 +1,4 @@
-module Annales.Deaths ( deathOf, deathProbs ) where
+module Annales.Deaths ( deathProbs ) where
 
 import TextGen (word, aan, choose, list)
 
@@ -18,6 +18,7 @@ import Annales.Empire (
   ,removePerson
   )
 
+import Annales.Descriptions ( descDeathOf )
 import Annales.Omens ( omen )
 
 -- mortality table from the Roman Empire
@@ -46,26 +47,6 @@ mortality a
 
 
 
-deathOf :: Empire -> TextGenCh -> TextGenCh
-deathOf e person = inc [ person, death e ]
-
-death :: Empire -> TextGenCh
-death e = choose [ choke e, beast e, disease e, poison e, witchcraft e ]
-
-
-choke e = list [ word "choked on", aan $ choose [ bone, other ] ]
-  where bone = list [ vocabGet e "animals", word "bone" ]
-        other = vocabGet e "foods"
-
-beast e = list [ verbedby, aan $ vocabGet e "animals" ]
-  where verbedby = chooseW [ "was stung by", "was bitten by", "was allergic to", "swallowed", "was eaten by" ]
-
-
-disease e = list [ chooseW [ "succumbed to", "died of", "was taken by" ], vocabGet e "diseases" ]
-
-poison e = list [ word "ate poisoned", vocabGet e "foods" ]
-
-witchcraft e = chooseW [ "was ensorcelled", "was beguiled", "was spellbound", "succumbed to a geas" ] 
 
 
 
@@ -116,7 +97,7 @@ deathRemove :: Empire -> [ Person ] -> Person -> IO ( [ Person ], TextGenCh )
 deathRemove e ps p = do
   name <- return $ pName p
   remain <- removePerson p ps
-  return ( remain, deathOf e name )
+  return ( remain, descDeathOf e name )
 
 
   
@@ -134,7 +115,7 @@ deadEmperor e = do
   case emperor e of
     (Just olde) -> do
       e' <- return $ e { emperor = Nothing, consort = Nothing }
-      death <- return $ deathOf e $ pName olde
+      death <- return $ descDeathOf e $ pName olde
       return ( e', death )
     Nothing -> omen e
 
@@ -143,6 +124,6 @@ deadConsort e = do
   case consort e of
     (Just cons) -> do
       e' <- return $ e { consort = Nothing }
-      death <- return $ deathOf e $ pName cons
+      death <- return $ descDeathOf e $ pName cons
       return ( e', death )
     Nothing -> omen e
