@@ -7,6 +7,7 @@ a neural net trained on dictionary entries.
 
 ## Sample output
 
-* [Release 1.0.0.0 - Bladda](output/sample-1.0.0.0-Bladda.md)
+* [Release 1.3.0.0 - Applu Terpron](output/sample-1.3.0.0-Applu-Terpron.md)
 * [Release 1.1.0.0 - Limonication](output/sample-1.1.0.0-Limonication.md)
+* [Release 1.0.0.0 - Bladda](output/sample-1.0.0.0-Bladda.md)
 
