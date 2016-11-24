@@ -30,6 +30,7 @@ import Annales.Empire (
   ,randn
   ,chooseW
   ,phrase
+  ,elemPerson
   )
 
 import TextGen (
@@ -59,8 +60,16 @@ royalBabyName :: Empire -> Gender -> IO [ Char ]
 royalBabyName e g = do
   r <- randn 4
   case r of
-    0         -> lineageName e g
+    0         -> do
+      ln <- lineageName e g
+      already <- elemPerson (Person (word ln) 1 Male) (heirs e)
+      case already of
+        True -> newName e g
+        False -> return ln
     otherwise -> newName e g
+
+
+
 
 
 -- Returns a random new person

@@ -181,7 +181,7 @@ civilWar e = do
             return ( e'', list [ paragraph $ sentence $ bdesc, paragraph $ sentence vdesc ] )
           otherwise -> do
             e' <- return $ e { claimants = v:remain }
-            return ( e', bdesc )
+            return ( e', paragraph $ sentence $ bdesc )
     
 pickCombatants :: [ Person ] -> IO ( Maybe Person, Maybe Person, [ Person ] )
 pickCombatants ps = do

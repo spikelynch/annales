@@ -38,6 +38,7 @@ module Annales.Empire (
   ,paragraph
   ,inc
   ,removePerson
+  ,elemPerson
   ) where
 
 
@@ -311,6 +312,9 @@ randRemove as = do
 -- (because names are generators, to compare names it has to be
 -- done in IO)
 
+
+
+
 removePerson ::  Person  -> [ Person ] -> IO ( [ Person ] )
 removePerson p ps = do
   name <- return $ pName p
@@ -330,4 +334,16 @@ filterGens name (p:ps) = do
     False -> return $ p:rest
     True ->  return rest
 
+elemPerson :: Person -> [ Person ] -> IO Bool
+elemPerson p ps = do
+  name <- return $ pName p
+  sname <- generate name
+  elemPr (dumbjoin sname) ps
 
+elemPr :: [ Char ] -> [ Person ] -> IO Bool
+elemPr n []     = return False
+elemPr n (p:ps) = do
+  pn <- generate $ pName p
+  case (dumbjoin pn == n) of
+    True -> return True
+    False -> elemPr n ps
