@@ -1,16 +1,30 @@
 module Annales.Omens (omen) where
 
-import TextGen (TextGen, runTextGen, word, choose, remove, list, randrep, rep, perhaps, smartjoin)
+import TextGen (
+  TextGen
+  ,word
+  ,choose
+  ,list
+  ,randrep
+  ,rep
+  ,perhaps
+  ,smartjoin
+  )
 
-import Annales.Empire ( TextGenCh, Empire, court, vocabGet, generate, dumbjoin, randn)
-  
+import Annales.Empire (
+  TextGenCh
+  ,Empire
+  ,vocabGet
+  ,inc
+  )
+       
 
 
 
 
 
 omen :: Empire -> IO ( Empire, TextGenCh )
-omen e = return ( e, list [ collective, phenom, word "in", place ] )
+omen e = return ( e, inc [ collective, phenom, word "in", place ] )
   where phenom = vocabGet e "phenomena"
         place = vocabGet e "places"
 

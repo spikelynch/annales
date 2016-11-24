@@ -26,6 +26,7 @@ import Annales.Empire (
   ,dumbjoin
   ,wordjoin
   ,cap
+  ,inc
   ,randn
   ,chooseW
   ,phrase
@@ -65,7 +66,7 @@ royalWedding e = do
                           v = vocabGet e
                           waswed = w "was wedded to"
                           celebrated = list [ w "with", v "festivities" ]
-                      in list [ eg, waswed, cg, celebrated ]
+                      in inc [ eg, waswed, cg, celebrated ]
 
 
 royalBirth :: Empire -> IO ( Empire, TextGenCh )
@@ -98,7 +99,7 @@ birthDesc e mother baby = let (Person pg _ g) = baby
                               v = vocabGet e
                               child = if g == Male then w "son" else w "daughter"
                               star = perhaps ( 3, 5 ) $ list [ w "under the star", v "stars" ]
-                          in list [ mg, w "was brought to bed of a", child, phrase pg, star ]
+                          in inc [ mg, w "was brought to bed of a", child, phrase pg, star ]
                      
 maybeConsort :: Empire -> Person
 maybeConsort e = case consort e of

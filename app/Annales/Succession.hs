@@ -27,7 +27,9 @@ import Annales.Empire (
   ,dumbjoin
   ,wordjoin
   ,nicelist
+  ,inc
   ,paragraph
+  ,sentence
   ,cap
   ,randn
   ,randRemove
@@ -74,7 +76,7 @@ succession e = do
       case mheir of
         (Just newe) -> do
           (e', style ) <- makeEmperor e newe newheirs
-          return ( e', list [ word "Succession of", style ] )
+          return ( e', inc [ word "Succession of", style ] )
         Nothing -> startWar e
     cs -> civilWar e
 
@@ -152,10 +154,9 @@ chooseClaimants e = do
   cos <- return $ drop n1 (court e)
   return $ e { court = cos, claimants = cls } 
 
--- make a "thing, thing and thing" TextGenCh combinator
 
 nameWar :: Empire -> TextGenCh
-nameWar e = list [ word "Now began the War of", wname, word "in which", cs, word "contended" ]
+nameWar e = inc [ word "Now began the War of", wname, word "in which", cs, word "contended" ]
   where wname = vocabGet e "places"
         cs = nicelist $ map pName $ claimants e
 
@@ -177,7 +178,7 @@ civilWar e = do
           [] -> do
             ( e', vdesc ) <- victory e v
             e'' <- return $ e' { claimants = [] }
-            return ( e'', list [ paragraph bdesc, paragraph vdesc ] )
+            return ( e'', list [ paragraph $ sentence $ bdesc, paragraph $ sentence vdesc ] )
           otherwise -> do
             e' <- return $ e { claimants = v:remain }
             return ( e', bdesc )
@@ -217,7 +218,7 @@ acclamation e p = do
   return ( e', acclamationDesc e' style )
   
 acclamationDesc :: Empire -> TextGenCh -> TextGenCh
-acclamationDesc e style = list [ style, vocabGet e "enthroned", vocabGet e "acclamations" ]
+acclamationDesc e style = inc [ style, vocabGet e "enthroned", vocabGet e "acclamations" ]
 
 
 

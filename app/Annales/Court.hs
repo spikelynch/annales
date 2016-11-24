@@ -16,6 +16,7 @@ import Annales.Empire (
   ,generate
   ,dumbjoin
   ,cap
+  ,inc
   ,randn
   ,randRemove
   ,chooseW
@@ -62,7 +63,7 @@ newCourtier :: Empire -> IO ( Empire, TextGenCh )
 newCourtier e = do
   p <- newPerson e
   e'   <- return $ e { court = p:(court e) }
-  return ( e', list [ pName p, arrived ] )
+  return ( e', inc [ pName p, arrived ] )
 
 goneCourtier :: Empire -> IO ( Empire, TextGenCh )
 goneCourtier e = do

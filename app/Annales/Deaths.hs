@@ -14,8 +14,7 @@ import Annales.Empire (
   ,court
   ,pName
   ,pAge
-  ,generate
-  ,dumbjoin
+  ,inc
   ,removePerson
   )
 
@@ -48,7 +47,7 @@ mortality a
 
 
 deathOf :: Empire -> TextGenCh -> TextGenCh
-deathOf e person = list [ person, death e ]
+deathOf e person = inc [ person, death e ]
 
 death :: Empire -> TextGenCh
 death e = choose [ choke e, beast e, disease e, poison e, witchcraft e ]

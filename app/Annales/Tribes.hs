@@ -9,6 +9,7 @@ import Annales.Empire (
   ,wordjoin
   ,phrase
   ,chooseW
+  ,inc
   )
 
 import TextGen (
@@ -43,7 +44,7 @@ tribeDescribe e t = let v = vocabGet e
                         worship = list [ v "worshipping", perhaps (1, 2) $ v "divine", v "gods" ]
                         clause = perhaps (2, 3) $ phrase $ choose [ givento, worship ]
                         arose = list [ w "arose in", v "places" ]
-  in list [ w "The", t, nation, clause, arose ]
+  in inc [ w "The", t, nation, clause, arose ]
 
 
 goneTribe :: Empire -> IO ( Empire, TextGenCh )
@@ -56,7 +57,7 @@ goneTribe e = do
       return ( e', tribeGo e tribe ) 
 
 tribeGo :: Empire -> [[Char]] -> TextGenCh
-tribeGo e tc = list [ word "The", wordjoin tc, went ]
+tribeGo e tc = inc [ word "The", wordjoin tc, went ]
   where went = choose [ dwindled, conquered, migrated, fled ]
         dwindled = chooseW [ "dwindled", "dissolved", "failed" ]
         conquered = list [ word "were conquered by the", vocabGet e "tribes" ]

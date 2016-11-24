@@ -36,6 +36,7 @@ module Annales.Empire (
   ,chooseW
   ,showL
   ,paragraph
+  ,inc
   ,removePerson
   ) where
 
@@ -148,6 +149,12 @@ phrase :: TextGenCh -> TextGenCh
 phrase g = list [ comma, g, comma ]
   where comma = word ","
 
+-- inc is the general paragraph/incident/list shortcut
+
+inc :: [ TextGenCh ] -> TextGenCh
+inc e = paragraph $ sentence $ list e   
+
+
 paragraph :: TextGenCh -> TextGenCh
 paragraph g = list [ word "¶", g, word "\n\n" ]
 
@@ -157,6 +164,7 @@ sentence :: TextGenCh -> TextGenCh
 sentence g = TextGen $ \s -> let (TextGen gf) = g
                                  ( raw, s' ) = gf s
                              in ( [ smartjoin raw ], s' )
+
 
 
 -- A combinator for lists, lists and lists

@@ -97,8 +97,8 @@ makeYear e = do
   case minc of
     Nothing -> return ( e', Nothing )
     Just inc -> case year e of
-      1 -> return ( e', Just $ list [ yearDesc e', inc ] )
-      otherwise -> return ( e', Just $ list [ yearAbbrev e', inc ] )
+      1 -> return ( e', Just $ list [ yearDesc e, inc ] )
+      otherwise -> return ( e', Just $ list [ yearAbbrev e, inc ] )
 
       
 
@@ -111,9 +111,9 @@ chain e (p:ps) = do
 
 link :: Maybe TextGenCh -> Maybe TextGenCh -> Maybe TextGenCh
 link Nothing Nothing = Nothing
-link (Just g) Nothing = Just $ paragraph $ sentence g
+link (Just g) Nothing = Just g
 link Nothing (Just g) = Just g
-link (Just g) (Just h) = Just (list [ paragraph $ sentence g, h ]) 
+link (Just g) (Just h) = Just (list [ g, h ]) 
 
 perhapsIncident :: Empire -> ( Empire -> Int, Empire -> IO ( Empire, TextGenCh ) ) -> IO ( Empire, Maybe TextGenCh )
 perhapsIncident e (probf, incident) = do
@@ -142,8 +142,8 @@ generateAnnals len e = do
         True -> return text
         otherwise -> do
           rest <- generateAnnals (len - lp) e'
---          return $ text ++ "\n\n" ++ rest
-          return $ text ++ "\n\n--\n" ++ state ++ "\n--\n\n" ++ rest
+          return $ text ++ "\n\n" ++ rest
+--          return $ text ++ "\n\n--\n" ++ state ++ "\n--\n\n" ++ rest
 
 wordCount :: [ Char ] -> Int
 wordCount t = 1 + (length $ filter (== ' ') t)
