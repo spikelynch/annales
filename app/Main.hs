@@ -1,8 +1,43 @@
-import TextGen (TextGen, runTextGen, word,  choose, remove, list, randrep, rep, perhaps, smartjoin)
+import TextGen (
+  TextGen
+  ,runTextGen
+  ,word
+  ,choose
+  ,remove
+  ,list
+  ,randrep
+  ,rep
+  ,perhaps
+  ,smartjoin
+  )
 
-import Annales.Empire ( TextGenCh, Empire, Person(..), Gender(..), incrementYear, yearDesc, yearAbbrev, court, emperor, lineage, consort, heirs, year, pAge, initialiseEmpire, vocabGet, generate, dumbjoin, randn, paragraph, sentence)
+import Annales.Empire (
+  TextGenCh
+  ,Empire
+  ,Person(..)
+  ,Gender(..)
+  ,renderEmpire,
+   incrementYear
+  ,yearDesc
+  ,yearAbbrev
+  ,court
+  ,emperor
+  ,lineage
+  ,consort
+  ,heirs
+  ,year
+  ,pAge
+  ,initialiseEmpire
+  ,vocabGet
+  ,generate
+  ,dumbjoin
+  ,randn
+  ,paragraph
+  ,sentence
+  )
 
-import Annales.Emperor ( succession,  royalWedding, royalBirth, probBirth )
+import Annales.Emperor ( royalWedding, royalBirth, probBirth )
+import Annales.Succession ( succession )
 import Annales.Court ( newCourtier, goneCourtier )
 import Annales.Tribes ( newTribe, goneTribe )
 import Annales.Deaths ( deathProbs )
@@ -11,7 +46,6 @@ import Annales.Omens ( omen )
 import System.Environment (getArgs)
 import Text.Read (readMaybe)
 import System.Random
-import Control.Monad (forM)
 import Data.Maybe (catMaybes)
 
 -- Note: the callbacks here provide a nice way to model contingent
@@ -32,13 +66,13 @@ probmap = [
   ,( probSuccession, succession )
   ,( (\_ -> 10), newTribe )
   ,( (\_ -> 10), goneTribe )
-  ,( (\_ -> 10), newCourtier )
-  ,( (\_ -> 20), omen )
+  ,( (\_ -> 40), newCourtier )
+  ,( (\_ -> 10), omen )
   ]
   where probWedding e = case consort e of
                           (Just _) -> 0
                           Nothing -> case emperor e of
-                                       (Just _) -> 65
+                                       (Just em) -> if pAge em > 15 then 65 else 0
                                        Nothing -> 0
         probSuccession e = case emperor e of
                              (Just _) -> 0
@@ -65,7 +99,7 @@ makeYear e = do
     Nothing -> return ( e', Nothing )
     Just inc -> case year e of
       1 -> return ( e', Just $ list [ yearDesc e', inc ] )
-      otherwise -> return ( e', Just $ list [ yearDesc e', inc ] )
+      otherwise -> return ( e', Just $ list [ yearAbbrev e', inc ] )
 
       
 
@@ -103,12 +137,14 @@ generateAnnals len e = do
     Just incidents -> do
       words <- generate incidents
       text <- return $ concat words
+      state <- renderEmpire e'
       lp <- return $ wordCount $ text
       case lp > len of
         True -> return text
         otherwise -> do
           rest <- generateAnnals (len - lp) e'
-          return $ text ++ rest
+          return $ text ++ "\n\n" ++ rest
+--          return $ text ++ "\n\n--\n" ++ state ++ "\n--\n\n" ++ rest
 
 wordCount :: [ Char ] -> Int
 wordCount t = 1 + (length $ filter (== ' ') t)

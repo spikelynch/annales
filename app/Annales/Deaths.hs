@@ -19,7 +19,31 @@ import Annales.Empire (
   )
 
 import Annales.Omens ( omen )
-  
+
+-- mortality table from the Roman Empire
+-- http://www.richardcarrier.info/lifetbl.html
+
+mortality :: Int -> Int
+mortality a
+  | a == 0  = 36
+  | a == 1  = 24
+  | a <= 5  = 6
+  | a <= 10 = 5
+  | a <= 15 = 7
+  | a <= 20 = 8
+  | a <= 25 = 9
+  | a <= 30 = 11
+  | a <= 35 = 12
+  | a <= 40 = 14
+  | a <= 45 = 17
+  | a <= 50 = 21
+  | a <= 55 = 25
+  | a <= 60 = 33
+  | a <= 65 = 41
+  | a <= 70 = 53
+  | a <= 75 = 68
+  | otherwise = 90
+
 
 
 deathOf :: Empire -> TextGenCh -> TextGenCh
@@ -71,10 +95,10 @@ consortD e = case consort e of
 -- here follows the worst type signature I have ever written. *coughs*:
 
 groupD :: Empire -> [ Person ] -> (Empire -> [ Person ] -> Empire ) -> [ ( (Empire -> Int), (Empire -> IO (Empire, TextGenCh )) )  ]
-groupD e hs update = map gD hs 
+groupD e ps update = map gD ps 
   where gD p = ( deathProb p, inc p )
         inc p = \e -> do
-          ( remaining, desc)  <- deathRemove e (heirs e) p
+          ( remaining, desc )  <- deathRemove e ps p
           e' <- return $ update e remaining
           return ( e', desc )
 
@@ -115,8 +139,7 @@ filterGens name (p:ps) = do
 -- LATER; we can use this to increase mortality in war, plague
 
 deathProb :: Person -> (Empire -> Int)
-deathProb p = (\_ -> 5 + (pAge p))
-
+deathProb p = (\_ -> mortality (pAge p))
 
 -- deadEmperor used to do the new emperor selection as well, but now
 -- that's its own incident, triggered by an absence of emperor

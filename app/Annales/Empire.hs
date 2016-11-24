@@ -12,6 +12,7 @@ module Annales.Empire (
   ,tribes
   ,lineage
   ,year
+  ,renderEmpire
   ,pName
   ,pAge
   ,pGender
@@ -56,6 +57,7 @@ import Data.List (intercalate)
 import Data.List.Split (splitOn)
 import Data.Char (toUpper)
 import qualified Data.Map as Map
+import Control.Monad (forM)
 import System.Directory (getDirectoryContents)
 import Text.Regex.Posix
 import System.Random (StdGen, getStdRandom, randomR)
@@ -84,6 +86,28 @@ data Empire = Empire { emperor :: Maybe Person
                      , projects :: [ TextGenCh ]
                      , vocab :: Map String TextGenCh
                      }
+
+
+renderEmpire :: Empire -> IO ( [ Char ] )
+renderEmpire e = do
+  emp <- mpShow $ emperor e
+  cons <- mpShow $ consort e
+  hs <- forM (heirs e) pShow
+  c <- forM (court e) pShow
+  hlist <- return $ intercalate ", " hs
+  clist <- return $ intercalate ", " c
+  return $ intercalate "\n" [ emp, cons, hlist, clist ]
+
+pShow :: Person -> IO ( [ Char ] )
+pShow p = do
+  s1 <- generate $ pName p
+  a <- return $ show $ pAge p
+  return $ (dumbjoin s1) ++ " " ++ a 
+
+mpShow :: Maybe Person -> IO ( [ Char ] )
+mpShow Nothing = return "-"
+mpShow (Just p) = pShow p
+
 
 
 pName :: Person -> TextGenCh
