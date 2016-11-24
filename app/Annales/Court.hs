@@ -19,6 +19,7 @@ import Annales.Empire (
   ,inc
   ,randn
   ,randRemove
+  ,elemPerson
   ,chooseW
   )
 
@@ -62,8 +63,13 @@ arrived = chooseW [ "rose to prominence", "won favour", "was first heard of", "r
 newCourtier :: Empire -> IO ( Empire, TextGenCh )
 newCourtier e = do
   p <- newPerson e
-  e'   <- return $ e { court = p:(court e) }
-  return ( e', inc [ pName p, arrived ] )
+  dup <- elemPerson p $ court e
+  case dup of
+    False -> do
+      e' <- return $ e { court = p:(court e) }
+      return ( e', inc [ pName p, arrived ] )
+    True -> do
+      return ( e, inc [ word "Fearful omen of a doppleganger of", pName p, word "at court" ] )
 
 goneCourtier :: Empire -> IO ( Empire, TextGenCh )
 goneCourtier e = do
