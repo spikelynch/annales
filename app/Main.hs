@@ -97,9 +97,9 @@ makeYear e = do
   ( e', minc ) <- chain (incrementYear e) allprobmap
   case minc of
     Nothing -> return ( e', Nothing )
-    Just inc -> case year e of
-      1 -> return ( e', Just $ list [ yearDesc e, inc ] )
-      otherwise -> return ( e', Just $ list [ yearAbbrev e, inc ] )
+    Just inc -> case year e' of
+      1 -> return ( e', Just $ list [ yearDesc e', inc ] )
+      otherwise -> return ( e', Just $ list [ yearAbbrev e', inc ] )
 
       
 
@@ -144,7 +144,7 @@ generateAnnals len e = do
         otherwise -> do
           rest <- generateAnnals (len - lp) e'
           return $ text ++ "\n\n" ++ rest
-          -- return $ text ++ "\n\n--\n" ++ state ++ "\n--\n\n" ++ rest
+          --return $ text ++ "\n\n--\n" ++ state ++ "\n--\n\n" ++ rest
 
 wordCount :: [ Char ] -> Int
 wordCount t = 1 + (length $ filter (== ' ') t)

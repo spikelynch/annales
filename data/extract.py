@@ -8,8 +8,8 @@ from nltk.corpus import wordnet as wn
 DIVISION = [
     ( re.compile("^\w{1,7}(sh|is|ne|ch|th|us|om|gh|or|rg|rh|b)$"), "gods" ),
     ( re.compile("(ism|ity)$"), "religions" ),
-    ( re.compile("a$"), "women"),
-    ( re.compile("(us|on|an)$"), "men" ),
+    ( re.compile("(a|ne|ie|ey)$"), "women"),
+    ( re.compile("(us|on|ses|ix)$"), "men" ),
     ( re.compile("(es|i|ae)$"), "tribes" ),
     ( re.compile(".*"), "places" )
 ]

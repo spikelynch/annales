@@ -29,6 +29,7 @@ module Annales.Empire (
   ,sentence
   ,nicelist
   ,cap
+  ,capg
   ,phrase
   ,randn
   ,randPick
@@ -156,8 +157,22 @@ inc :: [ TextGenCh ] -> TextGenCh
 inc e = paragraph $ sentence $ list e   
 
 
+paragraph' :: TextGenCh -> TextGenCh
+paragraph' g = list [ word "¶", g, word "\n\n" ]
+
 paragraph :: TextGenCh -> TextGenCh
-paragraph g = list [ word "¶", g, word "\n\n" ]
+paragraph g = list [ g, word "\n\n" ]
+
+-- Two header levels
+
+h2 :: TextGenCh -> TextGenCh
+h2 g = list [ word "##", g, word "\n\n" ]
+
+-- use LaTeX marginpar for these
+
+h3 :: TextGenCh -> TextGenCh
+h3 g = list [ word "###", g, word "\n\n" ]
+
 
 -- A combinator which wraps a generator in the sentence formatter
 
@@ -166,6 +181,10 @@ sentence g = TextGen $ \s -> let (TextGen gf) = g
                                  ( raw, s' ) = gf s
                              in ( [ smartjoin raw ], s' )
 
+capg :: TextGenCh -> TextGenCh
+capg g = TextGen $ \s -> let (TextGen gf) = g
+                             ( raw, s' ) = gf s
+                         in ( [ dumbjoin $ map cap raw ], s' )
 
 
 -- A combinator for lists, lists and lists
@@ -256,15 +275,15 @@ incrementYear e = e {
         -- add courtiers 
 
 yearDesc :: Empire -> TextGenCh
-yearDesc e = paragraph $ sentence $ yearof $ emperor e
+yearDesc e = h2 $ sentence $ yearof $ emperor e
   where yearof Nothing = word "Interregnum"
         yearof (Just em) = list [ word "Year", a, word "in the reign of", g ]
           where a = word $ show $ year e
                 g = pName $ em
 
 yearAbbrev :: Empire -> TextGenCh
-yearAbbrev e = paragraph $ word $ yearcode $ emperor e
-  where yearcode Nothing = "INT." ++ (show $ year e)
+yearAbbrev e = h3 $ word $ yearcode $ emperor e
+  where yearcode Nothing = "Interregnum"
         yearcode (Just emp) = (show $ year e) ++ "." ++ ecode
           where ecode = case lineage e of
                   []   -> ""

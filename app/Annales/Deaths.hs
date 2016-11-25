@@ -60,7 +60,7 @@ deathProbs e = emp ++ cons ++ hs ++ cs
         hs      = groupD e (heirs e) updateHeirs 
         cs      = groupD e (court e) updateCourt 
 
--- FIXME - heirs and court need to have the dead people removed
+
 
 emperorD :: Empire -> [ ( (Empire -> Int), (Empire -> IO (Empire, TextGenCh )) )  ]
 emperorD e = case emperor e of
@@ -79,7 +79,7 @@ groupD :: Empire -> [ Person ] -> (Empire -> [ Person ] -> Empire ) -> [ ( (Empi
 groupD e ps update = map gD ps 
   where gD p = ( deathProb p, inc p )
         inc p = \e -> do
-          ( remaining, desc )  <- deathRemove e ps p
+          ( remaining, desc )  <- deathRemove e ps p            
           e' <- return $ update e remaining
           return ( e', desc )
 
