@@ -3,27 +3,30 @@
 import sys, re
 from nltk.corpus import wordnet as wn
 
-# do a dictionary lookup on people and if they're in WordNet, exclude them
+# decapitalise "of"
 
 DIVISION = [
-    ( re.compile("^\w{1,7}(sh|is|ne|ch|th|us|om|gh|or|rg|rh|b)$"), "gods" ),
-    ( re.compile("(ism|ity)$"), "religions" ),
-    ( re.compile("(a|ne|ie|ey)$"), "women"),
-    ( re.compile("(us|on|ses|ix)$"), "men" ),
-    ( re.compile("(es|i|ae)$"), "tribes" ),
-    ( re.compile(".*"), "places" )
+    ( re.compile(r"\sOf\s"), "artifacts", True),
+    ( re.compile(r"^[^ ]+(ity|ness|ing|age|nce|dom|ry|ment|hood|ure)$"), "abstractions", False),
+    ( re.compile(r"^[^ ]{5,}(ible|ant|ish|ary|ic|ical|like|ous)$"), "adjectives", False),
+    ( re.compile(r"(men|ards|ors|ons|eeps|ins|sts|ers|ins|ings|lves|orcs|edes)$"), "allies", False),
+    ( re.compile(r"^[^ ]{3,}ly$"), "adverbs", False),
+    ( re.compile(r"^\w{1,7}(sh|is|ne|ch|th|us|om|gh|or|rg|rh|b)$"), "gods", True),
+    ( re.compile(r"^[^ ]{1,19}(et|ave|ade|eon|axe|ife|bow|shot)$"), "weapons", False),
+    ( re.compile(r"(cheese|fruit|apple|berry|meat|pie|bean|leaf|chip|flesh|shell|cake|bread)"), "foods", False),
+    ( re.compile(r"(mead|honey|ale|beer|wine|juice|water|milk|syrup|cream)"), "drinks", False),
+    ( re.compile(r"(oint|crem|otion|musk|fume|ohol|nth)"), "cosmetics", False),
+    ( re.compile(r"(ism|ity)$"), "religions", True ),
+    ( re.compile(r"^\w{1,10}(zh|gh|were|ant|sph|gon|chi|ore|saur|oul|oup)"), "monsters", False ),
+    ( re.compile(r"(eum|ium|ple|rch|ad|se)$"), "buildings", False ),
+    ( re.compile(r"(a|ne|ie|ey|il|ty)$"), "women", True),
+    ( re.compile(r"(us|on|ses|ix|an)$"), "men", True ),
+    ( re.compile(r"(es|i|ae)$"), "tribes", True ),
+    ( re.compile(r".*"), "places", True )
 ]
 
 
 
-divisions = {
-    "gods": [],
-    "religions": [],
-    "women": [],
-    "men": [],
-    "tribes": [],
-    "places": []
-    }
 
 
 def is_real_word(w):
@@ -33,20 +36,42 @@ def is_real_word(w):
         return True
     return False
 
+TERMS_RE = re.compile("^([A-Z ]+):")
 
 
-words = re.compile("^([A-Z ]+):")
+def by_terms(line):
+    m = TERMS_RE.search(line)
+    if m:
+        return [ m.group(1) ]
+    else:
+        return []
+
+WORDS_RE = re.compile("\w{4,}")
+
+def by_splitting(line):
+    return WORDS_RE.findall(line)
+
+divisions = {}
+
+for r, d, c in DIVISION:
+    divisions[d] = []
+
+
+
 
 for line in sys.stdin:
-    m = words.search(line)
-    if m:
-        n = m.group(1).title()
-        if not is_real_word(n):
-            for r, d in DIVISION:
-                m = r.search(n)
+    for term in by_terms(line):
+        if not is_real_word(term):
+            for r, d, caps in DIVISION:
+                if caps:
+                    t2 = term.title()
+                else:
+                    t2 = term.lower()
+                m = r.search(t2)
                 if m:
-                    divisions[d].append(n)
+                    divisions[d].append(t2)
                     break
+
 
 for d in divisions.keys():
     fn = d + ".txt"
