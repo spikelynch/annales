@@ -8,7 +8,8 @@ packages:
 - '.'
 - location:
     git: https://github.com/spikelynch/textgen.git
-    commit: 626cec2
+    commit: 97550246720598c4afe6e0e220aa2acbf163e4a6
+#    commit: 626cec2
 
 # Packages to be pulled from upstream that are not in the resolver (e.g., acme-missiles-0.3)
 extra-deps: [ roman-numerals-0.5.1.5 ]

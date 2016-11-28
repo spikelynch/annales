@@ -37,6 +37,7 @@ module Annales.Empire (
   ,chooseW
   ,showL
   ,paragraph
+  ,possessive
   ,inc
   ,removePerson
   ,elemPerson
@@ -194,6 +195,12 @@ nicelist []       = word ""
 nicelist (a:[])   = a
 nicelist (a:b:[]) = list [ a, word "and", b ]
 nicelist (a:b:c)  = list [ a, word ",", nicelist (b:c) ]
+
+
+possessive :: Person -> TextGenCh
+possessive (Person _ _ Male) = word "his"
+possessive (Person _ _ Female) = word "her"
+
   
 randn :: Int -> IO Int
 randn n = do

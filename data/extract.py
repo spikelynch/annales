@@ -15,6 +15,7 @@ DIVISION = [
     ( re.compile(r"^[^ ]{1,19}(et|ave|ade|eon|axe|ife|bow|shot)$"), "weapons", False),
     ( re.compile(r"(cheese|fruit|apple|berry|meat|pie|bean|leaf|chip|flesh|shell|cake|bread)"), "foods", False),
     ( re.compile(r"(mead|honey|ale|beer|wine|juice|water|milk|syrup|cream)"), "drinks", False),
+    ( re.compile(r"^([^ ]+ )?[^ ]{5,}(sy|ps|gue|ver|th)$"), "diseases", False ),
     ( re.compile(r"(oint|crem|otion|musk|fume|ohol|nth)"), "cosmetics", False),
     ( re.compile(r"(ism|ity)$"), "religions", True ),
     ( re.compile(r"^\w{1,10}(zh|gh|were|ant|sph|gon|chi|ore|saur|oul|oup)"), "monsters", False ),

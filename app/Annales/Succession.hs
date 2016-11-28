@@ -168,6 +168,8 @@ chooseClaimants e = do
 -- civilWar is called by succession until there
 -- are no more claimants
 
+-- This returns a TextGenCh of the kind list [ paragraph ]
+
 civilWar :: Empire -> IO ( Empire, TextGenCh )
 civilWar e = do
   ( ma, mb, remain ) <- pickCombatants $ claimants e
@@ -176,16 +178,22 @@ civilWar e = do
     Just a -> case mb of
       Nothing -> victory e a
       Just b -> do
-        ( v, bdesc ) <- doBattle e a b
-        case remain of
-          [] -> do
-            ( e', vdesc ) <- victory e v
-            e'' <- return $ e' { claimants = [] }
-            return ( e'', list [ paragraph $ sentence $ bdesc, paragraph $ sentence vdesc ] )
-          otherwise -> do
-            e' <- return $ e { claimants = v:remain }
-            return ( e', paragraph $ sentence $ bdesc )
-    
+        ( mv, bdescraw ) <- doBattle e a b
+        bdesc <- return $ map (\p -> paragraph $ sentence p) bdescraw
+        case mv of
+          Nothing -> do
+            return ( e, list bdesc )
+          Just v -> do
+            case remain of
+              [] -> do
+                ( e', vdesc ) <- victory e v
+                e'' <- return $ e' { claimants = [] }
+                return ( e'', list $ bdesc ++ [ paragraph $ sentence vdesc ]) 
+              otherwise -> do
+                e' <- return $ e { claimants = v:remain }
+                return ( e', list bdesc )
+
+
 pickCombatants :: [ Person ] -> IO ( Maybe Person, Maybe Person, [ Person ] )
 pickCombatants ps = do
   ( al, ps' ) <- randRemove ps
@@ -194,12 +202,15 @@ pickCombatants ps = do
     where l2m []     = Nothing
           l2m (a:as) = Just a
 
-doBattle :: Empire -> Person -> Person -> IO ( Person, TextGenCh )
+-- Maybe person because some battles don't end the war
+
+doBattle :: Empire -> Person -> Person -> IO ( Maybe Person, [ TextGenCh ] )
 doBattle e a b = do
-  w <- randn 2
+  w <- randn 4
   case w of
-    0 -> return ( a, descBattle e a b )
-    1 -> return ( b, descBattle e b a )
+    0 -> return ( Just a, descBattle e a b (Just a) )
+    1 -> return ( Just b, descBattle e b a (Just b) )
+    otherwise -> return ( Nothing, descBattle e a b Nothing )
 
 
 victory :: Empire -> Person -> IO ( Empire, TextGenCh )

@@ -37,12 +37,14 @@ import Annales.Empire (
   ,randRemove
   ,chooseW
   ,phrase
+  ,possessive
   )
 
 import TextGen (
   TextGen
   ,word
   ,choose
+  ,weighted
   ,remove
   ,perhaps
   ,list
@@ -66,15 +68,18 @@ chw = chooseW
 descSuccession :: TextGenCh -> TextGenCh
 descSuccession style = inc [ w "Succession of", style ]
 
+-- add: war of N things
+
 descWar :: Empire -> TextGenCh
 descWar e = let v = vocabGet e
                 name = ch [ woq, adjw ]
-                woq = list [ w "War of", capg $ v "qualities" ]
-                adjw = list [ capg $ v "epithets", w "War" ]
+                woq = list [ w "War of", capg $ v "abstractions" ]
+                adjw = list [ capg $ v "adjectives", w "War" ]
                 forces = nicelist $ map pName $ claimants e
-                met = chw [ "were joined", "battled", "clashed", "disagreed", "contended", "disputed" ]
+                met = chw [ "were joined", "battled", "clashed", "disagreed", "contended", "disputed", "sought mastery" ]
+                began = chw [ "Now began the", "In this year was begun the", "Beginning of the" ]
                 s1 = inc [ forces, met, w "in the", name ]
-                s2 = inc [ w "Now began the", name, w "in which", forces, met ]
+                s2 = inc [ began, name, w ",", w "in which", forces, met ]
             in ch [ s1, s2 ]
 
 descAcclamation :: Empire -> TextGenCh -> TextGenCh
@@ -82,10 +87,53 @@ descAcclamation e style = inc [ style, vocabGet e "enthroned", vocabGet e "accla
 
 
 -- these two are not wrapped in inc because they will be returned as separate
--- paragraphs
+-- paragraphs.
 
-descBattle :: Empire -> Person -> Person -> TextGenCh
-descBattle e a b = list [ pName a, w "and", pName b, w "contended in battle: ", pName a, w "was the victor" ]
+-- DescBattle should return a list of generators, each of which will be
+-- an incident (wrapped in a sentence / paragraph )
+
+descBattle :: Empire -> Person -> Person -> Maybe Person -> [ TextGenCh ]
+descBattle e a b mv = let battle = choose [ ambush e a b ]
+                      in case mv of
+                           Nothing -> [ battle ]
+                           Just _  -> [ battle, battleLoss e b ]
+
+ambush :: Empire -> Person -> Person -> TextGenCh
+ambush e a b = list [ pName a, perhaps ( 1, 3 ) $ aid e, ambushed ]
+  where ambushed = ch [
+          list [ chw [ "ambushed the", "surprised the"], forces, w "of", pName b ], 
+          list [ w "took the", forces, w "of", pName b, w "all unawares" ]
+          ]
+
+
+          
+
+forces = chw [ "legions", "armies", "forces", "warriors", "soldiers", "men" ]
+
+aid :: Empire -> TextGenCh
+aid e = phrase $ list [ aided, allies ]
+  where v = vocabGet e
+        aided = chw [ "with the aid of", "in league with", "allied with", "calling on" ]
+        allies = list [ certain, v "adjectives", v "allies" ]
+        certain = perhaps ( 1, 3 ) $ chw [ "certain", "some" ]
+                  
+
+
+
+battleLoss :: Empire -> Person -> TextGenCh
+battleLoss e d = list [ pName d, died ]
+  where died = chw [ "died", "was slain", "gave up the ghost", "left the field" ]
+
+
+
+
+
+
+
+
+
+
+
 
 descWinWar :: Empire -> TextGenCh -> TextGenCh
 descWinWar e style = list [ style, vocabGet e "enthroned", w "triumph" ]
@@ -125,20 +173,30 @@ descDeathOf :: Empire -> TextGenCh -> TextGenCh
 descDeathOf e person = inc [ person, death e ]
 
 death :: Empire -> TextGenCh
-death e = ch [ choke e, beast e, disease e, poison e, witchcraft e ]
+death e = weighted [ ( 5, choke e), (4, beast e), (71, disease e), (10, poison e), (10, witchcraft e) ]
 
 
 choke e = list [ w "choked on", aan $ ch [ bone, other ] ]
-  where bone = list [ vocabGet e "animals", w "bone" ]
+  where bone = list [ vocabGet e "monsters", chw [ "bone", "shell"]  ]
         other = vocabGet e "foods"
 
-beast e = list [ verbedby, aan $ vocabGet e "animals" ]
+beast e = list [ verbedby, aan $ vocabGet e "monsters" ]
   where verbedby = chw [ "was stung by", "was bitten by", "was allergic to", "swallowed", "was eaten by" ]
 
 
 disease e = list [ chw [ "succumbed to", "died of", "was taken by" ], vocabGet e "diseases" ]
 
-poison e = list [ chw [ "ate poisoned", "ate rotten", "ate spoiled" ], vocabGet e "foods" ]
+poison e = choose [ chaumas e, chaumurky e, chausmetics e ]
+
+chaumas e = list [ w "ate", bad, vocabGet e "foods" ]
+  where bad = chw [ "poisoned", "rotten", "bad", "spoiled", "tainted" ]
+
+chaumurky e = list [ w "drank", bad, vocabGet e "drinks" ]
+  where bad = chw [ "poisoned", "new", "sour", "tainted" ]
+
+chausmetics e = list [ w "was poisoned with", vocabGet e "cosmetics" ]
+
+
 
 witchcraft e = chw [ "was ensorcelled", "was beguiled", "was spellbound", "succumbed to a geas" ] 
 
@@ -177,8 +235,8 @@ descCourtierGo e p = let gone = chw [ "was exiled", "fell into disgrace", "Fell 
 
 descTribe :: Empire -> TextGenCh -> TextGenCh
 descTribe e t = let v = vocabGet e
-                    nation = phrase $ aan $ list [ v "epithets", v "nations" ]
-                    givento = list [ v "proneto", v "immorality" ]
+                    nation = phrase $ aan $ list [ v "adjectives", v "nations" ]
+                    givento = list [ v "proneto", v "abstractions" ]
                     worship = list [ v "worshipping", perhaps (1, 2) $ v "divine", v "gods" ]
                     clause = perhaps (2, 3) $ phrase $ ch [ givento, worship ]
                     arose = list [ w "arose in", v "places" ]

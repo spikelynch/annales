@@ -153,9 +153,9 @@ wordCount t = 1 + (length $ filter (== ' ') t)
 
 
 getLength :: [ String ] -> Int
-getLength [] = 1000
+getLength [] = 50000
 getLength (a:as) = case readMaybe a of
-  Nothing -> 1000
+  Nothing -> 50000
   Just i -> i
 
 
