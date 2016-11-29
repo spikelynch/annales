@@ -139,12 +139,14 @@ battleDeath e d = weighted [
    ( 10, ghost )
   ]
   where resting = list [
-          chw [ "Now the", "The", "Certain it is that the" ]
-          , remains, w "of", d
-          , chw [ "leave not", "remain in", "rest in" ]
-          , chw [ "those fields", "that place", "the cold earth" ]
+          chw [ "Now the", "They tell that the", "Certain it is that the" ]
+          , choose [
+              list [ chw [ "bones", "parts", "ouns" ], w "of", d, chw [ "leave not", "remain in", "rest in" ] ],
+              list [ chw [ "body", "clay", "dust" ], w "of", d, chw [ "leaves not", "remains in", "rests in" ] ]
+              ]
+          ,chw [ "those fields", "that place", "the cold earth" ]
           ]
-        remains = chw [ "bones", "parts", "ouns" ]
+        remains = chw [ ]
         honour = list [
           w "Of", d, chw [ "there is no more that", "little more", "no futher tales" ]
           , w "can be told, save the"
@@ -165,13 +167,13 @@ battleDeath e d = weighted [
           , chw [ "spirit", "shade", "ghost", "voice" ]
           , w "of", d
           , chw [
-              "may yet be heard"
-              ,"echoes still"
-              ,"haunts still"
-              ,"yet lingers"
-              ,"remains"
+              "may yet be heard in"
+              ,"echoes in"
+              ,"haunts"
+              ,"yet lingers in"
+              ,"remains in"
               ]
-          , chw [ "in that place", "there" ]
+          , chw [ "that place", "those fields" ]
           ]
           
   
@@ -254,7 +256,7 @@ descBirth e mother baby = let (Person pg _ g) = baby
 
 birth = chw [ "was brought to bed of a", "gave birth to a", "was blessed with a", "bore a", "was accouched of a" ]
 
-birthCircs e = perhaps ( 1, 5 ) $ choose [ birthStar e ] --, birthOmen e, birthBastard e ]
+birthCircs e = perhaps ( 1, 5 ) $ choose [ birthStar e, birthBastard e ] -- , birthOmen e,  ]
 
 birthStar e = choose [ inf, rising, setting, pmoon ]
   where s = vocabGet e "stars"
@@ -265,6 +267,12 @@ birthStar e = choose [ inf, rising, setting, pmoon ]
         mp = chw [ "a full", "a waning", "a gibbous", "the friendly silence of the" ]
 
 
+birthBastard e = case court e of
+  [] -> birthStar e
+  cs -> phrase $ list [ said, w "to be the", bastard, w "of", father ]
+    where said = chw [ "whispered", "rumoured", "said" ]
+          bastard = chw [ "bastard", "by-blow", "image" ]
+          father = choose $ map (\(Person g _ _) -> g) cs
 
 
 
