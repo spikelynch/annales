@@ -41,6 +41,7 @@ import Annales.Emperor ( royalWedding, royalBirth, probBirth )
 import Annales.Succession ( probSuccession, succession )
 import Annales.Court ( newCourtier, goneCourtier )
 import Annales.Tribes ( newTribe, goneTribe )
+import Annales.Buildings ( buildBuilding, destroyBuilding )
 import Annales.Deaths ( deathProbs )
 import Annales.Omens ( omen )
 
@@ -67,8 +68,10 @@ probmap = [
   ,( probWedding, royalWedding )
   ,( (\_ -> 10), newTribe )
   ,( (\_ -> 10), goneTribe )
-  ,( (\_ -> 40), newCourtier )
   ,( (\_ -> 20), goneCourtier )
+  ,( (\_ -> 40), newCourtier )
+  ,( (\_ ->  5), destroyBuilding )
+  ,( (\_ ->  5), buildBuilding )
   ,( (\_ -> 10), omen )
   ]
   where probWedding e = case consort e of

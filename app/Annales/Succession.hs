@@ -179,7 +179,7 @@ civilWar e = do
       Nothing -> victory e a
       Just b -> do
         ( mv, bdescraw ) <- doBattle e a b
-        bdesc <- return $ map (\p -> paragraph $ sentence p) bdescraw
+        bdesc <- return $ map (\p -> paragraph p) bdescraw
         case mv of
           Nothing -> do
             return ( e, list bdesc )

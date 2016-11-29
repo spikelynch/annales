@@ -12,6 +12,10 @@ module Annales.Descriptions (
   , descCourtier
   , descCourtDouble
   , descCourtierGo
+  , descBuildingName
+  , descNewBuilding
+  , descModifyBuilding
+  , descBuildingGone
   , descOmen
   ) where
   
@@ -22,6 +26,7 @@ import Annales.Empire (
   ,Gender(..)
   ,claimants
   ,emperor
+  ,court
   ,generate
   ,vocabGet
   ,pName
@@ -33,6 +38,7 @@ import Annales.Empire (
   ,sentence
   ,cap
   ,capg
+  ,cap1g
   ,randn
   ,randRemove
   ,chooseW
@@ -83,50 +89,135 @@ descWar e = let v = vocabGet e
             in ch [ s1, s2 ]
 
 descAcclamation :: Empire -> TextGenCh -> TextGenCh
-descAcclamation e style = inc [ style, vocabGet e "enthroned", vocabGet e "acclamations" ]
+descAcclamation e style = inc [ style, vocabGet e "enthroned", how ]
+  where how = weighted [
+          ( 90, vocabGet e "acclamations_sensible" )
+          ,( 10,  vocabGet e "acclamations_silly" )
+          ]
 
 
 -- these two are not wrapped in inc because they will be returned as separate
 -- paragraphs.
 
--- DescBattle should return a list of generators, each of which will be
--- an incident (wrapped in a sentence / paragraph )
+
 
 descBattle :: Empire -> Person -> Person -> Maybe Person -> [ TextGenCh ]
-descBattle e a b mv = let battle = choose [ ambush e a b ]
-                      in case mv of
-                           Nothing -> [ battle ]
-                           Just _  -> [ battle, battleLoss e b ]
+descBattle e a b mv = let d = case mv of
+                            Nothing -> False
+                            Just _  -> True
+                          battle = ch [ ambush e a b, siege e a b d, pitched e a b ]
+                      in case d of
+                           True -> [ battle, battleLoss e b ]
+                           False ->  [ battle ]
 
-ambush :: Empire -> Person -> Person -> TextGenCh
-ambush e a b = list [ pName a, perhaps ( 1, 3 ) $ aid e, ambushed ]
+
+  
+-- generators used in all the battles
+
+forces = list [ w "the", chw [ "legions", "armies", "forces", "warriors", "soldiers", "men" ] ]
+
+allies :: Empire -> TextGenCh
+allies e = phrase $ list [ aided, bywho ]
+  where v = vocabGet e
+        aided = chw [ "with the aid of", "in league with", "allied with", "calling on" ]
+        bywho = choose [ list [ certain, v "adjectives", v "allies" ], dingus ]
+        certain = perhaps ( 1, 3 ) $ chw [ "certain", "some" ]
+        dingus = list [ w "the", v "artifacts" ]
+                  
+
+battleLoss :: Empire -> Person -> TextGenCh
+battleLoss e d = sentence $ choose [ battleDeath e n ] --, disgrace n ]
+  where n = pName d
+
+
+
+battleDeath :: Empire -> TextGenCh -> TextGenCh
+battleDeath e d = weighted [
+  (30,   resting )
+  ,( 40, byWeapon )
+  ,( 20, honour ),
+   ( 10, ghost )
+  ]
+  where resting = list [
+          chw [ "Now the", "The", "Certain it is that the" ]
+          , remains, w "of", d
+          , chw [ "leave not", "remain in", "rest in" ]
+          , chw [ "those fields", "that place", "the cold earth" ]
+          ]
+        remains = chw [ "bones", "parts", "ouns" ]
+        honour = list [
+          w "Of", d, chw [ "there is no more that", "little more", "no futher tales" ]
+          , w "can be told, save the"
+          , chw [ "songs", "wailing", "cries" ], w "of",
+            chw [ "honour", "shame", "sorrow", "glory" ]
+          ]
+        byWeapon = list [
+          cap1g $ aan $ list [
+              perhaps (1, 3) $ chw [ "thirsty", "avid", "hungry", "bitter" ]
+              ,vocabGet e "weapons"
+              ]
+          , w "was the", chw [ "bane", "end", "last bedmate" ], w "of"
+          , perhaps ( 1, 2 ) $ chw [ "noble", "brave", "honoured" ]
+          , d
+          ]
+        ghost = list [
+          chw [ "Now the", "The", "They say that the" ]
+          , chw [ "spirit", "shade", "ghost", "voice" ]
+          , w "of", d
+          , chw [
+              "may yet be heard"
+              ,"echoes still"
+              ,"haunts still"
+              ,"yet lingers"
+              ,"remains"
+              ]
+          , chw [ "in that place", "there" ]
+          ]
+          
+  
+
+
+
+-- types of battles
+
+ambush :: Empire -> Person -> Person  -> TextGenCh
+ambush e a b = sentence $ list [ pName a, perhaps ( 1, 3 ) $ allies e, ambushed ]
   where ambushed = ch [
           list [ chw [ "ambushed the", "surprised the"], forces, w "of", pName b ], 
-          list [ w "took the", forces, w "of", pName b, w "all unawares" ]
+          list [ w "took", forces, w "of", pName b, w "all unawares" ]
           ]
 
 
-          
+siege :: Empire -> Person -> Person -> Bool -> TextGenCh
+siege e a b d = choose [ siege' e a b d, siege' e b a d ]
 
-forces = chw [ "legions", "armies", "forces", "warriors", "soldiers", "men" ]
+siege' :: Empire -> Person -> Person -> Bool -> TextGenCh
+siege' e a b dec = list [ cap1g $ sentence $ sdesc, w " ", cap1g $ sentence $ end ]
+  where besiegers = list [ forces, w "of", pName a ]
+        besieged = list [ forces, w "of", pName b ]
+        place = list [ w "in", perhaps (1, 2) citadel, vocabGet e "places" ]
+        citadel = list [ w "the", chw [ "fortress", "redoubt", "castle", "villa", "dairy", "temple" ], w "of" ]
+        until = list [ w "until", choose [ s1, s2, s3 ] ]
+        s1 = list [ w "they were reduced to drinking", vocabGet e "drinks" ]
+        s2 = list [ w "they had only", vocabGet e "foods", w "for provender" ]
+        s3 = list [ vocabGet e "diseases", w "stalked the", chw [ "streets", "parapets", "walls" ] ]
+        sdesc = list [ besiegers, chw [ "laid siege to", "embattled", "besieged", "trapped" ], besieged, place, until ]
+        time = chw [ "Finally", "At last", "After many months" ]
+        end = case dec of
+          True -> list [ time, phrase $ chw [ "their walls were thrown down", "the gates were breached", "fire and blood were their end" ] ]
+          False -> list [ time, allies e, w "the siege was broken" ]
 
-aid :: Empire -> TextGenCh
-aid e = phrase $ list [ aided, allies ]
-  where v = vocabGet e
-        aided = chw [ "with the aid of", "in league with", "allied with", "calling on" ]
-        allies = list [ certain, v "adjectives", v "allies" ]
-        certain = perhaps ( 1, 3 ) $ chw [ "certain", "some" ]
-                  
-
-
-
-battleLoss :: Empire -> Person -> TextGenCh
-battleLoss e d = list [ pName d, died ]
-  where died = chw [ "died", "was slain", "gave up the ghost", "left the field" ]
-
-
-
-
+pitched :: Empire -> Person -> Person -> TextGenCh
+pitched e a b = list [ sentence $ cap1g $ armies, w " ", sentence $ cap1g $ outcome ]
+  where forcea = list [ forces, w "of", pName a ]
+        forceb = list [ forces, w "of", pName b ]
+        ground = chw [ "Fields", "Meads", "Plain", "Meadows", "Flats", "Marshes", "Fens", "Bogs" ]
+        battleground = list [ ground, w "of", vocabGet e "places" ]
+        armies = list [ forcea, w "and", forceb, w "met on the", battleground ]
+        outcome = list [ number, warriors, died ]
+        number = chw [ "Countless", "Numberless", "Thousands of", "Hundreds of", "Dozens of", "A good many" ]
+        warriors = chw [ "warriors", "fighting men", "men", "heroes", "soldiers" ]
+        died = chw [ "died", "sought a cold bed", "bedewed the grass", "met their end", "died in harness" ]
 
 
 
@@ -159,8 +250,25 @@ descBirth e mother baby = let (Person pg _ g) = baby
                               (Person mg _ _) = mother
                               v = vocabGet e
                               child = if g == Male then w "son" else w "daughter"
-                              star = perhaps ( 3, 5 ) $ list [ w "under the star", v "stars" ]
-                          in inc [ mg, w "was brought to bed of a", child, phrase pg, star ]
+                          in inc [ mg, birth, child, phrase pg, birthCircs e ]
+
+birth = chw [ "was brought to bed of a", "gave birth to a", "was blessed with a", "bore a", "was accouched of a" ]
+
+birthCircs e = perhaps ( 1, 5 ) $ choose [ birthStar e ] --, birthOmen e, birthBastard e ]
+
+birthStar e = choose [ inf, rising, setting, pmoon ]
+  where s = vocabGet e "stars"
+        inf = list [ w "under the influence of", s ]
+        rising = list [ w "at the heliacal rising of", s ]
+        setting = list [ w "at the setting of", s ]
+        pmoon = list [ chw [ "during", "under" ], mp, w "Moon" ]
+        mp = chw [ "a full", "a waning", "a gibbous", "the friendly silence of the" ]
+
+
+
+
+
+
 
 --
 --
@@ -254,6 +362,14 @@ descTribeGo e tribe = let v = vocabGet e
 
 
 
+--
+--
+-- Omens
+--
+--
+
+
+
 descOmen :: Empire -> TextGenCh
 descOmen e = inc [ collective, phenom, w "in", place ]
   where phenom = vocabGet e "phenomena"
@@ -262,3 +378,47 @@ descOmen e = inc [ collective, phenom, w "in", place ]
 
 collective :: TextGenCh
 collective = chw [ "Outbreak of", "Panic caused by", "Great", "Reports of", "Rumours of" ]
+
+
+--
+--
+-- Buildings
+--
+--
+
+descBuildingName :: Empire -> TextGenCh
+descBuildingName e = ch [ capg $ vocabGet e "buildings", temple ]
+  where temple = list [ w "Temple of", vocabGet e "gods" ]
+
+descNewBuilding :: Empire -> TextGenCh -> TextGenCh
+descNewBuilding e b = project e b (chw [ "erected", "founded", "established", "built", "constructed" ] )
+
+descModifyBuilding :: Empire -> TextGenCh -> TextGenCh
+descModifyBuilding e b = project e b (chw [ "repaired", "renovated", "expanded", "extended", "completed" ] )
+
+project :: Empire -> TextGenCh -> TextGenCh -> TextGenCh
+project e building verbed = inc [ person, verbed, w "the", building ]
+  where person = choosePerson e
+
+
+descBuildingGone :: Empire -> TextGenCh -> TextGenCh
+descBuildingGone e b = inc [ w "The", b, w "was", destroyed, how ]
+  where destroyed = chw [ "destroyed", "ruined", "obliterated", "demolished", "collapsed", "burnt down" ]
+        how = list [ w "by", aan $ choose [ vocabGet e "monsters", w "fire", w "flood", w "lightning bolt", w "earthquake", w "riot" ] ]
+
+
+choosePerson :: Empire -> TextGenCh
+choosePerson e = case emperor e of
+                   Nothing -> case court e of
+                                [] -> chooseRandPerson e
+                                c -> chooseP c
+                   (Just emp) -> chooseP (emp:(court e)) 
+
+chooseP :: [ Person ] -> TextGenCh
+chooseP [] = word "--"
+chooseP ps = choose $ map (\(Person n _ _) -> n) ps
+
+chooseRandPerson :: Empire -> TextGenCh
+chooseRandPerson e = choose [ men, women ]
+  where men = vocabGet e "men"
+        women = vocabGet e "women"

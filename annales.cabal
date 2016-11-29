@@ -1,5 +1,5 @@
 name:                annales
-version:             1.4.0.0
+version:             1.5.0.0
 synopsis:            Generates randomised annales of rulers 
 description:         Please see README.md
 homepage:            https://github.com/spikelynch/annales#readme
@@ -23,6 +23,7 @@ library
                      , Annales.Tribes
                      , Annales.Deaths
                      , Annales.Court
+                     , Annales.Buildings
                      , Annales.Descriptions
   build-depends:       base >= 4.7 && < 5
                      , text >= 1.2.1.3 
@@ -57,6 +58,7 @@ executable annales-exe
                      , Annales.Tribes
                      , Annales.Deaths
                      , Annales.Court
+                     , Annales.Buildings
                      , Annales.Descriptions
   default-language:    Haskell2010
 

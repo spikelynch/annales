@@ -11,6 +11,7 @@ module Annales.Empire (
   ,heirs
   ,tribes
   ,lineage
+  ,buildings
   ,year
   ,renderEmpire
   ,pName
@@ -30,6 +31,7 @@ module Annales.Empire (
   ,nicelist
   ,cap
   ,capg
+  ,cap1g
   ,phrase
   ,randn
   ,randPick
@@ -89,7 +91,7 @@ data Empire = Empire { emperor :: Maybe Person
                      , claimants :: [ Person ]
                      , court :: [ Person ]
                      , tribes :: [ TextGenCh ]
-                     , projects :: [ TextGenCh ]
+                     , buildings :: [ TextGenCh ]
                      , vocab :: Map String TextGenCh
                      }
 
@@ -182,10 +184,19 @@ sentence g = TextGen $ \s -> let (TextGen gf) = g
                                  ( raw, s' ) = gf s
                              in ( [ smartjoin raw ], s' )
 
+-- capg is title case
+
 capg :: TextGenCh -> TextGenCh
 capg g = TextGen $ \s -> let (TextGen gf) = g
                              ( raw, s' ) = gf s
                          in ( [ dumbjoin $ map cap raw ], s' )
+
+-- cap1g capitalises the first word
+
+cap1g :: TextGenCh -> TextGenCh
+cap1g g = TextGen $ \s -> let (TextGen gf) = g
+                              ( raw, s' ) = gf s
+                          in ( [ cap $ dumbjoin raw ], s' )
 
 
 -- A combinator for lists, lists and lists
@@ -261,7 +272,7 @@ initialE = Empire { emperor = Nothing
                   , claimants = []
                   , court = []
                   , tribes =  []
-                  , projects = []
+                  , buildings = []
                   , vocab = Map.empty
                   }
 
@@ -283,10 +294,8 @@ incrementYear e = e {
 
 yearDesc :: Empire -> TextGenCh
 yearDesc e = h2 $ sentence $ yearof $ emperor e
-  where yearof Nothing = word "Interregnum"
-        yearof (Just em) = list [ word "Year", a, word "in the reign of", g ]
-          where a = word $ show $ year e
-                g = pName $ em
+  where yearof Nothing = word "Now began an interregnum"
+        yearof (Just em) = list [ word "Now began the reign of", pName $ em ]
 
 yearAbbrev :: Empire -> TextGenCh
 yearAbbrev e = h3 $ word $ yearcode $ emperor e
@@ -373,3 +382,4 @@ elemPr n (p:ps) = do
   case (dumbjoin pn == n) of
     True -> return True
     False -> elemPr n ps
+

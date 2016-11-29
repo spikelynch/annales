@@ -3,10 +3,11 @@
 import sys, re
 from nltk.corpus import wordnet as wn
 
-# decapitalise "of"
+
 
 DIVISION = [
     ( re.compile(r"\sOf\s"), "artifacts", True),
+    ( re.compile(r"^[^ ]+(sion|ions|nces|sts|als)$"), "festivities", False),
     ( re.compile(r"^[^ ]+(ity|ness|ing|age|nce|dom|ry|ment|hood|ure)$"), "abstractions", False),
     ( re.compile(r"^[^ ]{5,}(ible|ant|ish|ary|ic|ical|like|ous)$"), "adjectives", False),
     ( re.compile(r"(men|ards|ors|ons|eeps|ins|sts|ers|ins|ings|lves|orcs|edes)$"), "allies", False),
@@ -19,7 +20,7 @@ DIVISION = [
     ( re.compile(r"(oint|crem|otion|musk|fume|ohol|nth)"), "cosmetics", False),
     ( re.compile(r"(ism|ity)$"), "religions", True ),
     ( re.compile(r"^\w{1,10}(zh|gh|were|ant|sph|gon|chi|ore|saur|oul|oup)"), "monsters", False ),
-    ( re.compile(r"(eum|ium|ple|rch|ad|se)$"), "buildings", False ),
+    ( re.compile(r"(eum|ium|ple|rch|ad|se|ce)$"), "buildings", True ),
     ( re.compile(r"(a|ne|ie|ey|il|ty)$"), "women", True),
     ( re.compile(r"(us|on|ses|ix|an)$"), "men", True ),
     ( re.compile(r"(es|i|ae)$"), "tribes", True ),
@@ -70,6 +71,8 @@ for line in sys.stdin:
                     t2 = term.lower()
                 m = r.search(t2)
                 if m:
+                    t2 = re.sub(r"\bOf\b", "of", t2)
+                    t2 = re.sub(r"\bThe\b", "the", t2)
                     divisions[d].append(t2)
                     break
 
