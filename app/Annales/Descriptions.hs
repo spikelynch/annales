@@ -267,12 +267,14 @@ birthStar e = choose [ inf, rising, setting, pmoon ]
         mp = chw [ "a full", "a waning", "a gibbous", "the friendly silence of the" ]
 
 
-birthBastard e = case court e of
+birthBastard e = case bastardFathers e of
   [] -> birthStar e
-  cs -> phrase $ list [ said, w "to be the", bastard, w "of", father ]
+  bfs -> phrase $ list [ said, w "to be", bastard, w "of", choose bfs ]
     where said = chw [ "whispered", "rumoured", "said" ]
-          bastard = chw [ "bastard", "by-blow", "image" ]
-          father = choose $ map (\(Person g _ _) -> g) cs
+          bastard = chw [ "the bastard", "a by-blow", "the image" ]
+
+bastardFathers e = map (\(Person g _ _) -> g) $ males
+  where males = filter (\(Person _ _ pg) -> pg == Male ) $ court e
 
 
 
