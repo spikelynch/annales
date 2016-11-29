@@ -1,0 +1,9 @@
+foil
+falchion
+cutlas
+backsword
+epee
+rapier
+claymore
+saber
+scimitar

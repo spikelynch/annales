@@ -1,0 +1,810 @@
+ADA-SCID
+AIDS
+Addison’s disease
+Aleppo boil
+Asian influenza
+Becker muscular dystrophy
+Black Death
+Bright's disease
+Cooley's anemia
+Duchenne's muscular dystrophy
+Dutch elm disease
+Ewing's sarcoma
+Fanconi's anemia
+Gaucher's disease
+German measles
+Graves' disease
+Hashimoto's disease
+Haverhill fever
+Hirschsprung's disease
+Hodgkin's disease
+Huntington's chorea
+Hurler's syndrome
+Kallman's syndrome
+Kaposi's sarcoma
+Kawasaki disease
+Lambert-Eaton syndrome
+Legionnaires' disease
+Lyme disease
+Marfan's syndrome
+Marseilles fever
+McArdle's disease
+Meniere's disease
+Newcastle disease
+Niemann-Pick disease
+Pott's disease
+Q fever
+Rocky Mountain spotted fever
+Spanish disease
+Spanish influenza
+Spielmeyer-Vogt disease
+St Anthony's fire
+St Vitus' dance
+Still's disease
+Tay-Sachs disease
+Texas fever
+Vincent's angina
+Weil's disease
+Werdnig-Hoffman disease
+Wilms' tumor
+X-linked SCID
+a bubo
+a bule
+a carbuncle
+a flux of humour
+a furuncle
+a hectic fever
+a hectical complaint
+a malignant fever
+a malignant pustule
+a malignant sore throat
+a mania
+a meagrom
+a megrim
+a putrid fever
+a putrid sore throat
+a rising of the lights
+a sanguineous crust
+a summer complaint
+a surfeit
+a wolf
+a worm fit
+abasia
+abdominal actinomycosis
+abdominal angina
+abdominal phthisis
+abetalipoproteinemia
+ablepsy
+abortus fever
+acantholysis
+acanthosis
+acanthosis nigricans
+acetabulum
+achondroplasia
+achor
+acne rosacea
+acne vulgaris
+acromion
+actinic dermatitis
+actinic keratosis
+acute glaucoma
+acute lymphocytic leukemia
+acute myelocytic leukemia
+acute pyelonephritis
+adult respiratory distress syndrome
+adynamia
+age-related macular degeneration
+ague-cake
+ainhum
+alastrim
+albuminuria
+alder blight
+alveolar resorption
+alveolar rhabdomyosarcoma
+amaurosis
+ambulant plague
+amebic dysentery
+amenorrhoea
+an ague
+an ancome
+an aneurysm
+an impostume
+anaplasmosis
+anasarca
+angina
+angiosarcoma
+ankylosing spondylitis
+anthracosis
+anthracosis
+anthrax
+aphonia
+aphtha
+apoplexy
+apple blight
+asbestosis
+ascites
+aspergillosis
+asphycsia
+aspiration pneumonia
+ataxia
+atheroma
+atopic dermatitis
+atrophy
+bad blood
+baker's eczema
+barber's itch
+beet blight
+bighead
+bilious fever
+biliousness
+black death
+black disease
+black fever
+black knot
+black plague
+black pox
+black rot
+black spot
+blackheart
+blackwater
+blackwater fever
+bladder in throat
+blight canker
+blister blight
+blister rust
+blood poisoning
+blood spavin
+bloody flux
+bloody sweat
+bluetongue
+bog spavin
+boils
+bone shave
+bone spavin
+bottom rot
+bovine spongiform encephalitis
+brain fever
+break bone fever
+breakbone
+breast cancer
+bronchiolitis
+bronze john
+brown rot gummosis
+brucellosis
+brucellosis
+bubble gum dermatitis
+bull nose
+bunt
+cachexy
+cachæmia
+cacogastric
+cacospysy
+caduceus
+camelpox
+camp diarrhœa
+camp fever
+cancroid
+cancrum oris
+candida
+cane blight
+canicola fever
+canine chorea
+canine distemper
+canine madness
+canker
+canker
+carcinoma in situ
+carcinosarcoma
+cat scratch disease
+catalepsy
+catarrhal bronchitis
+celery blight
+cerebritis
+cerebrospinal meningitis
+cervicofacial actinomycosis
+chalkstones
+chestnut blight
+chickenpox
+chilblain
+chill fever
+chin cough
+chlamydia
+chloasma
+chlorosis
+choak
+cholecystitus
+cholelithiasis
+cholera
+cholera
+cholera infantum
+cholera morbus
+cholera morbus
+chondrosarcoma
+chorea
+chronic glaucoma
+chronic lymphocytic leukemia
+chronic myelocytic leukemia
+chronic obstructive pulmonary disease
+chronic pyelonephritis
+chronic wasting disease
+cirrhosis
+coffee blight
+cold plague
+colic
+collar blight
+colon cancer
+common wart
+commotion
+complication
+congenital afibrinogenemia
+congestion
+congestive chills
+congestive fever
+consumption
+contagious pyrexia
+corruption
+cortical cataract
+coryza
+costiasis
+costiveness
+cotton ball
+cow pox
+cowpox
+cradle cap
+cramp colic
+creeps
+crop sickness
+croup
+croup
+crown wart
+crud
+cutaneous anthrax
+cyanosis
+cynanche
+cystic fibrosis
+cystitis
+cystitis
+cystoid macular edema
+damping off
+dandruff
+day fever
+debility
+decrepitude
+delirium tremens
+dengue
+dengue
+deplumation
+diabetic retinopathy
+diaper rash
+diary fever
+dieback
+diphtheria
+diphtheria
+discoid lupus erythematosus
+distal muscular dystrophy
+distemper
+dock fever
+domestic illness
+double pneumonia
+dropsy
+dropsy of the brain
+drusen
+dry bellyache
+dry rot
+dyscrasy
+dysentery
+dysorexy
+dyspepsia
+dysphasia
+dysury
+eclampsia
+eclampsy
+ecstasy
+eczema herpeticum
+eczema vaccinatum
+edema
+edema of the lungs
+effluvia
+elephantiasis
+embryonal carcinoma
+embryonal rhabdomyosarcoma
+emphysema
+encephalitis
+endemic
+endometrial carcinoma
+enteric fever
+enteritis
+enterocolitis
+enterotoxemia
+epidemic pleurodynia
+epilepsy
+epitaxis
+epithelioma
+epithelioma
+equine distemper
+ergot
+ergot
+erysipelas
+erysipelas
+erythema multiforme
+erythema nodosum leprosum
+exanthema subitum
+extravasted blood
+fainting fits
+falling sickness
+familial hypercholesterolemia
+fatty liver
+fatty liver
+fibrinous bronchitis
+fibrocystic breast disease
+filariasis
+fistula
+fistulous withers
+fits
+flag smut
+flare
+flux
+foetor oris
+foot rot
+foot-and-mouth disease
+fowl cholera
+fowl pest
+french pox
+frogg
+furunculosis
+fusarium wilt
+galactosemia
+galloping consumption
+gangrene
+general paralysis of the insane
+genital herpes
+genital wart
+gingivitis
+glanders
+glandular fever
+goiter
+goitre endocarditis
+gonorrhea
+gout
+gout
+granuloma inguinale
+granville wilt
+great pox
+green fever
+green sickness
+green smut
+grippe
+grocer's itch
+gummosis
+haematuria
+hairy root
+halo blight
+head cold
+heart sickness
+heartrot
+heaves
+hematemesis
+hematuria
+hemiplegy
+hemorrhagic septicemia
+hepatitis A
+hepatitis B
+hepatitis C
+hepatitis delta
+hepatolenticular degeneration
+hepatoma
+herpes zoster
+hickey
+hip gout
+hives
+hog cholera
+hospital fever
+hydrocephalus
+hydropericardium
+hydrophobia
+hydropsy
+hydrothroax
+hyperbetalipoproteinemia
+hypericism
+hæmatemesis
+impetigo
+impetigo
+inanition
+infantile paralysis
+infectious mononucleosis
+intermittent fever
+interstitial pneumonia
+intestinal colic
+intestinal obstruction
+ischaemia
+jail fever
+jaundice
+jawfaln
+jungle rot
+juvenile wart
+kakke
+kakke disease
+keratoderma
+keratonosis
+keratonosus
+keratosis blennorrhagica
+keratosis follicularis
+keratosis pilaris
+kruchhusten
+kwashiorkor
+lactose intolerance
+latent diabetes
+leaf disease
+leaf scorch
+leak
+leiomyosarcoma
+lepromatous leprosy
+leprosy
+leptomeningitis
+leukoderma
+leukoma
+lichen planus
+lichtenoid eczema
+lientery
+limb-girdle muscular dystrophy
+liposarcoma
+listeriosis
+little potato
+livedo
+liver cancer
+livergrown
+lockjaw
+loco disease
+locomotor ataxia
+long sickness
+looping ill
+loose smut
+lumbago
+lung cancer
+lung fever
+lung sickness
+lupus erythematosus
+lupus vulgaris
+lymphoblastic leukemia
+lymphocytic choriomeningitis
+lymphogranuloma venereum
+lysinemia
+macular edema
+male hypogonadism
+malignant hyperthermia
+mange
+maple syrup urine disease
+marasmus
+marasmus
+melancholia
+melanoma
+melanosis
+membranous croup
+meningitis
+meningoencephalitis
+mesentery
+mesothelioma
+meteorism
+metritis
+miasma
+miliary tuberculosis
+milk fever
+milk leg
+milk sickness
+milk sickness
+mimesis
+molluscum contagiosum
+monocytic leukemia
+moon blindness
+morbilli
+morbus addisonii
+morbus cordis
+mormal
+morphea
+morphew
+mortification
+multiple myeloma
+multiple sclerosis
+mumps
+murine typhus
+murrain
+myasthenia gravis
+myelitis
+myeloblastic leukemia
+myocarditis
+myosarcoma
+myotonic muscular dystrophy
+myxomatosis
+necrobiosis lipoidica
+necrosis
+necrotizing enterocolitis
+needle blight
+nephrogenic diabetes insipidus
+nephrosis
+nepritis
+nervous prostration
+nettle rash
+neuralgia
+neuroblastoma
+neurodermatitis
+neuroepithelioma
+neurofibromatosis
+neurosarcoma
+nevoid elephantiasis
+nongonococcal urethritis
+nonspecific urethritis
+normal tension glaucoma
+nostalgia
+nuclear cataract
+nyctalopia
+oat cell carcinoma
+occupational disease
+oculopharyngeal muscular dystrophy
+oligodactyly
+oligodontia
+onion yellow dwarf
+onycholysis
+oral cancer
+oral herpes
+oriental boil
+osteoarthritis
+osteogenesis imperfecta
+osteopetrosis
+osteosarcoma
+otosclerosis
+ozena
+pachyderma
+palsy
+pancreatic cancer
+papulovesicle
+paralysis agitants
+paratyphoid
+parenchyma
+paroxysm
+parturition
+peach blight
+pellagra
+pelvic inflammatory disease
+pemphigus
+pemphigus
+periarteritis nodosa
+pericarditis
+pericementoclasia
+peripneumonia
+peritonitis
+pernicious anæmia
+pertussis
+petechial fever
+peurperal exhaustion
+phenylketonuria
+phlegmasia alba dolens
+phthiriasis
+phthisis
+pink disease
+pink disease
+pinkroot
+pip
+pityriasis alba
+pityriasis rosea
+plague
+plague
+plantar wart
+pleomorphic rhabdomyosarcoma
+pleurisy
+pleuropneumonia
+pneumococcal pneumonia
+pneumocytosis
+pneumonia
+pneumonic plague
+pock
+podagra
+poison ivy
+poison oak
+poison sumac
+poliomyelitis
+poliomyelitis
+porphyria
+porphyria
+posterior subcapsular cataract
+potato blight
+potato mosaic
+potato wart
+potter's asthma
+pox
+primary syphilis
+prostate cancer
+prurigo
+psittacosis
+psoriasis
+psoriatic arthritis
+puerperal exhaustion
+puerperal fever
+puking fever
+pullorum disease
+pulmonary anthrax
+pulmonary tuberculosis
+purples
+purpura
+purulent pleurisy
+pycnodysostosis
+pycnosis
+pyelitis
+pyelitis
+pyrexia
+pyæmia
+quarter crack
+quinsy
+quinsy
+rabies
+rag-picker's disease
+red water
+relapsing fever
+remitting fever
+respiratory distress syndrome
+retinoblastoma
+rhagades
+rheumatic fever
+rheumatism
+rheumatism
+rhinotracheitis
+rickets
+rickets
+rickettsialpox
+rim blight
+rinderpest
+ring rot
+root rot
+rose cold
+roseola
+rotanny fever
+rubeola
+saddle sore
+sandfly fever
+scarlatina
+scarlet fever
+scarlet fever
+scarlet rash
+schistosome dermatitis
+sciatica
+scirrhus
+sclerotium disease
+scotomy
+scouring
+scours
+scowring
+scrapie
+screws
+scrivener's palsy
+scrofula
+scrofula
+scrofula fugax
+scrofula mesenterica
+scrofula vulgaris
+scrumpox
+scurvy
+scurvy
+seborrhea
+seborrheic dermatitis
+seborrheic keratosis
+secondary syphilis
+seminoma
+septicemia
+septicemic plague
+severe acute respiratory syndrome
+shaking
+shigellosis
+shingles
+ship fever
+shipping fever
+sickle-cell anemia
+siderosis
+silicosis
+siriasis
+sloes
+small pox
+sodoku
+softening of the brain
+sore throat distemper
+spasms
+spina bifida
+spinach blight
+splenic fever
+spondylarthritis
+spotted fever
+spring nettle
+sprue
+spur blight
+staggers
+status asthmaticus
+stem blight
+stomatitis
+stranger's fever
+strangury
+streptococcal sore throat
+stripe blight
+strophulus
+strumous
+stuffing
+sudor anglicus
+sunburn
+sunstroke
+swamp sickness
+sweating sickness
+sweating sickness
+sweet-potato ring rot
+swine influenza
+sycosis barbæ
+syringitis
+systemic lupus erythematosus
+tabes dorsalis
+tabes dorsalis
+tabes mesenterica
+teeth
+tenesmus
+tertiary syphilis
+tetanus
+the horrors
+the king’s evil
+the shakes
+thoracic actinomycosis
+thread blight
+thrombasthenia
+thrombocytopenic purpura
+thrombosis
+thrush
+tinea sycosis
+tissick
+tobacco mosaic
+toe crack
+tomato blight
+tomato streak
+toxemia of pregnancy
+trachoma
+trembles
+trench fever
+trench mouth
+trophoblastic cancer
+tsutsugamushi disease
+tuberculoid leprosy
+tularemia
+tussis convulsiva
+twig blight
+tympany
+type I diabetes
+type II diabetes
+typhoid
+typhoid
+typhus
+tyrosinemia
+ulatrophia
+valvular incompetence
+varicella
+variola
+venesection
+verticilliosis
+viper's dance
+viral pneumonia
+vitiligo
+volvulus
+walnut blight
+warble
+water on brain
+wheat scab
+white swelling
+whooping cough
+windburn
+winter fever
+womb fever
+xanthelasma
+xanthoma disseminatum
+xanthomatosis
+xanthosis
+xeroderma pigmentosum
+yaws
+yellow dwarf of potato
+yellow fever
+yellow jack
+yellowjacket
+zinc deficiency
+ægrotantem
+œdema

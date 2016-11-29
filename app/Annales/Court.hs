@@ -10,6 +10,9 @@ import Annales.Empire (
   ,Empire
   ,Person(..)
   ,court
+  ,heirs
+  ,emperor
+  ,consort
   ,vocabGet
   ,personGet
   ,pName
@@ -20,6 +23,7 @@ import Annales.Empire (
   ,randn
   ,randRemove
   ,elemPerson
+  ,removePerson
   ,chooseW
   )
 
@@ -45,6 +49,7 @@ import Annales.Descriptions ( descDeathOf )
 import Annales.Omens ( omen )
   
 
+import Data.Maybe (catMaybes)
 
 
 
@@ -59,16 +64,25 @@ newCourtier e = do
     True -> do
       return ( e, descCourtDouble e p )
 
+
+
 goneCourtier :: Empire -> IO ( Empire, TextGenCh )
 goneCourtier e = do
   ( mgone, court' ) <- randRemove $ court e
   case mgone of
     []     -> omen e
     gone:c -> do
+      others <- removePerson gone $ allCourt e
       e' <- return $ e { court = court' }
-      return ( e', descCourtierGo e gone ) 
+      return ( e', descCourtierGo e gone others ) 
 
 
 
+
+
+
+allCourt :: Empire -> [ Person ]
+allCourt e = ( royals ++ (heirs e) ++ (court e) )
+  where royals = catMaybes [ emperor e, consort e ]
 
 

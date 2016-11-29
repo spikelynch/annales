@@ -1,0 +1,359 @@
+abasia
+abdominal angina
+abdominal phthisis
+ablepsy
+abortus fever
+acetabulum
+achor
+acromion
+Addison’s disease
+adynamia
+an ague
+ægrotantem
+ague-cake
+ainhum
+Aleppo boil
+albuminuria
+amaurosis
+amenorrhoea
+anasarca
+an ancome
+an aneurysm
+angina
+anthracosis
+aphonia
+aphtha
+apoplexy
+ascites
+asphycsia
+ataxia
+atheroma
+atrophy
+bad blood
+barber's itch
+bilious fever
+biliousness
+black death
+black fever
+black plague
+black pox
+blackwater fever
+bladder in throat
+boils
+bloody flux
+blood poisoning
+bloody sweat
+bone shave
+brain fever
+breakbone
+break bone fever
+Bright's disease
+bronze john
+brucellosis
+a bubo
+a bule
+cachæmia
+cachexy
+cacogastric
+cacospysy
+caduceus
+camp diarrhœa
+camp fever
+cancrum oris
+candida
+canine madness
+canker
+a carbuncle
+catalepsy
+catarrhal bronchitis
+cerebritis
+chalkstones
+chilblain
+chill fever
+chin cough
+choak
+chloasma
+chlorosis
+cholecystitus
+cholelithiasis
+cholera
+cholera morbus
+chorea
+cold plague
+colic
+commotion
+congestion
+congestive chills
+congestive fever
+consumption
+contagious pyrexia
+corruption
+coryza
+costiveness
+cow pox
+cramp colic
+crop sickness
+croup
+cyanosis
+cynanche
+cystitis
+day fever
+debility
+decrepitude
+delirium tremens
+dengue
+deplumation
+diary fever
+diphtheria
+distemper
+dock fever
+domestic illness
+dropsy
+dropsy of the brain
+dry bellyache
+dyscrasy
+dysentery
+dysorexy
+dyspepsia
+dysphasia
+dysury
+eclampsia
+eclampsy
+ecstasy
+edema
+edema of the lungs
+effluvia
+elephantiasis
+emphysema
+encephalitis
+enteric fever
+enterocolitis
+enteritis
+epilepsy
+epitaxis
+epithelioma
+ergot
+erysipelas
+extravasted blood
+fainting fits
+falling sickness
+fatty liver
+foetor oris
+fibrinous bronchitis
+fistula
+fits
+flux
+a flux of humour
+french pox
+frogg
+a furuncle
+galloping consumption
+gangrene
+general paralysis of the insane
+glandular fever
+goitre endocarditis
+gout
+great pox
+green fever
+green sickness
+grippe
+grocer's itch
+hæmatemesis
+haematuria
+heart sickness
+a hectic fever
+a hectical complaint
+hematemesis
+hematuria
+hemiplegy
+hip gout
+hives
+the horrors
+hospital fever
+hydrocephalus
+hydropericardium
+hydrophobia
+hydropsy
+hydrothroax
+impetigo
+an impostume
+inanition
+infantile paralysis
+intermittent fever
+intestinal colic
+ischaemia
+jail fever
+jaundice
+jawfaln
+kakke
+the king’s evil
+kruchhusten
+leprosy
+lientery
+livergrown
+lockjaw
+locomotor ataxia
+long sickness
+lumbago
+lung fever
+lung sickness
+a malignant fever
+a malignant pustule
+a malignant sore throat
+a mania
+marasmus
+a meagrom
+a megrim
+melancholia
+membranous croup
+meningitis
+mesentery
+meteorism
+metritis
+miasma
+milk fever
+milk leg
+milk sickness
+morbilli
+morbus addisonii
+morbus cordis
+mormal
+morphew
+mortification
+myelitis
+myocarditis
+necrosis
+nephrosis
+nepritis
+nervous prostration
+nettle rash
+neuralgia
+nostalgia
+œdema
+oriental boil
+pachyderma
+palsy
+paralysis agitants
+parenchyma
+paroxysm
+parturition
+pemphigus
+pericarditis
+peripneumonia
+peritonitis
+pernicious anæmia
+pertussis
+petechial fever
+peurperal exhaustion
+phlegmasia alba dolens
+phthiriasis
+phthisis
+pink disease
+plague
+pleurisy
+pneumonia
+porphyria
+podagra
+poliomyelitis
+Pott's disease
+potter's asthma
+pox
+puerperal exhaustion
+puerperal fever
+puking fever
+purples
+purpura
+a putrid fever
+a putrid sore throat
+pyæmia
+pyelitis
+pyrexia
+quinsy
+rag-picker's disease
+remitting fever
+rheumatism
+rickets
+a rising of the lights
+rose cold
+roseola
+rotanny fever
+rubeola
+a sanguineous crust
+scarlatina
+scarlet fever
+scarlet rash
+sciatica
+scirrhus
+scotomy
+scouring
+scowring
+screws
+scrivener's palsy
+scrofula
+scrofula fugax
+scrofula mesenterica
+scrofula vulgaris
+scrumpox
+scurvy
+septicemia
+the shakes
+shaking
+shingles
+ship fever
+siriasis
+sloes
+small pox
+softening of the brain
+sore throat distemper
+Spanish disease
+Spanish influenza
+spasms
+spina bifida
+splenic fever
+spotted fever
+spring nettle
+sprue
+St Anthony's fire
+St Vitus' dance
+stomatitis
+stranger's fever
+strangury
+strophulus
+strumous
+stuffing
+sudor anglicus
+a summer complaint
+sunstroke
+a surfeit
+swamp sickness
+sweating sickness
+sycosis barbæ
+syringitis
+tabes dorsalis
+tabes mesenterica
+teeth
+tenesmus
+tetanus
+thrombosis
+thrush
+tinea sycosis
+tissick
+toxemia of pregnancy
+trench mouth
+tussis convulsiva
+typhoid
+tympany
+typhus
+varicella
+variola
+venesection
+viper's dance
+volvulus
+water on brain
+white swelling
+winter fever
+a wolf
+womb fever
+a worm fit
+yellow fever
+yellowjacket

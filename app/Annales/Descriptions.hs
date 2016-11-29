@@ -27,6 +27,7 @@ import Annales.Empire (
   ,claimants
   ,emperor
   ,court
+  ,buildings
   ,generate
   ,vocabGet
   ,pName
@@ -56,6 +57,7 @@ import TextGen (
   ,list
   ,aan
   )
+
 
 w :: [ Char ] -> TextGenCh
 w = word
@@ -344,9 +346,84 @@ descCourtDouble :: Empire -> Person -> TextGenCh
 descCourtDouble e p = inc [ w "Fearful omen of a doppleganger of", pName p, w "at court" ]
 
 
-descCourtierGo :: Empire -> Person -> TextGenCh
-descCourtierGo e p = let gone = chw [ "was exiled", "fell into disgrace", "Fell under a shadow", "became unfashionable", "was banished" ]
-                   in inc [ pName p, gone ]
+descCourtierGo :: Empire -> Person -> [ Person ] -> TextGenCh
+descCourtierGo e p c = inc $ [ choose [
+                                 list [ cap1g $ misdeed e p c, w ",", pName p, punishment e ]
+                                 ,list [pName p, phrase $ misdeed e p c, punishment e ]
+                                 ] ]
+
+misdeed :: Empire -> Person -> [ Person ] -> TextGenCh
+misdeed e p c = case maybeAffair e p c of
+  (Just affair) -> weighted [ ( 30, writing e), ( 70, affair ) ] -- traitor
+  Nothing       -> choose [ writing e ]
+  where
+
+
+punishment :: Empire -> TextGenCh
+punishment e = choose [ exiled, maimed, executed, shunned ]
+  where exiled = list [ w "was", chw [ "exiled", "banished" ], w "to", vocabGet e "places" ]
+        maimed = list [ w "was", corporal e $ chw [
+          "maimed", "blinded", "crippled", "gelded"
+          ] ]
+        executed = list [ w "was", choose [
+          list [ chw [ "cast", "thrown" ], w "from the", randBuilding e ],
+          corporal e $ chw [ "beheaded", "sacrificed", "flayed" ],
+          list [
+              chw [ "drowned", "throttled", "smothered" ]
+              ,chw [ "in the", "before the", "behind the" ]
+              ,randBuilding e
+              ]
+          ] ]
+        shunned = chw [
+          "became unfashionable"
+          ,"was excluded from polite society"
+          ,"dared not appear in company"
+          ,"fell under the shadow of infamy"
+          ,"wasted away"
+          ,"pined for the favour of fortune"
+          ,"was spoked of no more"
+          ,"was placed under a geas"
+          ]
+
+corporal :: Empire -> TextGenCh -> TextGenCh
+corporal e what = list [
+              what
+              ,w "with", aan $ vocabGet e "weapons"
+              ,perhaps ( 1, 3 ) $ list [
+                  chw [ "in the", "before the", "behind the" ]
+                  ,randBuilding e
+              ]
+              ]
+
+          
+writing e = list [
+  chw [ "having penned", "having been credited with", "having circulated", "having repeated" ]
+  , perhaps (2, 3) $ chw [ "certain", "some" ]
+  , chw [ "scandalous", "bitter", "popular", "roguish", "satirical", "improper", "incompetent" ]
+  , chw [ "verses", "mottoes", "epigrams", "jokes", "mixtapes", "songs" ]
+  ]
+
+
+
+maybeAffair :: Empire -> Person -> [ Person ] -> Maybe TextGenCh
+maybeAffair e p c = case filter ( \(Person _ a _) -> a > 16 ) c of
+                  [] -> Nothing
+                  ps -> Just $ affairWith e p $ chooseP ps 
+
+
+affairWith :: Empire -> Person -> TextGenCh -> TextGenCh
+affairWith e p pg = list [
+  chw [ "having flaunted", "having barely concealed", "having boasted of", "having exaggerated", "having spread rumours of" ]
+  ,possessive p
+  ,vocabGet e "affairs"
+  ,pg
+  ]
+
+
+
+          
+  -- let gone = chw [ "was exiled", "fell into disgrace", "Fell under a shadow", "became unfashionable", "was banished" ]
+  --                  in inc [ pName p, gone ]
 
 
 
@@ -402,8 +479,9 @@ collective = chw [ "Outbreak of", "Panic caused by", "Great", "Reports of", "Rum
 --
 
 descBuildingName :: Empire -> TextGenCh
-descBuildingName e = ch [ capg $ vocabGet e "buildings", temple ]
-  where temple = list [ w "Temple of", vocabGet e "gods" ]
+descBuildingName e = ch [ capg $ vocabGet e "buildings", temple e ]
+
+temple e = list [ w "Temple of", vocabGet e "gods" ]
 
 descNewBuilding :: Empire -> TextGenCh -> TextGenCh
 descNewBuilding e b = project e b (chw [ "erected", "founded", "established", "built", "constructed" ] )
@@ -422,6 +500,9 @@ descBuildingGone e b = inc [ w "The", b, w "was", destroyed, how ]
         how = list [ w "by", aan $ choose [ vocabGet e "monsters", w "fire", w "flood", w "lightning bolt", w "earthquake", w "riot" ] ]
 
 
+randBuilding :: Empire -> TextGenCh
+randBuilding e = choose ( [ temple e ] ++ buildings e )
+
 choosePerson :: Empire -> TextGenCh
 choosePerson e = case emperor e of
                    Nothing -> case court e of
@@ -437,3 +518,5 @@ chooseRandPerson :: Empire -> TextGenCh
 chooseRandPerson e = choose [ men, women ]
   where men = vocabGet e "men"
         women = vocabGet e "women"
+
+

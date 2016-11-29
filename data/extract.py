@@ -7,6 +7,7 @@ from nltk.corpus import wordnet as wn
 
 DIVISION = [
     ( re.compile(r"\sOf\s"), "artifacts", True),
+    ( re.compile(r"[^ ]{3,}(ns|rs|es|ds|es)$"), "phenomena", False),
     ( re.compile(r"^[^ ]+(sion|ions|nces|sts|als)$"), "festivities", False),
     ( re.compile(r"^[^ ]+(ity|ness|ing|age|nce|dom|ry|ment|hood|ure)$"), "abstractions", False),
     ( re.compile(r"^[^ ]{5,}(ible|ant|ish|ary|ic|ical|like|ous)$"), "adjectives", False),
