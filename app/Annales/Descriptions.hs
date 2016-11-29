@@ -256,7 +256,7 @@ descBirth e mother baby = let (Person pg _ g) = baby
 
 birth = chw [ "was brought to bed of a", "gave birth to a", "was blessed with a", "bore a", "was accouched of a" ]
 
-birthCircs e = perhaps ( 1, 5 ) $ choose [ birthStar e, birthBastard e ] -- , birthOmen e,  ]
+birthCircs e = perhaps ( 2, 7 ) $ choose [ birthStar e, birthBastard e, birthOmen e ]
 
 birthStar e = choose [ inf, rising, setting, pmoon ]
   where s = vocabGet e "stars"
@@ -277,6 +277,11 @@ bastardFathers e = map (\(Person g _ _) -> g) $ males
   where males = filter (\(Person _ _ pg) -> pg == Male ) $ court e
 
 
+birthOmen e = phrase $ list [
+  chw [ "during", "attended by", "in the course of", "in a night of", "in a day of" ]
+  ,perhaps ( 1, 2 ) $ chw [ "mighty", "great", "fearsome", "glorious" ]
+  ,vocabGet e "phenomena"
+  ]
 
 
 
