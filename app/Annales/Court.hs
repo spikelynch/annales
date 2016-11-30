@@ -45,7 +45,6 @@ import TextGen (
   ,list
   )
 
-import Annales.Descriptions ( descDeathOf )
 import Annales.Omens ( omen )
   
 

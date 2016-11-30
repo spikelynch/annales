@@ -297,11 +297,18 @@ birthOmen e = phrase $ list [
 --
 
 
-descDeathOf :: Empire -> TextGenCh -> TextGenCh
-descDeathOf e person = inc [ person, death e ]
+descDeathOf :: Empire -> Person -> TextGenCh
+descDeathOf e p = inc [ pName p, death e p ]
 
-death :: Empire -> TextGenCh
-death e = weighted [ ( 5, choke e), (4, beast e), (71, disease e), (10, poison e), (10, witchcraft e) ]
+death :: Empire -> Person -> TextGenCh
+death e p = weighted [
+  ( 5, choke e),
+  (4, beast e),
+  (41, disease e),
+  (30, assassination e p),
+  (10, poison e),
+  (10, witchcraft e)
+  ]
 
 
 choke e = list [ w "choked on", aan $ ch [ bone, other ] ]
@@ -309,7 +316,13 @@ choke e = list [ w "choked on", aan $ ch [ bone, other ] ]
         other = vocabGet e "foods"
 
 beast e = list [ verbedby, aan $ vocabGet e "monsters" ]
-  where verbedby = chw [ "was stung by", "was bitten by", "was allergic to", "swallowed", "was eaten by" ]
+  where verbedby = chw [
+          "was stung by"
+          ,"was bitten by"
+          ,"was allergic to"
+          ,"swallowed"
+          ,"was eaten by"
+          ]
 
 
 disease e = list [ chw [ "succumbed to", "died of", "was taken by" ], vocabGet e "diseases" ]
@@ -324,9 +337,28 @@ chaumurky e = list [ w "drank", bad, vocabGet e "drinks" ]
 
 chausmetics e = list [ w "was poisoned with", vocabGet e "cosmetics" ]
 
-
-
 witchcraft e = chw [ "was ensorcelled", "was beguiled", "was spellbound", "succumbed to a geas" ] 
+
+assassination e p = list [ w "was", deathmode, location ]
+  where deathmode = choose [
+          list [
+              chw [ "stabbed", "slashed", "murdered", "slain", "gutted" ]
+              , perhaps ( 1, 2) $ list [ w "with", aan $ vocabGet e "weapons" ]
+              ]
+          ,chw [ "drowned", "throttled", "smothered", "strangled", "crushed" ]
+          ]
+        location = list [
+          chw [ "in", "before", "behind" ]
+          ,choose [
+              list [ w "the", randBuilding e]
+              , list [ poss, chamber ]
+              ]
+          ]
+        poss = possessive p
+        chamber = chw [
+          "bedchamber", "privy", "parlour", "dressing-room", "pavillion"
+          ]
+
 
 --
 --
@@ -457,18 +489,29 @@ descCourtDouble e p = inc [ w "Fearful omen of a doppleganger of", pName p, w "a
 
 
 descCourtierGo :: Empire -> Person -> [ Person ] -> TextGenCh
-descCourtierGo e p c = inc $ [ choose [
-                                 list [ cap1g $ misdeed e p c, w ",", pName p, punishment e ]
-                                 ,list [pName p, phrase $ misdeed e p c, punishment e ]
-                                 ] ]
+descCourtierGo e p c = inc $ [ choose [ s1, s2 ] ]
+  where s1 = list [ cap1g $ crime, w ",", name, waspunished ]
+        s2 = list [ name, phrase $ crime, waspunished ]
+        s3 = list [ name, waspunished, w "for", crime ]
+        crime = misdeed e p c
+        name = pName p
+        waspunished = punishment e
 
 -- retire to his/her villa
 
 misdeed :: Empire -> Person -> [ Person ] -> TextGenCh
 misdeed e p c = case maybeAffair e p c of
-  (Just affair) -> weighted [ ( 30, writing e), ( 70, affair ) ] -- traitor
-  Nothing       -> choose [ writing e ]
-  where
+  (Just affair) -> weighted [
+    ( 20, writing e),
+    ( 70, affair ),
+    ( 60, traitor e),
+    ( 20, blasphemy e)
+    ] 
+  Nothing       -> weighted [
+    ( 20, writing e),
+    ( 60, traitor e),
+    ( 20, blasphemy e)
+    ]
 
 
 punishment :: Empire -> TextGenCh
@@ -507,7 +550,16 @@ corporal e what = list [
 
           
 writing e = list [
-  chw [ "having penned", "having been credited with", "having circulated", "having repeated" ]
+  chw [
+      "having penned",
+      "having circulated",
+      "having repeated",
+      "having written",
+      "composing",
+      "writing",
+      "reciting",
+      "being credited with"
+      ]
   , perhaps (2, 3) $ chw [ "certain", "some" ]
   , descLiterature e
   ]
@@ -526,18 +578,52 @@ maybeAffair e p c = case filter ( \(Person _ a _) -> a > 16 ) c of
 
 affairWith :: Empire -> Person -> TextGenCh -> TextGenCh
 affairWith e p pg = list [
-  chw [ "having flaunted", "having barely concealed", "having boasted of", "having exaggerated", "having spread rumours of" ]
+  chw [
+      "having flaunted",
+      "flaunting",
+      "barely concealing",
+      "bragging of",
+      "being unashamed of",
+      "brazenly enjoying",
+      "having exaggerated",
+      "spreading rumours of"
+      ]
   ,possessive p
   ,vocabGet e "affairs"
   ,pg
   ]
 
 
+traitor e = list [
+  chw [
+      "conspiring with"
+      ,"consorting with"
+      ,"aiding"
+      ,"abetting"
+      ,"recieving messages from"
+      ,"sympathising with"
+      ,"having been compromised by"
+      ,"having relations with"
+      ]
+  ,w "the"
+  ,currentTribe e
+  ]
 
-          
-  -- let gone = chw [ "was exiled", "fell into disgrace", "Fell under a shadow", "became unfashionable", "was banished" ]
-  --                  in inc [ pName p, gone ]
-
+blasphemy e = list [ choose [ b1, b2, b3 ], ptg, vocabGet e "gods" ]
+  where b1 = list [
+          w "failing to"
+          , chw [ "honour", "reverence", "worship", "acknowledge" ]
+          ]
+        b2 = list [
+          chw [ "speaking", "having spoken" ]
+          , chw [ "lightly", "brazenly", "openly" ]
+          , w "of"
+          ]
+        b3 = list [
+          perhaps (1, 2) $ chw [ "secretly", "indiscreetly" ]
+          , chw [ "honouring", "worshipping", "blaspheming" ]
+          ]
+        ptg = perhaps ( 1, 3 ) $ chw [ "the god", "the goddess" ]
 
 
 --

@@ -97,7 +97,7 @@ deathRemove :: Empire -> [ Person ] -> Person -> IO ( [ Person ], TextGenCh )
 deathRemove e ps p = do
   name <- return $ pName p
   remain <- removePerson p ps
-  return ( remain, descDeathOf e name )
+  return ( remain, descDeathOf e p )
 
 
   
@@ -115,7 +115,7 @@ deadEmperor e = do
   case emperor e of
     (Just olde) -> do
       e' <- return $ e { emperor = Nothing, consort = Nothing }
-      death <- return $ descDeathOf e $ pName olde
+      death <- return $ descDeathOf e olde
       return ( e', death )
     Nothing -> omen e
 
@@ -124,6 +124,6 @@ deadConsort e = do
   case consort e of
     (Just cons) -> do
       e' <- return $ e { consort = Nothing }
-      death <- return $ descDeathOf e $ pName cons
+      death <- return $ descDeathOf e cons
       return ( e', death )
     Nothing -> omen e
