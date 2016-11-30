@@ -579,20 +579,40 @@ maybeAffair e p c = case filter ( \(Person _ a _) -> a > 16 ) c of
 
 
 affairWith :: Empire -> Person -> TextGenCh -> TextGenCh
-affairWith e p pg = list [
-  chw [
-      "having flaunted",
-      "flaunting",
-      "barely concealing",
-      "bragging of",
-      "being unashamed of",
-      "brazenly enjoying",
-      "having exaggerated",
-      "spreading rumours of"
-      ]
-  ,possessive p
-  ,vocabGet e "affairs"
-  ,pg
+affairWith e p pg = choose [
+    list [
+        chw [
+            "having flaunted"
+            ,"flaunting"
+            ,"barely concealing"
+            ,"bragging of"
+            ,"being unashamed of"
+            ,"brazenly enjoying"
+            ,"having exaggerated"
+            ,"spreading rumours of"
+            ]
+        ,possessive p ,vocabGet e "abstractions", w "with"
+        ,pg
+        ]
+    ,list [
+        chw [
+            "comitting"
+            ,"having committed"
+            ,"having been discovered in"
+            ]
+        ,vocabGet e "abstractions", w "with"
+        ,pg
+        ]
+    ,list [
+        chw [
+            "growing"
+            ,"becoming"
+            ,"having become"
+            ,"having grown"
+            ]
+        ,vocabGet e "adjectives", w "of"
+        ,pg
+        ]
   ]
 
 

@@ -54,14 +54,6 @@ import Data.List (intercalate)
 import Control.Monad (forM)
 import Text.Numeral.Roman (toRoman)
 
--- Note: the callbacks here provide a nice way to model contingent
--- events.
--- chance of an heir is 0  if there is no consort (but bastardy)
--- no marriages if there is already a consort
--- etc
-
--- Remember that I'm fudging empire state here: see
--- https://github.com/spikelynch/annales/issues/14
 
 
 
@@ -167,21 +159,31 @@ getLength (a:as) = case readMaybe a of
   Just i -> i
 
 
+quote = "\"For God's sake, let us sit upon the ground\nAnd tell sad stories of the death of kings\""
 
   
-generateTitle :: Empire -> IO [ Char ]
-generateTitle e = do
+generateTitle :: Empire -> StdGen -> IO [ Char ]
+generateTitle e seed = do
   l <- return $ map pname $ reverse $ lineage e
   mends <- return $ ends l
-  subtitle <- return $ case mends of
-    Just ( k1, k2 ) -> mkTitle k1 k2
-    Nothing         -> "Not enough rulers to make a title"
-  nation <- generate $ vocabGet e "places"
-  return $ "# Annales " ++ (dumbjoin nation) ++ "\n\n" ++ subtitle ++ "\n\n"
+  return $ case mends of
+    Just ( k1, k2 ) -> concat [
+      "# GENERATIONS\n\n"
+      ,"Being a faithful narration of the history of the realm"
+      ," from the reign of "
+      ,k1
+      ," to the present day\n\n"
+      ,"Transcribed by the algorithm annales-exe"
+      ," with the random seed "
+      ,(show seed)
+      ," during the reign of "
+      ,k2
+      ,"\n\n"
+      ,quote
+      ,"\n\n"
+      ]
+    Nothing -> "no title"
 
-mkTitle :: [ Char ] -> [ Char ] -> [ Char ]
-mkTitle k1 k2 = "From " ++ k1 ++ " to " ++ k2
-  
 ends :: [ a ] -> Maybe ( a, a )
 ends (a:b:bs) = Just ( a, last (b:bs) )
 ends _        = Nothing
@@ -193,9 +195,10 @@ pname (Forebear n _ (Just i)) = n ++ " " ++ (toRoman i)
 main :: IO ()
 main = do
   args <- getArgs
+  initGen <- getStdGen
   length <- return $ getLength args
   e0 <- initialiseEmpire "./data/"
   (e', annales) <- generateAnnals length e0
-  title <- generateTitle e'
+  title <- generateTitle e' initGen 
   putStrLn title
   putStrLn annales

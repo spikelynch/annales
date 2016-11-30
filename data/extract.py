@@ -14,7 +14,7 @@ DIVISION = [
     ( re.compile(r"(men|ards|ors|ons|eeps|ins|sts|ers|ins|ings|lves|orcs|edes)$"), "allies", False),
     ( re.compile(r"^[^ ]{3,}ly$"), "adverbs", False),
     ( re.compile(r"^\w{1,7}(sh|is|ne|ch|th|us|om|gh|or|rg|rh|b)$"), "gods", True),
-    ( re.compile(r"^[^ ]{1,19}(et|ave|ade|eon|axe|ife|bow|shot)$"), "weapons", False),
+    ( re.compile(r"^[^ ]{1,19}(et|ave|ade|eon|axe|ife|bow|shot|ax|erg|erd)$"), "weapons", False),
     ( re.compile(r"(sour|sweet|bitter|cheese|fruit|apple|berry|meat|pie|bean|leaf|chip|flesh|shell|cake|bread)"), "foods", False),
     ( re.compile(r"(mead|honey|ale|beer|wine|juice|water|milk|syrup|cream)"), "drinks", False),
     ( re.compile(r"^([^ ]+ )?[^ ]{5,}(sy|ps|gue|ver|th)$"), "diseases", False ),

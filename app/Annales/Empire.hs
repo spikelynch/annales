@@ -169,11 +169,12 @@ paragraph g = list [ g, word "\n\n" ]
 -- Two header levels
 
 h2 :: TextGenCh -> TextGenCh
-h2 g = list [ word "##", g, word "\n\n" ]
+h2 g = list [  word "##", g, word "\n\n" ]
 
 -- use LaTeX marginpar for these
 
 h3 :: TextGenCh -> TextGenCh
+--h3 g = list [ word "\\marginpar{\\normalfont\\iminfamily ", g, word "}\n\n" ]
 h3 g = list [ word "###", g, word "\n\n" ]
 
 
