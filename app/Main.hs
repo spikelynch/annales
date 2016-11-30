@@ -166,11 +166,27 @@ getLength (a:as) = case readMaybe a of
   Just i -> i
 
 
-dumpLineage :: Empire -> [ Char ]
-dumpLineage e = intercalate "\n" $ map pname $ reverse $ lineage e
-  where pname (Forebear n _ Nothing) = n
-        pname (Forebear n _ (Just i)) = n ++ " " ++ (toRoman i)
+
   
+generateTitle :: Empire -> IO [ Char ]
+generateTitle e = do
+  l <- return $ map pname $ reverse $ lineage e
+  mends <- return $ ends l
+  subtitle <- return $ case mends of
+    Just ( k1, k2 ) -> mkTitle k1 k2
+    Nothing         -> "Not enough rulers to make a title"
+  nation <- generate $ vocabGet e "places"
+  return $ "# Annales " ++ (dumbjoin nation) ++ "\n\n" ++ subtitle ++ "\n\n"
+
+mkTitle :: [ Char ] -> [ Char ] -> [ Char ]
+mkTitle k1 k2 = "From " ++ k1 ++ " to " ++ k2
+  
+ends :: [ a ] -> Maybe ( a, a )
+ends (a:b:bs) = Just ( a, last (b:bs) )
+ends _        = Nothing
+
+pname (Forebear n _ Nothing) = n
+pname (Forebear n _ (Just i)) = n ++ " " ++ (toRoman i)
 
 
 main :: IO ()
@@ -179,5 +195,6 @@ main = do
   length <- return $ getLength args
   e0 <- initialiseEmpire "./data/"
   (e', annales) <- generateAnnals length e0
+  title <- generateTitle e'
+  putStrLn title
   putStrLn annales
---  putStrLn $ dumpLineage e'
