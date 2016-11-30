@@ -28,9 +28,11 @@ import Annales.Empire (
   ,emperor
   ,court
   ,buildings
+  ,tribes
   ,generate
   ,vocabGet
   ,pName
+  ,pGender
   ,dumbjoin
   ,wordjoin
   ,nicelist
@@ -245,8 +247,9 @@ descWedding e cg = let me = emperor e
                          Just emp -> pName emp
                          Nothing -> word "ERROR"
                        v = vocabGet e
-                       waswed = w "was wedded to"
-                       celebrated = list [ w "with", v "festivities" ]
+                       waswed = chw [ "was wedded to", "espoused", "married", "was joined with" ]
+                       celebrated = list [ w "with", much, v "festivities" ]
+                       much = chw [ "great", "many", "much", "wild", "joyful", "happy" ]
                    in inc [ eg, waswed, cg, celebrated ]
 
 
@@ -265,7 +268,7 @@ birthStar e = choose [ inf, rising, setting, pmoon ]
         inf = list [ w "under the influence of", s ]
         rising = list [ w "at the heliacal rising of", s ]
         setting = list [ w "at the setting of", s ]
-        pmoon = list [ chw [ "during", "under" ], mp, w "Moon" ]
+        pmoon = list [ chw [ "during", "under" ], mp, w "moon" ]
         mp = chw [ "a full", "a waning", "a gibbous", "the friendly silence of the" ]
 
 
@@ -336,11 +339,118 @@ witchcraft e = chw [ "was ensorcelled", "was beguiled", "was spellbound", "succu
 -- villa/etc in PLACE, sponsor games, projects
 
 
+-- descCourtier :: Empire -> Person -> TextGenCh
+-- descCourtier e p = inc [ pName p, w "rocked up" ]
+
 
 descCourtier :: Empire -> Person -> TextGenCh
-descCourtier e p = let arrived = chw [ "rose to prominence", "won favour", "was first heard of", "rose through the ranks", "was promoted" ]
-                   in inc [ pName p, arrived ]
+descCourtier e p = inc [
+  choose [
+      list [ arrived e p, w "after having", achievement e ],
+      list [ w "Having", achievement e, w ",", arrived e p ]
+      ,list [
+          chw [ "Now", "In this year", "At this time", "In this season" ]
+          , arrived e p
+          ]
+      ]
+  ]
 
+achievement :: Empire -> TextGenCh
+achievement e = choose [
+  descCourtTribe e
+  ,list [ chw [ "written", "penned", "distributed" ],
+         perhaps ( 1, 2 ) $ chw [ "certain", "some" ],
+         descLiterature e
+       ]
+  ,wonFavour e
+  ]
+
+
+wonFavour :: Empire -> TextGenCh
+wonFavour e = list [ favour, who ]
+  where favour = chw [
+          "caught the eye of"
+          ,"won the favour of"
+          ,"flattered"
+          ,"impressed"
+          ,"performed certain offices for"
+          ,"earned the esteem of"
+          ,"earned the gratitude of"
+          ]
+        who = case court e of
+                [] -> list [ w "a noble", chw [ "lady", "lord" ] ]
+                cs -> chooseP cs
+  
+
+arrived :: Empire -> Person -> TextGenCh
+arrived e p = list [ pName p, desc, cametocourt ]
+  where wman = if pGender p == Male then w "man" else w "woman"
+        v = vocabGet e
+        desc = phrase $ weighted [ (40, noble), (10, humble), (50, personal), (10, ofatribe) ]        
+        noble = list [
+          w "a noble of", perhaps ( 1, 2 ) $ w "the house of", v "places"
+          ]
+        humble = list [
+          w "a", wman, w "of", chw [ "low birth", "humble birth", "no name", "no pedigree", "no estate" ]
+          ,perhaps (1, 2) $ phrase $list [
+              w "whose"
+              ,chw [ "father", "mother" ]
+              ,chw [ "dealt in", "traded in", "sold" ]
+              ,choose [ v "foods", v "drinks" ]
+              ]
+          ]
+        personal = list [
+          aan $ v "adjectives", wman, w ","
+          ,chw [ "adept at", "mighty at", "great with", "skilled in" ]
+          ,choose [ skills, weapons ]
+          ]
+        ofatribe = list [
+          w "said to be"
+          , chw [ "of the", "of the blood of the", "one of the" ]
+          , currentTribe e
+          ]
+        skills = chw [
+          "intrigue"
+          ,"warfare"
+          , "courtship"
+          , "wizardry"
+          , "learning"
+          , "the chase"
+          , "the arts of love"
+          , "letters"
+          , "politics"
+          ]
+        weapons = list [ wskill, v "weapons" ]
+        wskill = chw [ "the", "the arts of the", "the use of the", "wielding the", "the skills of the" ]
+        cametocourt = chw [
+          "rose to prominence",
+          "arrived at court",
+          "was much spoken of",
+          "was promoted",
+          "became known",
+          "was in the eye of fortune",
+          "was the talk of the court"
+          ]
+
+
+
+
+
+
+
+descCourtTribe :: Empire -> TextGenCh
+descCourtTribe e = list [ defeated, w "the", currentTribe e ]
+  where defeated = chw [
+          "defeated", "exterminated", "punished", "quelled"
+          , "triumphed over", "repressed", "embarrassed", "harassed"
+          , "controlled", "bested"
+          ]
+
+
+currentTribe :: Empire -> TextGenCh
+currentTribe e = case tribes e of
+                   [] -> vocabGet e "tribes" 
+                   ts -> choose ts
 
 descCourtDouble :: Empire -> Person -> TextGenCh
 descCourtDouble e p = inc [ w "Fearful omen of a doppleganger of", pName p, w "at court" ]
@@ -351,6 +461,8 @@ descCourtierGo e p c = inc $ [ choose [
                                  list [ cap1g $ misdeed e p c, w ",", pName p, punishment e ]
                                  ,list [pName p, phrase $ misdeed e p c, punishment e ]
                                  ] ]
+
+-- retire to his/her villa
 
 misdeed :: Empire -> Person -> [ Person ] -> TextGenCh
 misdeed e p c = case maybeAffair e p c of
@@ -363,7 +475,7 @@ punishment :: Empire -> TextGenCh
 punishment e = choose [ exiled, maimed, executed, shunned ]
   where exiled = list [ w "was", chw [ "exiled", "banished" ], w "to", vocabGet e "places" ]
         maimed = list [ w "was", corporal e $ chw [
-          "maimed", "blinded", "crippled", "gelded"
+          "maimed", "blinded", "crippled", "killed", "impaled"
           ] ]
         executed = list [ w "was", choose [
           list [ chw [ "cast", "thrown" ], w "from the", randBuilding e ],
@@ -376,12 +488,10 @@ punishment e = choose [ exiled, maimed, executed, shunned ]
           ] ]
         shunned = chw [
           "became unfashionable"
-          ,"was excluded from polite society"
+          ,"was excluded from the court"
           ,"dared not appear in company"
           ,"fell under the shadow of infamy"
           ,"wasted away"
-          ,"pined for the favour of fortune"
-          ,"was spoked of no more"
           ,"was placed under a geas"
           ]
 
@@ -399,9 +509,12 @@ corporal e what = list [
 writing e = list [
   chw [ "having penned", "having been credited with", "having circulated", "having repeated" ]
   , perhaps (2, 3) $ chw [ "certain", "some" ]
-  , chw [ "scandalous", "bitter", "popular", "roguish", "satirical", "improper", "incompetent" ]
-  , chw [ "verses", "mottoes", "epigrams", "jokes", "mixtapes", "songs" ]
+  , descLiterature e
   ]
+
+
+descLiterature e = list [ v "litadj", v "literature" ]
+  where v = vocabGet e
 
 
 

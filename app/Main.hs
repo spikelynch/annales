@@ -16,6 +16,7 @@ import Annales.Empire (
   ,Empire
   ,Person(..)
   ,Gender(..)
+  ,Forebear(..)
   ,renderEmpire,
    incrementYear
   ,yearDesc
@@ -49,6 +50,9 @@ import System.Environment (getArgs)
 import Text.Read (readMaybe)
 import System.Random
 import Data.Maybe (catMaybes)
+import Data.List (intercalate)
+import Control.Monad (forM)
+import Text.Numeral.Roman (toRoman)
 
 -- Note: the callbacks here provide a nice way to model contingent
 -- events.
@@ -132,7 +136,7 @@ perhapsIncident e (probf, incident) = do
 
 -- generateAnnales until we exceed len words
 
-generateAnnals :: Int -> Empire -> IO [ Char ]
+generateAnnals :: Int -> Empire -> IO (Empire, [ Char ])
 generateAnnals len e = do
   ( e', mincidents ) <- makeYear e
   case mincidents of
@@ -143,10 +147,10 @@ generateAnnals len e = do
       state <- renderEmpire e'
       lp <- return $ wordCount $ text
       case lp > len of
-        True -> return text
+        True -> return (e', text)
         otherwise -> do
-          rest <- generateAnnals (len - lp) e'
-          return $ text ++ "\n\n" ++ rest
+          (e'', rest ) <- generateAnnals (len - lp) e'
+          return $ ( e'', text ++ "\n\n" ++ rest )
           --return $ text ++ "\n\n--\n" ++ state ++ "\n--\n\n" ++ rest
 
 wordCount :: [ Char ] -> Int
@@ -162,6 +166,11 @@ getLength (a:as) = case readMaybe a of
   Just i -> i
 
 
+dumpLineage :: Empire -> [ Char ]
+dumpLineage e = intercalate "\n" $ map pname $ reverse $ lineage e
+  where pname (Forebear n _ Nothing) = n
+        pname (Forebear n _ (Just i)) = n ++ " " ++ (toRoman i)
+  
 
 
 main :: IO ()
@@ -169,5 +178,6 @@ main = do
   args <- getArgs
   length <- return $ getLength args
   e0 <- initialiseEmpire "./data/"
-  annales <- generateAnnals length e0
+  (e', annales) <- generateAnnals length e0
   putStrLn annales
+  putStrLn $ dumpLineage e'
