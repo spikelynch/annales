@@ -1,4 +1,8 @@
-module Annales.Tribes ( newTribe, goneTribe ) where
+module Annales.Tribes (
+  newTribe
+  ,doTribe
+  ,goneTribe
+  ) where
 
 import Annales.Empire (
   TextGenCh
@@ -9,6 +13,7 @@ import Annales.Empire (
   ,wordjoin
   ,phrase
   ,chooseW
+  ,randPick
   ,inc
   )
 
@@ -22,7 +27,7 @@ import TextGen (
   ,list
   )
 
-import Annales.Descriptions ( descTribe, descTribeGo )
+import Annales.Descriptions ( descTribe, descTribeActivity, descTribeGo )
 
 import Annales.Omens ( omen )
  
@@ -33,6 +38,14 @@ newTribe e = do
   tribeg <- return $ wordjoin tribe
   e'   <- return $ e { tribes = tribeg:(tribes e) }
   return ( e', descTribe e tribeg )
+
+
+doTribe :: Empire -> IO ( Empire, TextGenCh )
+doTribe e = do
+  mt <- randPick $ tribes e
+  case mt of
+    Nothing -> omen e
+    (Just t) -> return ( e, descTribeActivity e t )
 
 
 goneTribe :: Empire -> IO ( Empire, TextGenCh )

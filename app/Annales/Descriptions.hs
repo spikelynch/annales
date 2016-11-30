@@ -9,6 +9,7 @@ module Annales.Descriptions (
   , descDeathOf
   , descTribe
   , descTribeGo
+  , descTribeActivity
   , descCourtier
   , descCourtDouble
   , descCourtierGo
@@ -479,10 +480,11 @@ descCourtTribe e = list [ defeated, w "the", currentTribe e ]
           ]
 
 
-currentTribe :: Empire -> TextGenCh
-currentTribe e = case tribes e of
-                   [] -> vocabGet e "tribes" 
-                   ts -> choose ts
+
+
+
+
+
 
 descCourtDouble :: Empire -> Person -> TextGenCh
 descCourtDouble e p = inc [ w "Fearful omen of a doppleganger of", pName p, w "at court" ]
@@ -632,6 +634,12 @@ blasphemy e = list [ choose [ b1, b2, b3 ], ptg, vocabGet e "gods" ]
 --
 --
 
+currentTribe :: Empire -> TextGenCh
+currentTribe e = case tribes e of
+                   [] -> vocabGet e "tribes" 
+                   ts -> choose ts
+
+
 descTribe :: Empire -> TextGenCh -> TextGenCh
 descTribe e t = let v = vocabGet e
                     nation = phrase $ aan $ list [ v "adjectives", v "nations" ]
@@ -642,15 +650,39 @@ descTribe e t = let v = vocabGet e
                 in inc [ w "The", t, nation, clause, arose ]
 
 descTribeGo :: Empire -> TextGenCh -> TextGenCh
-descTribeGo e tribe = let v = vocabGet e
-                          went = ch [ dwindled, conquered, migrated, fled ]
-                          dwindled = chw [ "dwindled", "dissolved", "failed" ]
-                          conquered = list [ w "were conquered by the", vocabGet e "tribes" ]
-                          migrated = list [ w "migrated to the", chw [ "north", "west", "east", "south" ] ]
-                          fled = list [ cursed, vocabGet e "phenomena" ]
-                          cursed = chw [ "were cursed with", "fled the", "fled in the face of" ]
-                      in inc [ w "The", tribe, went ]
+descTribeGo e tribe = inc [ w "The", tribe, went ]
+  where v = vocabGet e
+        went = ch [ dwindled, conquered, migrated, fled, monster ]
+        dwindled = chw [ "dwindled", "dissolved", "failed" ]
+        conquered = list [ w "were conquered by the", vocabGet e "tribes" ]
+        migrated = list [ w "migrated to the", chw [ "north", "west", "east", "south" ] ]
+        fled = list [ cursed, vocabGet e "phenomena" ]
+        cursed = chw [ "were cursed with", "fled the", "fled in the face of" ]
+        monster = list [ w "were destroyed by", aan $ v "monsters" ]
 
+
+descTribeActivity :: Empire -> TextGenCh -> TextGenCh
+descTribeActivity e tribe = inc [ w "The", tribe, didstuff ]
+  where didstuff = choose [ incursion, destruction, conversion ]
+        v = vocabGet e
+        incursion = list [
+          chw [
+              "made incursions in"
+              ,"caused trouble in"
+              ,"plundered"
+              ,"raided"
+              ]
+          ,v "places"
+          ]
+        destruction = list [
+          chw [ "sacked", "destroyed", "burnt", "overran" ]
+          ,v "places"
+          ]
+        conversion = list [
+          chw [ "were converted to", "converted to", "became followers of" ]
+          ,v "religions"
+          ]
+            
 
 
 --

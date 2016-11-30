@@ -294,12 +294,12 @@ incrementYear e = e {
 
 yearDesc :: Empire -> TextGenCh
 yearDesc e = h2 $ sentence $ yearof $ emperor e
-  where yearof Nothing = word "Now began an interregnum"
-        yearof (Just em) = list [ word "Now began the reign of", pName $ em ]
+  where yearof Nothing = word "Interregnum"
+        yearof (Just em) = list [ word "Reign of", pName $ em ]
 
 yearAbbrev :: Empire -> TextGenCh
 yearAbbrev e = h3 $ word $ yearcode $ emperor e
-  where yearcode Nothing = "Interregnum"
+  where yearcode Nothing = "INT"
         yearcode (Just emp) = (show $ year e) ++ "." ++ ecode
           where ecode = case lineage e of
                   []   -> ""
