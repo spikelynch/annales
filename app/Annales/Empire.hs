@@ -300,7 +300,7 @@ yearDesc e = h2 $ sentence $ yearof $ emperor e
 
 yearAbbrev :: Empire -> TextGenCh
 yearAbbrev e = h3 $ word $ yearcode $ emperor e
-  where yearcode Nothing = "INT"
+  where yearcode Nothing = "INT" ++ "." ++ (show $ year e)
         yearcode (Just emp) = (show $ year e) ++ "." ++ ecode
           where ecode = case lineage e of
                   []   -> ""

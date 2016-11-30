@@ -152,14 +152,22 @@ wordCount t = 1 + (length $ filter (== ' ') t)
 
 
 
-getLength :: [ String ] -> Int
-getLength [] = 50000
-getLength (a:as) = case readMaybe a of
-  Nothing -> 50000
-  Just i -> i
+parseArgs :: [ String ] -> ( Int, Maybe StdGen )
+parseArgs (a:[]) = ( readLen a, Nothing )
+parseArgs (a:b:as) = ( readLen a, readSeed b )
+parseArgs _        = ( 50000, Nothing )
 
+readLen :: String -> Int
+readLen s = case readMaybe s of
+              Nothing -> 50000
+              Just i -> i
 
-quote = "\"For God's sake, let us sit upon the ground\nAnd tell sad stories of the death of kings\""
+readSeed :: String -> Maybe StdGen
+readSeed s = readMaybe s
+
+quote = "\"For God's sake, let us sit upon the ground / And tell sad stories of the death of kings\""
+
+ghurl = "[annales-exe](https://github.com/spikelynch/annales)"
 
   
 generateTitle :: Empire -> StdGen -> IO [ Char ]
@@ -168,13 +176,14 @@ generateTitle e seed = do
   mends <- return $ ends l
   return $ case mends of
     Just ( k1, k2 ) -> concat [
-      "# GENERATIONS\n\n"
+      "# ANNALES\n\n"
       ,"Being a faithful narration of the history of the realm"
       ," from the reign of "
       ,k1
       ," to the present day\n\n"
-      ,"Transcribed by the algorithm annales-exe"
-      ," with the random seed "
+      ,"As transcribed by the algorithm "
+      ,ghurl
+      ," using the pseudo-random seed "
       ,(show seed)
       ," during the reign of "
       ,k2
@@ -195,8 +204,11 @@ pname (Forebear n _ (Just i)) = n ++ " " ++ (toRoman i)
 main :: IO ()
 main = do
   args <- getArgs
+  ( length, mseed ) <- return $ parseArgs args
+  case mseed of
+    (Just seed) -> setStdGen seed
+    Nothing -> putStrLn ""
   initGen <- getStdGen
-  length <- return $ getLength args
   e0 <- initialiseEmpire "./data/"
   (e', annales) <- generateAnnals length e0
   title <- generateTitle e' initGen 

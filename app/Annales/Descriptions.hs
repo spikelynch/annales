@@ -491,15 +491,46 @@ descCourtDouble e p = inc [ w "Fearful omen of a doppleganger of", pName p, w "a
 
 
 descCourtierGo :: Empire -> Person -> [ Person ] -> TextGenCh
-descCourtierGo e p c = inc $ [ choose [ s1, s2 ] ]
+descCourtierGo e p c = inc $ [ choose [ s1, s2, s3, s4 ] ]
   where s1 = list [ cap1g $ crime, w ",", name, waspunished ]
         s2 = list [ name, phrase $ crime, waspunished ]
         s3 = list [ name, waspunished, w "for", crime ]
+        s4 = retirement e p
         crime = misdeed e p c
         name = pName p
         waspunished = punishment e
 
--- retire to his/her villa
+retirement :: Empire -> Person -> TextGenCh
+retirement e p = choose [
+  list [ pName p, retired, w ",", wearying ]
+  ,list [ cap1g $ wearying, w ",", pName p, retired ]
+  ]
+  where poss = possessive p
+        retired = list [
+          choose [
+              w "retired to"
+              , w "retreated to"
+              , w "left for"
+              , list [ w "spent", poss, chw [ "remaining", "last" ], chw [ "days", "years" ], w "at" ]
+              ]
+          , poss
+          , chw [ "villa", "palace", "estates", "home", "cave", "fortress" ]
+          , w "in", vocabGet e "places"
+          ]
+        wearying = list [
+          chw [
+              "wearying of", "tiring of", "disgusted with", "having grown weary of",
+              "satiated with", "repelete with", "spurning", "having exhausted",
+              "leaving", "abandoning", "forsaking"
+              ]
+          ,w "the"
+          ,perhaps ( 2, 3 ) $ vocabGet e "adjectives"
+          ,choose [ vocabGet e "abstractions", vocabGet e "festivities" ]
+          ,w "of the"
+          ,chw [ "court", "throne", "palace", "capital", "salon", "city" ]
+          ]
+
+          
 
 misdeed :: Empire -> Person -> [ Person ] -> TextGenCh
 misdeed e p c = case maybeAffair e p c of

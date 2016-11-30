@@ -10,6 +10,7 @@ import Annales.Empire (
   ,vocabGet
   ,emperor
   ,consort
+  ,year
   ,heirs
   ,court
   ,pName
@@ -114,7 +115,7 @@ deadEmperor :: Empire -> IO ( Empire, TextGenCh )
 deadEmperor e = do
   case emperor e of
     (Just olde) -> do
-      e' <- return $ e { emperor = Nothing, consort = Nothing }
+      e' <- return $ e { emperor = Nothing, consort = Nothing, year = 1 }
       death <- return $ descDeathOf e olde
       return ( e', death )
     Nothing -> omen e
