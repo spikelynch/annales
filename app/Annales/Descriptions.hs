@@ -250,7 +250,7 @@ descWedding e cg = let me = emperor e
                        v = vocabGet e
                        waswed = chw [ "was wedded to", "espoused", "married", "was joined with" ]
                        celebrated = list [ w "with", much, v "festivities" ]
-                       much = chw [ "great", "many", "much", "wild", "joyful", "happy" ]
+                       much = chw [ "great", "loud", "much", "wild", "joyful", "happy" ]
                    in inc [ eg, waswed, cg, celebrated ]
 
 
