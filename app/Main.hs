@@ -180,4 +180,4 @@ main = do
   e0 <- initialiseEmpire "./data/"
   (e', annales) <- generateAnnals length e0
   putStrLn annales
-  putStrLn $ dumpLineage e'
+--  putStrLn $ dumpLineage e'
