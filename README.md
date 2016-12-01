@@ -10,7 +10,40 @@ a neural net trained on dictionary entries.
 * [ANNALES](output/annales.md)
 * [ANNALES as a PDF](output/annales.pdf)
 
-I'll blog about the details later in the week.
+I'll blog about all the details later in the week.
+
+## Code overview
+
+Annales is build in three stages: vocabuary modelling, vocabulary
+mining and procedural generation.
+
+### Vocabulary modelling
+
+The basis for the nonsensical names and words is a neural net which
+has been trained on all of the word definitions in WordNet. I built
+this a while ago to power a Twitter bot,
+[@GLOSSATORY](http://bots.mikelynch.org/glossatory/), using Justin
+Johnson's [torch-rnn](https://github.com/jcjohnson/torch-rnn) code.
+
+Here is
+[the eight-line script used to fetch around 82,000 definitions from WordNet](data/wordnetdefs.py)
+
+### Vocabulary mining
+
+I generated about 50,000 glossatory entries, and then generated
+vocabulary files for Annales from that with a Python script,
+[extract.py](data/extract.py). This creates lists like
+[men.txt](data/men.txt) or [buildings](data/buildings.txt) based on
+regular expressions.
+
+### Procedural generation
+
+annales itself is a Haskell application which builds on
+[TextGen](https://github.com/spikelynch/textgen), a Haskell combinator
+library I wrote for another Twitter bot,
+[@amightyhost](http://bots.mikelynch.org/amightyhost/).  It uses its
+own event loop to generate incidents and then uses TextGen, with the
+vocabulary files, to generate descriptions of those incidents.
 
 ## Sample output
 
