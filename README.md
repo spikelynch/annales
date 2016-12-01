@@ -33,7 +33,7 @@ Here is
 I generated about 50,000 glossatory entries, and then generated
 vocabulary files for Annales from that with a Python script,
 [extract.py](data/extract.py). This creates lists like
-[men.txt](data/men.txt) or [buildings](data/buildings.txt) based on
+[men.txt](data/men.txt) and [buildings.txt](data/buildings.txt) based on
 regular expressions.
 
 ### Procedural generation
