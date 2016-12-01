@@ -520,7 +520,7 @@ retirement e p = choose [
         wearying = list [
           chw [
               "wearying of", "tiring of", "disgusted with", "having grown weary of",
-              "satiated with", "repelete with", "spurning", "having exhausted",
+              "satiated with", "replete with", "spurning", "having exhausted",
               "leaving", "abandoning", "forsaking"
               ]
           ,w "the"

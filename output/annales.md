@@ -1,4 +1,3 @@
-
 # ANNALES
 
 Being a faithful narration of the history of the realm from the reign of Fobbial Artesia I to the present day
@@ -1112,7 +1111,7 @@ In this year Forsea, a noble of the house of Onual Trissiency, arrived at court.
 
 ###8.KO.I
 
-Repelete with the nonfitry of the throne, Forsea retreated to her fortress in Colvency.
+Replete with the nonfitry of the throne, Forsea retreated to her fortress in Colvency.
 
 
 
@@ -2592,7 +2591,7 @@ Panic caused by simitges in Tancocis Tnell.
 
 Crandy Myola was accouched of a daughter, Accordsaliza.
 
-Repelete with the concilfish phression of the salon, Vellow Belnodon left for his cave in Bunfle Bur.
+Replete with the concilfish phression of the salon, Vellow Belnodon left for his cave in Bunfle Bur.
 
 
 
@@ -5038,7 +5037,7 @@ Shearket Dombecrora, an elisperlant woman, great with wielding the gleenet, was 
 
 ###10.P
 
-Repelete with the ronchnic lancussion of the city, Ponetan left for his palace in Scaoting Tow.
+Replete with the ronchnic lancussion of the city, Ponetan left for his palace in Scaoting Tow.
 
 
 
@@ -8464,7 +8463,7 @@ Presta was brought to bed of a son, Wav Chutan.
 
 The Haggli sacked Brack.
 
-De Saba retired to her cave in Hinner, repelete with the tharpathness of the throne.
+De Saba retired to her cave in Hinner, replete with the tharpathness of the throne.
 
 Having written incompetent jokes, Charps Doction, a noble of the house of Wagerid, became known.
 
@@ -11958,7 +11957,7 @@ The Grip Namidae became followers of Noveleminism.
 
 The Dabemiii caused trouble in Porthied.
 
-Gonu Candlession retired to his home in Spir, repelete with the nevision of the city.
+Gonu Candlession retired to his home in Spir, replete with the nevision of the city.
 
 
 
@@ -12166,7 +12165,7 @@ The Temple of Pondwich was ruined by an earthquake.
 
 ###4.D.I
 
-Whitelin Genan retired to his home in Fent, repelete with the menchablession of the palace.
+Whitelin Genan retired to his home in Fent, replete with the menchablession of the palace.
 
 The Temple of Uhis was collapsed by a lightning bolt.
 
@@ -12238,7 +12237,7 @@ Chelliza succumbed to panny-halver.
 
 Rumours of aconstoy states in Rack Rack.
 
-Atrica retreated to her estates in Rication Jaltbu, repelete with the dentric unicement of the city.
+Atrica retreated to her estates in Rication Jaltbu, replete with the dentric unicement of the city.
 
 
 
@@ -13282,7 +13281,7 @@ The Daistesi destroyed Genus Mardle.
 
 The Poloridae, a heositic clan, followers of the holy Pattector, arose in Chaid.
 
-Cock the Man spent his last days at his villa in Inquitary Siug, repelete with the dispe-reant sparrience of the court.
+Cock the Man spent his last days at his villa in Inquitary Siug, replete with the dispe-reant sparrience of the court.
 
 
 
