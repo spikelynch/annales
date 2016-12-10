@@ -12,6 +12,21 @@ a neural net trained on dictionary entries.
 
 I'll blog about all the details later in the week.
 
+## Blogged
+
+[Annales: the gory details in three parts](http://mikelynch.org/2016/Dec/10/annales-details/)
+
+1. [Vocabularies](http://mikelynch.org/2016/Dec/10/annales-1-vocab/):
+   using a neural network, Python and regular expressions to generate
+   a nonsense vocabulary
+2. [TextGen](http://mikelynch.org/2016/Dec/10/annales-2-textgen/): a
+   Haskell combinator library for making up randomised sentences (plus
+   a one-paragraph explanation of how the State monad works!)
+3. [Events](http://mikelynch.org/2016/Dec/10/annales-3-events/): in
+   which I get bogged down writing a succession algorithm, but also
+   figure out how to correct a typo in a randomly-generated text
+
+
 ## Code overview
 
 Annales is build in three stages: vocabuary modelling, vocabulary
