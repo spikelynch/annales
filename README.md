@@ -10,9 +10,7 @@ a neural net trained on dictionary entries.
 * [ANNALES](output/annales.md)
 * [ANNALES as a PDF](output/annales.pdf)
 
-I'll blog about all the details later in the week.
-
-## Blogged
+## Blog posts
 
 [Annales: the gory details in three parts](http://mikelynch.org/2016/Dec/10/annales-details/)
 
